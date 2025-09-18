@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT - AI도구 가이드</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <style>
+        .detail-container {
+            background: var(--gray-50);
+            min-height: 100vh;
+        }
+
+        .detail-main {
+            padding: var(--space-xl) 0;
+        }
+
+        /* 도구 헤더 */
+        .tool-header {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-3xl);
+            border: 1px solid var(--gray-200);
+            margin-bottom: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-100), var(--accent-100));
+            border-radius: 50%;
+            transform: translate(150px, -100px);
+            opacity: 0.7;
+        }
+
+        .tool-header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-header__top {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .tool-logo-large {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 102, 255, 0.3);
+        }
+
+        .tool-header__info {
+            flex: 1;
+        }
+
+        .tool-header__badges {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .header-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .header-badge.featured {
+            background: var(--accent-500);
+        }
+
+        .header-badge.verified {
+            background: var(--secondary-500);
+        }
+
+        .tool-header__title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-sm);
+        }
+
+        .tool-header__subtitle {
+            font-size: 18px;
+            color: var(--gray-600);
+            margin-bottom: var(--space-lg);
+        }
+
+        .tool-header__meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2xl);
+            margin-bottom: var(--space-lg);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .meta-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .rating-stars .star {
+            color: var(--warning);
+            font-size: 20px;
+        }
+
+        .rating-score {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-left: var(--space-sm);
+        }
+
+        .rating-count {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .tool-header__actions {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            padding: var(--space-lg) var(--space-2xl);
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            min-width: 140px;
+        }
+
+        .btn-visit {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            transition: all var(--transition-base);
+        }
+
+        .btn-visit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+
+        /* 탭 네비게이션 */
+        .tab-navigation {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            margin-bottom: var(--space-2xl);
+            overflow-x: auto;
+        }
+
+        .tab-nav-list {
+            display: flex;
+            padding: var(--space-md);
+            gap: var(--space-sm);
+            min-width: fit-content;
+        }
+
+        .tab-nav-item {
+            padding: var(--space-md) var(--space-lg);
+            border-radius: 8px;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all var(--transition-base);
+        }
+
+        .tab-nav-item:hover {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            text-decoration: none;
+        }
+
+        .tab-nav-item.active {
+            background: var(--primary-500);
+            color: white;
+        }
+
+        /* 탭 컨텐츠 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 개요 탭 */
+        .overview-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+        }
+
+        @media (min-width: 1024px) {
+            .overview-content {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .main-overview {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2xl);
+        }
+
+        .overview-section {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-2xl);
+            border: 1px solid var(--gray-200);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-lg);
+        }
+
+        .section-subtitle {
+            color: var(--gray-600);
+            margin-bottom: var(--space-lg);
+            line-height: 1.6;
+        }
+
+        /* 기능 리스트 */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .feature-item {
+            display: flex;
+            gap: var(--space-md);
+            padding: var(--space-lg);
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            color: var(--primary-500);
+        }
+
+        .feature-content h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .feature-content p {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* 사이드바 */
+        .detail-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xl);
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-xl);
+            border: 1px solid var(--gray-200);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-lg);
+        }
+
+        /* 가격 정보 */
+        .pricing-plans {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .pricing-plan {
+            padding: var(--space-lg);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            transition: all var(--transition-base);
+        }
+
+        .pricing-plan:hover {
+            border-color: var(--primary-500);
+            box-shadow: 0 2px 8px rgba(0, 102, 255, 0.15);
+        }
+
+        .pricing-plan.popular {
+            border-color: var(--primary-500);
+            background: var(--primary-50);
+            position: relative;
+        }
+
+        .pricing-plan.popular::before {
+            content: '인기';
+            position: absolute;
+            top: -8px;
+            right: var(--space-lg);
+            background: var(--primary-500);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .plan-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .plan-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-500);
+            margin-bottom: var(--space-sm);
+        }
+
+        .plan-price .currency {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .plan-desc {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        /* 관련 정보 */
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        /* 태그 */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .tag-item {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            border: 1px solid var(--gray-200);
+        }
+
+        /* 후기 미리보기 */
+        .reviews-preview {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        .review-item {
+            padding: var(--space-lg);
+            background: var(--gray-50);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-500);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-md);
+        }
+
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .review-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--primary-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--primary-700);
+        }
+
+        .review-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .review-rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .review-text {
+            color: var(--gray-700);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* 관련 도구 */
+        .related-tools {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-md);
+        }
+
+        .related-tool {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--gray-50);
+            border-radius: 8px;
+            text-decoration: none;
+            color: inherit;
+            transition: all var(--transition-base);
+        }
+
+        .related-tool:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-300);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .related-tool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .related-tool-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+        }
+
+        .related-tool-info p {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .tool-header {
+                padding: var(--space-xl);
+            }
+
+            .tool-header__top {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-lg);
+            }
+
+            .tool-logo-large {
+                width: 80px;
+                height: 80px;
+                font-size: 40px;
+                align-self: center;
+            }
+
+            .tool-header__title {
+                font-size: 28px;
+            }
+
+            .tool-header__meta {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: var(--space-lg);
+            }
+
+            .tool-header__actions {
+                justify-content: center;
+            }
+
+            .btn-large {
+                min-width: auto;
+                flex: 1;
+            }
+
+            .overview-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-container">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container header__container">
+                <a href="03-대시보드.html" class="header__logo">AI도구 가이드</a>
+                
+                <div class="search-bar">
+                    <input type="text" class="search-bar__input" placeholder="AI 도구를 검색해보세요...">
+                    <span class="search-bar__icon">🔍</span>
+                </div>
+
+                <nav class="header__nav">
+                    <a href="04-도구목록.html" class="header__nav-link">도구 탐색</a>
+                    <a href="08-도구비교.html" class="header__nav-link">비교분석</a>
+                    <a href="09-후기목록.html" class="header__nav-link">커뮤니티</a>
+                    <a href="12-사용가이드.html" class="header__nav-link">가이드</a>
+                </nav>
+
+                <div class="header__actions">
+                    <a href="14-알림센터.html" class="btn-ghost" title="알림">🔔</a>
+                    <a href="11-즐겨찾기.html" class="btn-ghost" title="즐겨찾기">⭐</a>
+                    <div class="user-menu">
+                        <button class="btn-ghost" onclick="toggleUserMenu()">
+                            👤 김철수 ▼
+                        </button>
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <a href="07-프로필설정.html">프로필 설정</a>
+                            <a href="15-마이페이지.html">마이페이지</a>
+                            <a href="01-로그인.html">로그아웃</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container detail-main">
+            <!-- 도구 헤더 -->
+            <section class="tool-header">
+                <div class="tool-header-content">
+                    <div class="tool-header__top">
+                        <div class="tool-logo-large">🤖</div>
+                        
+                        <div class="tool-header__info">
+                            <div class="tool-header__badges">
+                                <span class="header-badge featured">AI 추천</span>
+                                <span class="header-badge verified">인증됨</span>
+                            </div>
+                            
+                            <h1 class="tool-header__title">ChatGPT</h1>
+                            <p class="tool-header__subtitle">대화형 AI로 텍스트 생성부터 창작까지</p>
+                            
+                            <div class="tool-header__meta">
+                                <div class="meta-item meta-rating">
+                                    <div class="rating-stars">
+                                        <span class="star">⭐</span>
+                                        <span class="star">⭐</span>
+                                        <span class="star">⭐</span>
+                                        <span class="star">⭐</span>
+                                        <span class="star">⭐</span>
+                                    </div>
+                                    <span class="rating-score">4.8</span>
+                                    <span class="rating-count">(12,847개 리뷰)</span>
+                                </div>
+                                
+                                <div class="meta-item">
+                                    <span>👥</span>
+                                    <span>1,000만+ 사용자</span>
+                                </div>
+                                
+                                <div class="meta-item">
+                                    <span>📅</span>
+                                    <span>2022년 출시</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-header__actions">
+                        <a href="https://chat.openai.com" target="_blank" class="btn-large btn-visit">
+                            🚀 바로 사용하기
+                        </a>
+                        <button class="btn-large btn-secondary" onclick="toggleFavorite()">
+                            ⭐ 즐겨찾기
+                        </button>
+                        <button class="btn-large btn-secondary" onclick="addToCompare()">
+                            📊 비교함 추가
+                        </button>
+                        <button class="btn-large btn-ghost" onclick="shareThisTool()">
+                            🔗 공유
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 탭 네비게이션 -->
+            <nav class="tab-navigation">
+                <div class="tab-nav-list">
+                    <a href="#overview" class="tab-nav-item active" onclick="switchTab(event, 'overview')">개요</a>
+                    <a href="#features" class="tab-nav-item" onclick="switchTab(event, 'features')">기능</a>
+                    <a href="#pricing" class="tab-nav-item" onclick="switchTab(event, 'pricing')">가격</a>
+                    <a href="#reviews" class="tab-nav-item" onclick="switchTab(event, 'reviews')">후기</a>
+                    <a href="#guide" class="tab-nav-item" onclick="switchTab(event, 'guide')">가이드</a>
+                    <a href="#cases" class="tab-nav-item" onclick="switchTab(event, 'cases')">활용사례</a>
+                </div>
+            </nav>
+
+            <!-- 개요 탭 -->
+            <div class="tab-content active" id="overview">
+                <div class="overview-content">
+                    <div class="main-overview">
+                        <!-- 도구 설명 -->
+                        <div class="overview-section">
+                            <h2 class="section-title">ChatGPT란?</h2>
+                            <p class="section-subtitle">
+                                ChatGPT는 OpenAI에서 개발한 대화형 인공지능 모델로, 자연스러운 대화를 통해 
+                                텍스트 생성, 번역, 요약, 창작 등 다양한 작업을 수행할 수 있습니다. 
+                                GPT(Generative Pre-trained Transformer) 기술을 기반으로 하여 
+                                인간과 같은 수준의 대화를 제공합니다.
+                            </p>
+
+                            <div class="features-grid">
+                                <div class="feature-item">
+                                    <div class="feature-icon">💬</div>
+                                    <div class="feature-content">
+                                        <h4>자연스러운 대화</h4>
+                                        <p>인간과 같은 자연스러운 대화를 통해 원하는 결과를 얻을 수 있습니다.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">✍️</div>
+                                    <div class="feature-content">
+                                        <h4>다양한 텍스트 생성</h4>
+                                        <p>기사, 에세이, 시, 소설 등 다양한 형태의 텍스트를 생성할 수 있습니다.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">🌍</div>
+                                    <div class="feature-content">
+                                        <h4>다국어 지원</h4>
+                                        <p>한국어를 포함한 다양한 언어로 번역과 대화가 가능합니다.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">🔍</div>
+                                    <div class="feature-content">
+                                        <h4>요약 및 분석</h4>
+                                        <p>긴 문서나 복잡한 내용을 간결하게 요약하고 분석할 수 있습니다.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">💡</div>
+                                    <div class="feature-content">
+                                        <h4>창작 도구</h4>
+                                        <p>창의적인 아이디어 생성과 브레인스토밍을 도와줍니다.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">💻</div>
+                                    <div class="feature-content">
+                                        <h4>코딩 지원</h4>
+                                        <p>프로그래밍 코드 작성, 디버깅, 설명을 제공합니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 주요 활용 분야 -->
+                        <div class="overview-section">
+                            <h2 class="section-title">주요 활용 분야</h2>
+                            <div class="tags-container">
+                                <span class="tag-item">📝 콘텐츠 작성</span>
+                                <span class="tag-item">📊 마케팅</span>
+                                <span class="tag-item">🎓 교육</span>
+                                <span class="tag-item">💼 비즈니스</span>
+                                <span class="tag-item">💻 개발</span>
+                                <span class="tag-item">🎨 창작</span>
+                                <span class="tag-item">🔬 연구</span>
+                                <span class="tag-item">🌍 번역</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 사이드바 -->
+                    <div class="detail-sidebar">
+                        <!-- 가격 정보 -->
+                        <div class="sidebar-card">
+                            <h3 class="sidebar-title">가격 플랜</h3>
+                            <div class="pricing-plans">
+                                <div class="pricing-plan">
+                                    <div class="plan-name">Free</div>
+                                    <div class="plan-price">무료</div>
+                                    <div class="plan-desc">기본 ChatGPT 사용 가능</div>
+                                </div>
+                                
+                                <div class="pricing-plan popular">
+                                    <div class="plan-name">ChatGPT Plus</div>
+                                    <div class="plan-price"><span class="currency">$</span>20<span class="currency">/월</span></div>
+                                    <div class="plan-desc">GPT-4, 빠른 응답, 우선 지원</div>
+                                </div>
+                                
+                                <div class="pricing-plan">
+                                    <div class="plan-name">Team</div>
+                                    <div class="plan-price"><span class="currency">$</span>30<span class="currency">/월/사용자</span></div>
+                                    <div class="plan-desc">팀 협업, 관리 기능 포함</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 도구 정보 -->
+                        <div class="sidebar-card">
+                            <h3 class="sidebar-title">도구 정보</h3>
+                            <div class="info-list">
+                                <div class="info-item">
+                                    <span class="info-label">개발사</span>
+                                    <span class="info-value">OpenAI</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">출시일</span>
+                                    <span class="info-value">2022년 11월</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">플랫폼</span>
+                                    <span class="info-value">웹, 모바일 앱</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">언어</span>
+                                    <span class="info-value">다국어 지원</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">API</span>
+                                    <span class="info-value">제공</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">업데이트</span>
+                                    <span class="info-value">2024년 9월</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 후기 미리보기 -->
+                        <div class="sidebar-card">
+                            <h3 class="sidebar-title">사용자 후기</h3>
+                            <div class="reviews-preview">
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="review-user">
+                                            <div class="review-avatar">김</div>
+                                            <span class="review-name">김마케터</span>
+                                        </div>
+                                        <div class="review-rating">
+                                            <span class="star">⭐⭐⭐⭐⭐</span>
+                                        </div>
+                                    </div>
+                                    <div class="review-text">
+                                        "마케팅 카피 작성에 정말 도움이 많이 됩니다. 
+                                        창의적인 아이디어도 잘 제공해줘요."
+                                    </div>
+                                </div>
+                                
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <div class="review-user">
+                                            <div class="review-avatar">박</div>
+                                            <span class="review-name">박개발자</span>
+                                        </div>
+                                        <div class="review-rating">
+                                            <span class="star">⭐⭐⭐⭐</span>
+                                        </div>
+                                    </div>
+                                    <div class="review-text">
+                                        "코드 작성과 디버깅에 유용합니다. 
+                                        설명도 잘해줘서 학습에도 도움이 돼요."
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <a href="09-후기목록.html?tool=chatgpt" class="btn btn-secondary" style="width: 100%; margin-top: var(--space-lg);">
+                                모든 후기 보기
+                            </a>
+                        </div>
+
+                        <!-- 관련 도구 -->
+                        <div class="sidebar-card">
+                            <h3 class="sidebar-title">관련 도구</h3>
+                            <div class="related-tools">
+                                <a href="05-도구상세.html?tool=claude" class="related-tool">
+                                    <div class="related-tool-icon">🤖</div>
+                                    <div class="related-tool-info">
+                                        <h4>Claude</h4>
+                                        <p>Anthropic의 AI 어시스턴트</p>
+                                    </div>
+                                </a>
+                                
+                                <a href="05-도구상세.html?tool=jasper" class="related-tool">
+                                    <div class="related-tool-icon">✍️</div>
+                                    <div class="related-tool-info">
+                                        <h4>Jasper AI</h4>
+                                        <p>마케팅 콘텐츠 전문 AI</p>
+                                    </div>
+                                </a>
+                                
+                                <a href="05-도구상세.html?tool=copy-ai" class="related-tool">
+                                    <div class="related-tool-icon">📝</div>
+                                    <div class="related-tool-info">
+                                        <h4>Copy.ai</h4>
+                                        <p>카피라이팅 AI 도구</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 기능 탭 -->
+            <div class="tab-content" id="features">
+                <div class="overview-section">
+                    <h2 class="section-title">주요 기능</h2>
+                    <p>ChatGPT의 다양한 기능들을 자세히 알아보세요.</p>
+                    <!-- 기능 상세 내용 -->
+                </div>
+            </div>
+
+            <!-- 가격 탭 -->
+            <div class="tab-content" id="pricing">
+                <div class="overview-section">
+                    <h2 class="section-title">요금제</h2>
+                    <p>ChatGPT의 다양한 요금제를 비교해보세요.</p>
+                    <!-- 가격 비교표 내용 -->
+                </div>
+            </div>
+
+            <!-- 후기 탭 -->
+            <div class="tab-content" id="reviews">
+                <div class="overview-section">
+                    <h2 class="section-title">사용자 후기</h2>
+                    <p>실제 사용자들의 생생한 후기를 확인해보세요.</p>
+                    <!-- 후기 목록 내용 -->
+                </div>
+            </div>
+
+            <!-- 가이드 탭 -->
+            <div class="tab-content" id="guide">
+                <div class="overview-section">
+                    <h2 class="section-title">사용 가이드</h2>
+                    <p>ChatGPT를 효과적으로 사용하는 방법을 알아보세요.</p>
+                    <!-- 가이드 내용 -->
+                </div>
+            </div>
+
+            <!-- 활용사례 탭 -->
+            <div class="tab-content" id="cases">
+                <div class="overview-section">
+                    <h2 class="section-title">활용 사례</h2>
+                    <p>다양한 업무 분야별 ChatGPT 활용 사례를 소개합니다.</p>
+                    <!-- 활용사례 내용 -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 탭 전환
+        function switchTab(event, tabId) {
+            event.preventDefault();
+            
+            // 모든 탭 링크에서 active 클래스 제거
+            document.querySelectorAll('.tab-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 모든 탭 컨텐츠 숨기기
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 클릭된 탭 링크에 active 클래스 추가
+            event.target.classList.add('active');
+            
+            // 해당 탭 컨텐츠 표시
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // 사용자 메뉴 토글
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 즐겨찾기 토글
+        function toggleFavorite() {
+            const btn = event.target;
+            const isFavorite = btn.textContent.includes('⭐');
+            
+            if (btn.textContent.includes('즐겨찾기')) {
+                btn.innerHTML = '⭐ 즐겨찾기 해제';
+                btn.classList.add('btn-warning');
+                btn.classList.remove('btn-secondary');
+                alert('즐겨찾기에 추가되었습니다!');
+            } else {
+                btn.innerHTML = '⭐ 즐겨찾기';
+                btn.classList.add('btn-secondary');
+                btn.classList.remove('btn-warning');
+                alert('즐겨찾기에서 제거되었습니다.');
+            }
+        }
+
+        // 비교함 추가
+        function addToCompare() {
+            alert('비교함에 추가되었습니다!\n최대 5개까지 도구를 선택하여 비교할 수 있습니다.');
+        }
+
+        // 공유하기
+        function shareThisTool() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'ChatGPT - AI도구 가이드',
+                    text: 'ChatGPT에 대한 자세한 정보를 확인해보세요!',
+                    url: window.location.href
+                });
+            } else {
+                // 클립보드에 복사
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('링크가 클립보드에 복사되었습니다!');
+                });
+            }
+        }
+
+        // 외부 클릭 시 사용자 메뉴 닫기
+        document.addEventListener('click', function(e) {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userMenu.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // 사용자 드롭다운 스타일
+        const style = document.createElement('style');
+        style.textContent = `
+            .user-menu {
+                position: relative;
+            }
+            
+            .user-dropdown {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border: 1px solid var(--gray-200);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                min-width: 150px;
+                z-index: 1000;
+                margin-top: 4px;
+            }
+            
+            .user-dropdown a {
+                display: block;
+                padding: var(--space-md) var(--space-lg);
+                color: var(--gray-700);
+                text-decoration: none;
+                transition: background var(--transition-base);
+            }
+            
+            .user-dropdown a:hover {
+                background: var(--gray-50);
+            }
+
+            .btn-warning {
+                background: var(--warning);
+                color: white;
+                border-color: var(--warning);
+            }
+
+            .btn-warning:hover {
+                background: #e68900;
+                border-color: #e68900;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

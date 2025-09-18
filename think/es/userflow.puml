@@ -1,0 +1,44 @@
+@startuml
+!theme mono
+
+title 업무별 AI 도구 가이드북 - 전체 유저플로우 연결도
+
+participant "직장인사용자" as User
+participant "가이드북시스템" as System
+participant "추천엔진" as Recommend
+participant "AI도구정보DB" as ToolDB
+participant "외부AI도구API" as ExternalAPI
+
+== 메인 플로우 연결 ==
+
+User -> System: 01. 업무도메인별 AI도구 탐색
+activate System
+
+System -> ToolDB: 업무별 도구 목록 조회
+System -> User: 도구 목록 제공
+
+User -> System: 02. AI도구 상세정보 확인  
+System -> ToolDB: 상세정보 조회
+System -> ExternalAPI: 실시간 정보 확인
+System -> User: 상세정보 제공
+
+User -> System: 03. AI도구 비교평가
+System -> ToolDB: 비교 대상 도구들 정보 조회
+System -> User: 비교 결과 제공
+
+System -> Recommend: 04. 개인화 추천 (백그라운드)
+Recommend -> ToolDB: 사용자 패턴 분석
+Recommend -> System: 추천 결과
+
+User -> System: 05. 사용후기 관리
+System -> ToolDB: 후기 저장/조회
+
+deactivate System
+
+note over User, ExternalAPI
+  각 플로우는 독립적으로 실행되며,
+  사용자의 행동 패턴에 따라 
+  개인화 추천이 백그라운드에서 동작
+end note
+
+@enduml

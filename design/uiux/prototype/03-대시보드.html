@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대시보드 - AI도구 가이드</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <style>
+        /* 대시보드 전용 스타일 */
+        .dashboard-container {
+            background: var(--gray-50);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-xl);
+            padding: var(--space-xl) 0;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr 300px;
+                gap: var(--space-2xl);
+            }
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--accent-500) 100%);
+            color: white;
+            border-radius: 16px;
+            padding: var(--space-3xl);
+            margin-bottom: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-greeting {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+
+        .hero-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: var(--space-xl);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: var(--space-2xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary-500);
+            border: none;
+        }
+
+        .btn-white:hover {
+            background: var(--gray-100);
+            transform: translateY(-1px);
+        }
+
+        /* 개인화 추천 섹션 */
+        .recommendations-section {
+            margin-bottom: var(--space-3xl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .section-subtitle {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-top: var(--space-xs);
+        }
+
+        .refresh-btn {
+            color: var(--primary-500);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .refresh-btn:hover {
+            text-decoration: underline;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-lg);
+        }
+
+        @media (min-width: 640px) {
+            .recommendations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .recommendations-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* 추천 도구 카드 */
+        .recommendation-card {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-xl);
+            border: 1px solid var(--gray-200);
+            transition: all var(--transition-base);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-300);
+        }
+
+        .recommendation-card__badge {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: var(--accent-500);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .recommendation-card__header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .recommendation-card__logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .recommendation-card__info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .recommendation-card__info .category {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .recommendation-card__match {
+            margin-bottom: var(--space-md);
+        }
+
+        .match-score {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            background: var(--secondary-100);
+            color: var(--secondary-700);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .recommendation-card__reason {
+            color: var(--gray-700);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: var(--space-lg);
+        }
+
+        .recommendation-card__actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .btn-sm {
+            padding: var(--space-sm) var(--space-md);
+            font-size: 13px;
+            border-radius: 6px;
+        }
+
+        /* 카테고리 섹션 */
+        .categories-section {
+            margin-bottom: var(--space-3xl);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+        }
+
+        @media (min-width: 768px) {
+            .categories-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .categories-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-xl);
+            border: 1px solid var(--gray-200);
+            text-align: center;
+            transition: all var(--transition-base);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-300);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .category-icon {
+            font-size: 32px;
+            margin-bottom: var(--space-md);
+        }
+
+        .category-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .category-count {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xl);
+        }
+
+        .sidebar-section {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-xl);
+            border: 1px solid var(--gray-200);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .see-all {
+            font-size: 13px;
+            color: var(--primary-500);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .see-all:hover {
+            text-decoration: underline;
+        }
+
+        /* 최근 활동 */
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md) 0;
+            border-bottom: 1px solid var(--gray-100);
+            transition: background var(--transition-base);
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 0 calc(var(--space-md) * -1);
+            padding: var(--space-md);
+        }
+
+        .recent-item:last-child {
+            border-bottom: none;
+        }
+
+        .recent-item:hover {
+            background: var(--gray-50);
+        }
+
+        .recent-item__icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .recent-item__content {
+            flex: 1;
+        }
+
+        .recent-item__name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+        }
+
+        .recent-item__time {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        /* 알림 */
+        .notification-item {
+            display: flex;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            background: var(--primary-50);
+            border: 1px solid var(--primary-200);
+            border-radius: 8px;
+            margin-bottom: var(--space-md);
+        }
+
+        .notification-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .notification-icon {
+            color: var(--primary-500);
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .notification-desc {
+            font-size: 13px;
+            color: var(--gray-700);
+            line-height: 1.4;
+        }
+
+        /* 반응형 조정 */
+        @media (max-width: 1023px) {
+            .sidebar {
+                order: -1;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: var(--space-xl);
+            }
+            
+            .hero-greeting {
+                font-size: 24px;
+            }
+            
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: var(--space-lg);
+            }
+            
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container header__container">
+                <a href="03-대시보드.html" class="header__logo">AI도구 가이드</a>
+                
+                <div class="search-bar">
+                    <input type="text" class="search-bar__input" placeholder="AI 도구를 검색해보세요...">
+                    <span class="search-bar__icon">🔍</span>
+                </div>
+
+                <nav class="header__nav">
+                    <a href="04-도구목록.html" class="header__nav-link">도구 탐색</a>
+                    <a href="08-도구비교.html" class="header__nav-link">비교분석</a>
+                    <a href="09-후기목록.html" class="header__nav-link">커뮤니티</a>
+                    <a href="12-사용가이드.html" class="header__nav-link">가이드</a>
+                </nav>
+
+                <div class="header__actions">
+                    <a href="14-알림센터.html" class="btn-ghost" title="알림">🔔</a>
+                    <a href="11-즐겨찾기.html" class="btn-ghost" title="즐겨찾기">⭐</a>
+                    <div class="user-menu">
+                        <button class="btn-ghost" onclick="toggleUserMenu()">
+                            👤 김철수 ▼
+                        </button>
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <a href="07-프로필설정.html">프로필 설정</a>
+                            <a href="15-마이페이지.html">마이페이지</a>
+                            <a href="01-로그인.html">로그아웃</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-greeting">안녕하세요, 김철수님! 👋</h1>
+                    <p class="hero-subtitle">오늘도 생산성을 높여줄 AI 도구들을 만나보세요</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">24</span>
+                            <span class="stat-label">즐겨찾기 도구</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">15</span>
+                            <span class="stat-label">이번 주 탐색</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">8</span>
+                            <span class="stat-label">작성한 후기</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-actions">
+                        <a href="04-도구목록.html" class="btn btn-white">새 도구 탐색</a>
+                        <a href="08-도구비교.html" class="btn btn-secondary">도구 비교하기</a>
+                    </div>
+                </div>
+            </section>
+
+            <div class="main-content">
+                <div class="main-column">
+                    <!-- 개인화 추천 섹션 -->
+                    <section class="recommendations-section">
+                        <div class="section-header">
+                            <div>
+                                <h2 class="section-title">당신을 위한 맞춤 추천</h2>
+                                <p class="section-subtitle">마케팅 업무에 특화된 AI 도구들을 선별했어요</p>
+                            </div>
+                            <a href="#" class="refresh-btn" onclick="refreshRecommendations()">
+                                🔄 새로고침
+                            </a>
+                        </div>
+
+                        <div class="recommendations-grid">
+                            <div class="recommendation-card" onclick="goToTool('chatgpt')">
+                                <span class="recommendation-card__badge">AI 추천</span>
+                                <div class="recommendation-card__header">
+                                    <div class="recommendation-card__logo">🤖</div>
+                                    <div class="recommendation-card__info">
+                                        <h3>ChatGPT</h3>
+                                        <span class="category">텍스트 생성</span>
+                                    </div>
+                                </div>
+                                <div class="recommendation-card__match">
+                                    <span class="match-score">⚡ 95% 매칭</span>
+                                </div>
+                                <p class="recommendation-card__reason">
+                                    마케팅 콘텐츠 기획과 카피 작성에 최적화된 도구입니다. 블로그, SNS, 광고 문구 생성이 필요한 업무에 적합해요.
+                                </p>
+                                <div class="recommendation-card__actions">
+                                    <button class="btn btn-primary btn-sm">자세히 보기</button>
+                                    <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); addToFavorites('chatgpt')">⭐ 즐겨찾기</button>
+                                </div>
+                            </div>
+
+                            <div class="recommendation-card" onclick="goToTool('canva')">
+                                <span class="recommendation-card__badge">인기</span>
+                                <div class="recommendation-card__header">
+                                    <div class="recommendation-card__logo">🎨</div>
+                                    <div class="recommendation-card__info">
+                                        <h3>Canva</h3>
+                                        <span class="category">디자인</span>
+                                    </div>
+                                </div>
+                                <div class="recommendation-card__match">
+                                    <span class="match-score">⚡ 88% 매칭</span>
+                                </div>
+                                <p class="recommendation-card__reason">
+                                    마케팅 소재 제작에 필수적인 디자인 도구입니다. 템플릿 기반으로 빠르게 전문적인 비주얼을 만들 수 있어요.
+                                </p>
+                                <div class="recommendation-card__actions">
+                                    <button class="btn btn-primary btn-sm">자세히 보기</button>
+                                    <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); addToFavorites('canva')">⭐ 즐겨찾기</button>
+                                </div>
+                            </div>
+
+                            <div class="recommendation-card" onclick="goToTool('jasper')">
+                                <span class="recommendation-card__badge">신규</span>
+                                <div class="recommendation-card__header">
+                                    <div class="recommendation-card__logo">✍️</div>
+                                    <div class="recommendation-card__info">
+                                        <h3>Jasper AI</h3>
+                                        <span class="category">콘텐츠 작성</span>
+                                    </div>
+                                </div>
+                                <div class="recommendation-card__match">
+                                    <span class="match-score">⚡ 92% 매칭</span>
+                                </div>
+                                <p class="recommendation-card__reason">
+                                    마케팅 콘텐츠 전문 AI 작성 도구입니다. 브랜드 톤앤매너를 학습하여 일관된 콘텐츠를 생성해줍니다.
+                                </p>
+                                <div class="recommendation-card__actions">
+                                    <button class="btn btn-primary btn-sm">자세히 보기</button>
+                                    <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); addToFavorites('jasper')">⭐ 즐겨찾기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 카테고리 섹션 -->
+                    <section class="categories-section">
+                        <div class="section-header">
+                            <div>
+                                <h2 class="section-title">카테고리별 인기 도구</h2>
+                                <p class="section-subtitle">업무 분야별로 검증된 AI 도구들을 만나보세요</p>
+                            </div>
+                        </div>
+
+                        <div class="categories-grid">
+                            <a href="04-도구목록.html?category=marketing" class="category-card">
+                                <div class="category-icon">📊</div>
+                                <div class="category-name">마케팅</div>
+                                <div class="category-count">48개 도구</div>
+                            </a>
+                            
+                            <a href="04-도구목록.html?category=development" class="category-card">
+                                <div class="category-icon">💻</div>
+                                <div class="category-name">개발</div>
+                                <div class="category-count">62개 도구</div>
+                            </a>
+                            
+                            <a href="04-도구목록.html?category=design" class="category-card">
+                                <div class="category-icon">🎨</div>
+                                <div class="category-name">디자인</div>
+                                <div class="category-count">35개 도구</div>
+                            </a>
+                            
+                            <a href="04-도구목록.html?category=planning" class="category-card">
+                                <div class="category-icon">📋</div>
+                                <div class="category-name">기획</div>
+                                <div class="category-count">29개 도구</div>
+                            </a>
+                            
+                            <a href="04-도구목록.html?category=sales" class="category-card">
+                                <div class="category-icon">💼</div>
+                                <div class="category-name">영업</div>
+                                <div class="category-count">31개 도구</div>
+                            </a>
+                            
+                            <a href="04-도구목록.html?category=hr" class="category-card">
+                                <div class="category-icon">👥</div>
+                                <div class="category-name">인사</div>
+                                <div class="category-count">22개 도구</div>
+                            </a>
+                            
+                            <a href="04-도구목록.html?category=writing" class="category-card">
+                                <div class="category-icon">📝</div>
+                                <div class="category-name">글쓰기</div>
+                                <div class="category-count">41개 도구</div>
+                            </a>
+                            
+                            <a href="04-도구목록.html?category=productivity" class="category-card">
+                                <div class="category-icon">⚡</div>
+                                <div class="category-name">생산성</div>
+                                <div class="category-count">38개 도구</div>
+                            </a>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- 사이드바 -->
+                <aside class="sidebar">
+                    <!-- 최근 활동 -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">
+                            최근 활동
+                            <a href="15-마이페이지.html" class="see-all">전체보기</a>
+                        </h3>
+                        
+                        <div class="recent-item" onclick="goToTool('midjourney')">
+                            <div class="recent-item__icon">🖼️</div>
+                            <div class="recent-item__content">
+                                <div class="recent-item__name">Midjourney</div>
+                                <div class="recent-item__time">2시간 전</div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-item" onclick="goToTool('notion')">
+                            <div class="recent-item__icon">📝</div>
+                            <div class="recent-item__content">
+                                <div class="recent-item__name">Notion AI</div>
+                                <div class="recent-item__time">5시간 전</div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-item" onclick="goToTool('claude')">
+                            <div class="recent-item__icon">🤖</div>
+                            <div class="recent-item__content">
+                                <div class="recent-item__name">Claude</div>
+                                <div class="recent-item__time">어제</div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-item" onclick="goToTool('gamma')">
+                            <div class="recent-item__icon">📊</div>
+                            <div class="recent-item__content">
+                                <div class="recent-item__name">Gamma</div>
+                                <div class="recent-item__time">3일 전</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 즐겨찾기 도구 -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">
+                            즐겨찾기
+                            <a href="11-즐겨찾기.html" class="see-all">관리</a>
+                        </h3>
+                        
+                        <div class="recent-item" onclick="goToTool('chatgpt')">
+                            <div class="recent-item__icon">🤖</div>
+                            <div class="recent-item__content">
+                                <div class="recent-item__name">ChatGPT</div>
+                                <div class="recent-item__time">매일 사용</div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-item" onclick="goToTool('canva')">
+                            <div class="recent-item__icon">🎨</div>
+                            <div class="recent-item__content">
+                                <div class="recent-item__name">Canva</div>
+                                <div class="recent-item__time">주 3회 사용</div>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-item" onclick="goToTool('grammarly')">
+                            <div class="recent-item__icon">✏️</div>
+                            <div class="recent-item__content">
+                                <div class="recent-item__name">Grammarly</div>
+                                <div class="recent-item__time">주 2회 사용</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 새로운 소식 -->
+                    <div class="sidebar-section">
+                        <h3 class="sidebar-title">
+                            새로운 소식
+                            <a href="14-알림센터.html" class="see-all">모두보기</a>
+                        </h3>
+                        
+                        <div class="notification-item">
+                            <span class="notification-icon">🆕</span>
+                            <div class="notification-content">
+                                <div class="notification-title">새로운 AI 도구 추가</div>
+                                <div class="notification-desc">마케팅 자동화를 위한 HubSpot AI가 추가되었습니다.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <span class="notification-icon">⭐</span>
+                            <div class="notification-content">
+                                <div class="notification-title">추천 업데이트</div>
+                                <div class="notification-desc">사용 패턴 기반으로 새로운 도구 3개를 추천합니다.</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 사용자 메뉴 토글
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 클릭 외부 영역 시 메뉴 닫기
+        document.addEventListener('click', function(e) {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userMenu.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // 추천 새로고침
+        function refreshRecommendations() {
+            alert('새로운 추천을 불러왔습니다!');
+            // 실제 서비스에서는 API 호출하여 새로운 추천 결과 로드
+        }
+
+        // 도구 상세 페이지로 이동
+        function goToTool(toolId) {
+            window.location.href = `05-도구상세.html?tool=${toolId}`;
+        }
+
+        // 즐겨찾기 추가
+        function addToFavorites(toolId) {
+            // 실제 서비스에서는 서버에 즐겨찾기 저장
+            alert(`${toolId}을(를) 즐겨찾기에 추가했습니다!`);
+        }
+
+        // 검색 기능
+        document.querySelector('.search-bar__input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const query = this.value.trim();
+                if (query) {
+                    window.location.href = `04-도구목록.html?q=${encodeURIComponent(query)}`;
+                }
+            }
+        });
+
+        // 사용자 드롭다운 스타일 추가
+        const style = document.createElement('style');
+        style.textContent = `
+            .user-menu {
+                position: relative;
+            }
+            
+            .user-dropdown {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border: 1px solid var(--gray-200);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                min-width: 150px;
+                z-index: 1000;
+                margin-top: 4px;
+            }
+            
+            .user-dropdown a {
+                display: block;
+                padding: var(--space-md) var(--space-lg);
+                color: var(--gray-700);
+                text-decoration: none;
+                transition: background var(--transition-base);
+            }
+            
+            .user-dropdown a:hover {
+                background: var(--gray-50);
+            }
+            
+            .user-dropdown a:first-child {
+                border-radius: 8px 8px 0 0;
+            }
+            
+            .user-dropdown a:last-child {
+                border-radius: 0 0 8px 8px;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

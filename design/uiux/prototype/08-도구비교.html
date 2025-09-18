@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도구 비교 - AI도구 가이드</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <style>
+        .compare-container {
+            background: var(--gray-50);
+            min-height: 100vh;
+        }
+
+        .compare-main {
+            padding: var(--space-xl) 0;
+        }
+
+        /* 비교 헤더 */
+        .compare-header {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-2xl);
+            border: 1px solid var(--gray-200);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .compare-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-sm);
+        }
+
+        .compare-subtitle {
+            color: var(--gray-600);
+            margin-bottom: var(--space-xl);
+        }
+
+        /* 도구 선택 영역 */
+        .tool-selector {
+            background: var(--primary-50);
+            border: 2px dashed var(--primary-300);
+            border-radius: 12px;
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+            text-align: center;
+        }
+
+        .selected-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .selected-tool {
+            background: white;
+            border-radius: 8px;
+            padding: var(--space-lg);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            transition: all var(--transition-base);
+        }
+
+        .selected-tool:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .remove-tool {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            width: 24px;
+            height: 24px;
+            background: var(--error);
+            color: white;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .tool-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+        }
+
+        .tool-details p {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .add-tool-btn {
+            border: 2px dashed var(--primary-500);
+            background: transparent;
+            color: var(--primary-500);
+            border-radius: 8px;
+            padding: var(--space-2xl) var(--space-lg);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        .add-tool-btn:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-600);
+        }
+
+        .add-tool-icon {
+            font-size: 32px;
+        }
+
+        /* 비교 액션 */
+        .compare-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .comparison-info {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        /* 비교 테이블 */
+        .comparison-table-container {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: var(--space-lg);
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .comparison-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-900);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .comparison-table th:first-child {
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            width: 200px;
+            min-width: 200px;
+        }
+
+        .comparison-table td:first-child {
+            background: var(--gray-50);
+            font-weight: 500;
+            color: var(--gray-700);
+            border-right: 1px solid var(--gray-200);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 점수 표시 */
+        .score-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .score-value {
+            font-weight: 600;
+            color: var(--gray-900);
+            min-width: 30px;
+        }
+
+        .score-bar-bg {
+            flex: 1;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--error) 0%, var(--warning) 50%, var(--secondary-500) 100%);
+            border-radius: 4px;
+            transition: width var(--transition-base);
+        }
+
+        /* 특징 아이콘 */
+        .feature-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .feature-yes {
+            color: var(--secondary-500);
+        }
+
+        .feature-no {
+            color: var(--error);
+        }
+
+        .feature-partial {
+            color: var(--warning);
+        }
+
+        /* 가격 표시 */
+        .price-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .price-main {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .price-sub {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        .price-free {
+            color: var(--secondary-600);
+        }
+
+        /* 종합 점수 섹션 */
+        .overall-scores {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+        }
+
+        @media (min-width: 1024px) {
+            .overall-scores {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .scores-chart,
+        .recommendation-card {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-2xl);
+            border: 1px solid var(--gray-200);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-lg);
+        }
+
+        /* 총점 차트 */
+        .total-scores {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .score-tool-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            min-width: 140px;
+        }
+
+        .score-tool-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .score-tool-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+
+        .score-progress {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .score-bar-large {
+            flex: 1;
+            height: 12px;
+            background: var(--gray-200);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .score-bar-large .score-bar-fill {
+            height: 100%;
+        }
+
+        .score-number {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gray-900);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* 추천 카드 */
+        .recommendation-result {
+            text-align: center;
+            padding: var(--space-xl) 0;
+        }
+
+        .winner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            background: linear-gradient(135deg, var(--secondary-500), var(--secondary-400));
+            color: white;
+            padding: var(--space-md) var(--space-xl);
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+        }
+
+        .winner-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+
+        .winner-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .winner-details h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .winner-details p {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .recommendation-reason {
+            color: var(--gray-700);
+            line-height: 1.6;
+            margin-bottom: var(--space-xl);
+        }
+
+        .winner-actions {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+        }
+
+        /* 가중치 조절 */
+        .weight-controls {
+            background: var(--primary-50);
+            border-radius: 12px;
+            padding: var(--space-2xl);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .weight-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-md);
+        }
+
+        .weight-subtitle {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-bottom: var(--space-lg);
+        }
+
+        .weight-sliders {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .weight-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .weight-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .weight-value {
+            color: var(--primary-500);
+            font-weight: 600;
+        }
+
+        .weight-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gray-200);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .weight-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-500);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .compare-actions {
+                flex-direction: column;
+                gap: var(--space-lg);
+                align-items: stretch;
+            }
+
+            .action-buttons {
+                justify-content: center;
+            }
+
+            .comparison-table-container {
+                overflow-x: auto;
+            }
+
+            .comparison-table th:first-child,
+            .comparison-table td:first-child {
+                min-width: 150px;
+            }
+
+            .winner-info {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+
+            .winner-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="compare-container">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container header__container">
+                <a href="03-대시보드.html" class="header__logo">AI도구 가이드</a>
+                
+                <div class="search-bar">
+                    <input type="text" class="search-bar__input" placeholder="AI 도구를 검색해보세요...">
+                    <span class="search-bar__icon">🔍</span>
+                </div>
+
+                <nav class="header__nav">
+                    <a href="04-도구목록.html" class="header__nav-link">도구 탐색</a>
+                    <a href="08-도구비교.html" class="header__nav-link" style="color: var(--primary-500);">비교분석</a>
+                    <a href="09-후기목록.html" class="header__nav-link">커뮤니티</a>
+                    <a href="12-사용가이드.html" class="header__nav-link">가이드</a>
+                </nav>
+
+                <div class="header__actions">
+                    <a href="14-알림센터.html" class="btn-ghost" title="알림">🔔</a>
+                    <a href="11-즐겨찾기.html" class="btn-ghost" title="즐겨찾기">⭐</a>
+                    <div class="user-menu">
+                        <button class="btn-ghost" onclick="toggleUserMenu()">
+                            👤 김철수 ▼
+                        </button>
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <a href="07-프로필설정.html">프로필 설정</a>
+                            <a href="15-마이페이지.html">마이페이지</a>
+                            <a href="01-로그인.html">로그아웃</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container compare-main">
+            <!-- 비교 헤더 -->
+            <div class="compare-header">
+                <h1 class="compare-title">AI 도구 비교 분석</h1>
+                <p class="compare-subtitle">
+                    최대 5개 도구를 선택하여 객관적으로 비교해보세요. 
+                    데이터 기반 분석으로 당신에게 가장 적합한 도구를 찾아드립니다.
+                </p>
+            </div>
+
+            <!-- 도구 선택 영역 -->
+            <div class="tool-selector">
+                <div class="selected-tools" id="selectedTools">
+                    <!-- ChatGPT -->
+                    <div class="selected-tool" data-tool="chatgpt">
+                        <button class="remove-tool" onclick="removeTool(this)">×</button>
+                        <div class="tool-info">
+                            <div class="tool-icon">🤖</div>
+                            <div class="tool-details">
+                                <h3>ChatGPT</h3>
+                                <p>OpenAI • 텍스트 생성</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Claude -->
+                    <div class="selected-tool" data-tool="claude">
+                        <button class="remove-tool" onclick="removeTool(this)">×</button>
+                        <div class="tool-info">
+                            <div class="tool-icon">🤖</div>
+                            <div class="tool-details">
+                                <h3>Claude</h3>
+                                <p>Anthropic • AI 어시스턴트</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jasper AI -->
+                    <div class="selected-tool" data-tool="jasper">
+                        <button class="remove-tool" onclick="removeTool(this)">×</button>
+                        <div class="tool-info">
+                            <div class="tool-icon">✍️</div>
+                            <div class="tool-details">
+                                <h3>Jasper AI</h3>
+                                <p>Jasper • 콘텐츠 작성</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 도구 추가 버튼 -->
+                    <button class="add-tool-btn" onclick="openToolSelector()">
+                        <span class="add-tool-icon">+</span>
+                        <span>도구 추가</span>
+                        <small>(최대 5개)</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 비교 액션 -->
+            <div class="compare-actions">
+                <div class="comparison-info">
+                    <strong>3개 도구</strong>를 비교 중입니다 • 마지막 업데이트: 2024년 9월 19일
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="saveComparison()">
+                        💾 비교 결과 저장
+                    </button>
+                    <button class="btn btn-secondary" onclick="shareComparison()">
+                        🔗 공유
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportToPDF()">
+                        📄 PDF 내보내기
+                    </button>
+                </div>
+            </div>
+
+            <!-- 가중치 조절 -->
+            <div class="weight-controls">
+                <h2 class="weight-title">비교 기준 가중치 설정</h2>
+                <p class="weight-subtitle">각 평가 항목의 중요도를 조절하여 맞춤형 비교 결과를 확인하세요</p>
+                
+                <div class="weight-sliders">
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <span>💰 가격</span>
+                            <span class="weight-value" id="priceWeight">25%</span>
+                        </div>
+                        <input type="range" class="weight-slider" min="0" max="50" value="25" 
+                               oninput="updateWeight(this, 'priceWeight')" onchange="recalculateScores()">
+                    </div>
+                    
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <span>⚡ 기능성</span>
+                            <span class="weight-value" id="featuresWeight">30%</span>
+                        </div>
+                        <input type="range" class="weight-slider" min="0" max="50" value="30" 
+                               oninput="updateWeight(this, 'featuresWeight')" onchange="recalculateScores()">
+                    </div>
+                    
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <span>👤 사용편의성</span>
+                            <span class="weight-value" id="usabilityWeight">25%</span>
+                        </div>
+                        <input type="range" class="weight-slider" min="0" max="50" value="25" 
+                               oninput="updateWeight(this, 'usabilityWeight')" onchange="recalculateScores()">
+                    </div>
+                    
+                    <div class="weight-item">
+                        <div class="weight-label">
+                            <span>🛠️ 지원</span>
+                            <span class="weight-value" id="supportWeight">20%</span>
+                        </div>
+                        <input type="range" class="weight-slider" min="0" max="50" value="20" 
+                               oninput="updateWeight(this, 'supportWeight')" onchange="recalculateScores()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 종합 점수 -->
+            <div class="overall-scores">
+                <!-- 총점 차트 -->
+                <div class="scores-chart">
+                    <h2 class="section-title">종합 점수</h2>
+                    <div class="total-scores">
+                        <div class="score-item">
+                            <div class="score-tool-info">
+                                <div class="score-tool-icon">🤖</div>
+                                <span class="score-tool-name">ChatGPT</span>
+                            </div>
+                            <div class="score-progress">
+                                <div class="score-bar-large">
+                                    <div class="score-bar-fill" style="width: 88%"></div>
+                                </div>
+                                <span class="score-number">88</span>
+                            </div>
+                        </div>
+                        
+                        <div class="score-item">
+                            <div class="score-tool-info">
+                                <div class="score-tool-icon">🤖</div>
+                                <span class="score-tool-name">Claude</span>
+                            </div>
+                            <div class="score-progress">
+                                <div class="score-bar-large">
+                                    <div class="score-bar-fill" style="width: 85%"></div>
+                                </div>
+                                <span class="score-number">85</span>
+                            </div>
+                        </div>
+                        
+                        <div class="score-item">
+                            <div class="score-tool-info">
+                                <div class="score-tool-icon">✍️</div>
+                                <span class="score-tool-name">Jasper AI</span>
+                            </div>
+                            <div class="score-progress">
+                                <div class="score-bar-large">
+                                    <div class="score-bar-fill" style="width: 82%"></div>
+                                </div>
+                                <span class="score-number">82</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 추천 결과 -->
+                <div class="recommendation-card">
+                    <h2 class="section-title">추천 결과</h2>
+                    <div class="recommendation-result">
+                        <div class="winner-badge">
+                            <span>🏆</span>
+                            <span>최고 추천 도구</span>
+                        </div>
+                        
+                        <div class="winner-info">
+                            <div class="winner-icon">🤖</div>
+                            <div class="winner-details">
+                                <h3>ChatGPT</h3>
+                                <p>전체적으로 가장 균형잡힌 성능</p>
+                            </div>
+                        </div>
+                        
+                        <p class="recommendation-reason">
+                            ChatGPT는 무료 사용이 가능하면서도 뛰어난 기능성을 제공합니다. 
+                            특히 텍스트 생성과 대화 능력이 우수하며, 광범위한 사용자 커뮤니티를 통해 
+                            다양한 활용 사례를 참고할 수 있습니다.
+                        </p>
+                        
+                        <div class="winner-actions">
+                            <a href="05-도구상세.html?tool=chatgpt" class="btn btn-primary">
+                                자세히 보기
+                            </a>
+                            <button class="btn btn-secondary" onclick="addToFavorites('chatgpt')">
+                                즐겨찾기 추가
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 상세 비교 테이블 -->
+            <div class="comparison-table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>비교 항목</th>
+                            <th>ChatGPT</th>
+                            <th>Claude</th>
+                            <th>Jasper AI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 가격 정보 -->
+                        <tr>
+                            <td><strong>💰 가격</strong></td>
+                            <td>
+                                <div class="price-info">
+                                    <span class="price-main price-free">무료 사용 가능</span>
+                                    <span class="price-sub">Plus: $20/월</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <span class="price-main price-free">무료 사용 가능</span>
+                                    <span class="price-sub">Pro: $20/월</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-info">
+                                    <span class="price-main">$39/월</span>
+                                    <span class="price-sub">Creator 플랜부터</span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- 기능 점수 -->
+                        <tr>
+                            <td><strong>⚡ 기능성</strong></td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">9.0</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">8.8</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 88%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">8.5</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- 사용편의성 -->
+                        <tr>
+                            <td><strong>👤 사용편의성</strong></td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">9.2</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">8.7</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 87%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">8.0</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 80%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- 지원 언어 -->
+                        <tr>
+                            <td><strong>🌍 지원 언어</strong></td>
+                            <td>100+ 언어</td>
+                            <td>95+ 언어</td>
+                            <td>25+ 언어</td>
+                        </tr>
+                        
+                        <!-- API 제공 -->
+                        <tr>
+                            <td><strong>🔧 API 제공</strong></td>
+                            <td><span class="feature-status feature-yes">✅</span></td>
+                            <td><span class="feature-status feature-yes">✅</span></td>
+                            <td><span class="feature-status feature-yes">✅</span></td>
+                        </tr>
+                        
+                        <!-- 모바일 앱 -->
+                        <tr>
+                            <td><strong>📱 모바일 앱</strong></td>
+                            <td><span class="feature-status feature-yes">✅</span></td>
+                            <td><span class="feature-status feature-no">❌</span></td>
+                            <td><span class="feature-status feature-no">❌</span></td>
+                        </tr>
+                        
+                        <!-- 팀 협업 -->
+                        <tr>
+                            <td><strong>👥 팀 협업</strong></td>
+                            <td><span class="feature-status feature-yes">✅</span></td>
+                            <td><span class="feature-status feature-partial">⚠️</span></td>
+                            <td><span class="feature-status feature-yes">✅</span></td>
+                        </tr>
+                        
+                        <!-- 콘텐츠 길이 제한 -->
+                        <tr>
+                            <td><strong>📄 입력 한도</strong></td>
+                            <td>4,000 토큰</td>
+                            <td>200,000 토큰</td>
+                            <td>2,000 토큰</td>
+                        </tr>
+                        
+                        <!-- 특화 기능 -->
+                        <tr>
+                            <td><strong>🎯 특화 기능</strong></td>
+                            <td>범용 대화형 AI</td>
+                            <td>긴 문서 처리</td>
+                            <td>마케팅 템플릿</td>
+                        </tr>
+                        
+                        <!-- 고객 지원 -->
+                        <tr>
+                            <td><strong>🛠️ 고객 지원</strong></td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">8.5</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">8.0</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 80%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="score-bar">
+                                    <span class="score-value">9.0</span>
+                                    <div class="score-bar-bg">
+                                        <div class="score-bar-fill" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 비교 저장 알림 -->
+            <div id="comparisonSaved" style="display: none; position: fixed; top: 100px; right: 20px; background: var(--secondary-500); color: white; padding: var(--space-lg); border-radius: 8px; z-index: 1000;">
+                ✅ 비교 결과가 저장되었습니다!
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let selectedTools = ['chatgpt', 'claude', 'jasper'];
+        
+        // 사용자 메뉴 토글
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 도구 제거
+        function removeTool(button) {
+            const toolCard = button.closest('.selected-tool');
+            const toolId = toolCard.dataset.tool;
+            
+            if (selectedTools.length <= 2) {
+                alert('최소 2개 이상의 도구가 필요합니다.');
+                return;
+            }
+            
+            selectedTools = selectedTools.filter(id => id !== toolId);
+            toolCard.remove();
+            updateComparisonInfo();
+        }
+
+        // 도구 선택기 열기
+        function openToolSelector() {
+            if (selectedTools.length >= 5) {
+                alert('최대 5개까지만 비교할 수 있습니다.');
+                return;
+            }
+            
+            // 실제 서비스에서는 도구 선택 모달을 열어 도구를 추가
+            const tools = [
+                { id: 'notion-ai', name: 'Notion AI', company: 'Notion', category: '생산성', icon: '📝' },
+                { id: 'copy-ai', name: 'Copy.ai', company: 'Copy.ai', category: '카피라이팅', icon: '📝' },
+                { id: 'midjourney', name: 'Midjourney', company: 'Midjourney', category: '이미지 생성', icon: '🎨' }
+            ];
+            
+            const availableTools = tools.filter(tool => !selectedTools.includes(tool.id));
+            
+            if (availableTools.length === 0) {
+                alert('추가할 수 있는 도구가 없습니다.');
+                return;
+            }
+            
+            const toolName = availableTools[0].name;
+            if (confirm(`${toolName}을(를) 비교에 추가하시겠습니까?`)) {
+                addToolToComparison(availableTools[0]);
+            }
+        }
+
+        // 비교에 도구 추가
+        function addToolToComparison(tool) {
+            selectedTools.push(tool.id);
+            
+            const selectedToolsContainer = document.getElementById('selectedTools');
+            const addButton = selectedToolsContainer.querySelector('.add-tool-btn');
+            
+            const newToolElement = document.createElement('div');
+            newToolElement.className = 'selected-tool';
+            newToolElement.dataset.tool = tool.id;
+            newToolElement.innerHTML = `
+                <button class="remove-tool" onclick="removeTool(this)">×</button>
+                <div class="tool-info">
+                    <div class="tool-icon">${tool.icon}</div>
+                    <div class="tool-details">
+                        <h3>${tool.name}</h3>
+                        <p>${tool.company} • ${tool.category}</p>
+                    </div>
+                </div>
+            `;
+            
+            selectedToolsContainer.insertBefore(newToolElement, addButton);
+            updateComparisonInfo();
+        }
+
+        // 비교 정보 업데이트
+        function updateComparisonInfo() {
+            const infoElement = document.querySelector('.comparison-info');
+            infoElement.innerHTML = `<strong>${selectedTools.length}개 도구</strong>를 비교 중입니다 • 마지막 업데이트: 2024년 9월 19일`;
+        }
+
+        // 가중치 업데이트
+        function updateWeight(slider, targetId) {
+            const value = slider.value;
+            const target = document.getElementById(targetId);
+            target.textContent = value + '%';
+        }
+
+        // 점수 재계산
+        function recalculateScores() {
+            // 실제 서비스에서는 가중치에 따라 점수를 재계산
+            console.log('점수 재계산 중...');
+        }
+
+        // 비교 결과 저장
+        function saveComparison() {
+            // 실제 서비스에서는 서버에 비교 결과 저장
+            showNotification('비교 결과가 저장되었습니다!');
+        }
+
+        // 비교 결과 공유
+        function shareComparison() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'AI 도구 비교 결과',
+                    text: `${selectedTools.length}개 AI 도구 비교 분석 결과를 확인해보세요!`,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('링크가 클립보드에 복사되었습니다!');
+                });
+            }
+        }
+
+        // PDF 내보내기
+        function exportToPDF() {
+            alert('PDF 내보내기 기능입니다.\n실제 서비스에서는 비교 결과를 PDF로 다운로드할 수 있습니다.');
+        }
+
+        // 즐겨찾기 추가
+        function addToFavorites(toolId) {
+            alert(`${toolId}을(를) 즐겨찾기에 추가했습니다!`);
+        }
+
+        // 알림 표시
+        function showNotification(message) {
+            const notification = document.getElementById('comparisonSaved');
+            notification.textContent = '✅ ' + message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // 외부 클릭 시 사용자 메뉴 닫기
+        document.addEventListener('click', function(e) {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userMenu.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // 사용자 드롭다운 스타일
+        const style = document.createElement('style');
+        style.textContent = `
+            .user-menu {
+                position: relative;
+            }
+            
+            .user-dropdown {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border: 1px solid var(--gray-200);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                min-width: 150px;
+                z-index: 1000;
+                margin-top: 4px;
+            }
+            
+            .user-dropdown a {
+                display: block;
+                padding: var(--space-md) var(--space-lg);
+                color: var(--gray-700);
+                text-decoration: none;
+                transition: background var(--transition-base);
+            }
+            
+            .user-dropdown a:hover {
+                background: var(--gray-50);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

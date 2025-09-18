@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - AI도구 가이드</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-50) 0%, var(--accent-50) 100%);
+            padding: var(--space-lg);
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-3xl);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .login-logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-500);
+            text-decoration: none;
+            margin-bottom: var(--space-md);
+            display: block;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-sm);
+        }
+
+        .login-subtitle {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .login-form {
+            margin-bottom: var(--space-xl);
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: var(--space-xs);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: var(--space-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all var(--transition-base);
+            background: white;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+            outline: none;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: var(--space-md);
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: var(--space-xs);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-xl);
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .forgot-password {
+            color: var(--primary-500);
+            text-decoration: none;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: var(--space-lg);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--space-xl);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: var(--space-xl) 0;
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--gray-200);
+        }
+
+        .divider span {
+            padding: 0 var(--space-lg);
+        }
+
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            background: white;
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: all var(--transition-base);
+            font-weight: 500;
+        }
+
+        .social-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .social-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .signup-link a {
+            color: var(--primary-500);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* 반응형 */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: var(--space-xl);
+                margin: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <a href="03-대시보드.html" class="login-logo">AI도구 가이드</a>
+                <h1 class="login-title">로그인</h1>
+                <p class="login-subtitle">업무에 딱 맞는 AI 도구를 찾아보세요</p>
+            </div>
+
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">이메일</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="form-input" 
+                        placeholder="your@email.com"
+                        required
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <div class="password-toggle">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="form-input" 
+                            placeholder="비밀번호를 입력하세요"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="password-toggle-btn" onclick="togglePassword()">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <span>로그인 상태 유지</span>
+                    </label>
+                    <a href="#" class="forgot-password">비밀번호 찾기</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-btn">
+                    로그인
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>또는</span>
+            </div>
+
+            <div class="social-login">
+                <a href="#" class="social-btn" onclick="socialLogin('google')">
+                    <span>🔍</span>
+                    <span>Google로 로그인</span>
+                </a>
+                <a href="#" class="social-btn" onclick="socialLogin('kakao')">
+                    <span>🟡</span>
+                    <span>카카오로 로그인</span>
+                </a>
+                <a href="#" class="social-btn" onclick="socialLogin('naver')">
+                    <span>🟢</span>
+                    <span>네이버로 로그인</span>
+                </a>
+            </div>
+
+            <div class="signup-link">
+                아직 계정이 없으신가요? <a href="02-회원가입.html">회원가입</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 로그인 폼 처리
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('이메일과 비밀번호를 모두 입력해주세요.');
+                return;
+            }
+
+            // 로그인 성공 시뮬레이션 (실제 서비스에서는 서버 API 호출)
+            if (email && password) {
+                alert('로그인 성공! 대시보드로 이동합니다.');
+                window.location.href = '03-대시보드.html';
+            }
+        });
+
+        // 비밀번호 토글 기능
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle-btn');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        // 소셜 로그인 처리
+        function socialLogin(provider) {
+            alert(`${provider} 로그인 처리 중... 대시보드로 이동합니다.`);
+            window.location.href = '03-대시보드.html';
+        }
+
+        // 접근성: Enter 키 처리
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.classList.contains('social-btn')) {
+                e.target.click();
+            }
+        });
+
+        // 데모용 자동 완성
+        document.getElementById('email').value = 'demo@example.com';
+    </script>
+</body>
+</html>

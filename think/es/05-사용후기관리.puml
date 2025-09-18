@@ -1,0 +1,141 @@
+@startuml
+!theme mono
+
+title 05. 사용후기 관리 플로우
+
+actor "직장인사용자" as User
+participant "가이드북시스템" as System
+participant "사용후기DB" as ReviewDB
+participant "AI도구정보DB" as ToolDB
+participant "컨텐츠조정시스템" as ContentModeration
+participant "알림시스템" as NotificationSystem
+participant "분석엔진" as AnalyticsEngine
+
+== 이벤트: 사용후기 작성 ==
+
+User -> System: **커맨드: 사용후기작성시작**\n(도구ID, 사용자ID, 사용기간)
+
+activate System
+System -> ToolDB: **커맨드: 도구정보확인**\n(도구ID)
+activate ToolDB
+
+note right of System
+  **정책/규칙:**
+  - 실제 사용 이력이 확인된 사용자만 후기 작성 가능
+  - 욕설, 광고성 내용 자동 필터링
+  - 평점과 텍스트 후기 일치성 검증
+  - 중복 후기 작성 방지 (동일 도구, 동일 사용자)
+end note
+
+ToolDB --> System: **이벤트: 도구정보확인됨**\n(도구명, 카테고리, 현재평점)
+deactivate ToolDB
+
+System --> User: **이벤트: 후기작성폼표시됨**\n(도구정보, 작성가이드, 평가항목)
+
+User -> System: **커맨드: 사용후기제출**\n(평점, 후기텍스트, 사용목적, 추천여부)
+activate System
+
+System -> ContentModeration: **커맨드: 컨텐츠검토요청**\n(후기내용, 사용자정보, 검토기준)
+activate ContentModeration
+ContentModeration --> System: **이벤트: 컨텐츠검토완료됨**\n(승인여부, 수정제안사항, 필터링결과)
+deactivate ContentModeration
+
+alt 승인된 후기
+    System -> ReviewDB: **커맨드: 후기데이터저장**\n(사용자ID, 도구ID, 후기내용, 승인상태)
+    activate ReviewDB
+    ReviewDB --> System: **이벤트: 사용후기저장됨**\n(후기ID, 저장시간, 공개상태)
+    deactivate ReviewDB
+    
+    System --> User: **이벤트: 후기작성완료됨**\n(작성확인, 포인트적립, 공개예정시간)
+else 수정필요한 후기
+    System --> User: **이벤트: 후기수정요청됨**\n(수정사유, 가이드라인, 재작성링크)
+end
+
+deactivate System
+
+== 이벤트: 사용후기 조회 및 관리 ==
+
+User -> System: **커맨드: 후기목록조회**\n(도구ID, 정렬기준, 필터조건)
+activate System
+
+System -> ReviewDB: **커맨드: 후기데이터조회**\n(도구ID, 정렬조건, 페이징정보)
+activate ReviewDB
+ReviewDB --> System: **이벤트: 후기목록조회됨**\n(후기목록, 평점통계, 총후기수)
+deactivate ReviewDB
+
+System --> User: **이벤트: 후기목록표시됨**\n(후기카드목록, 평점분포, 정렬옵션)
+
+User -> System: **커맨드: 후기상세조회**\n(후기ID)
+activate System
+
+System -> ReviewDB: **커맨드: 후기상세정보조회**\n(후기ID, 조회자정보)
+activate ReviewDB
+ReviewDB --> System: **이벤트: 후기상세정보조회됨**\n(상세후기, 작성자정보, 유용성투표)
+deactivate ReviewDB
+
+System --> User: **이벤트: 후기상세정보표시됨**\n(전체후기내용, 작성일자, 유용함투표)
+
+== 이벤트: 후기 상호작용 ==
+
+User -> System: **커맨드: 후기유용성투표**\n(후기ID, 투표: 유용함/유용하지않음)
+activate System
+
+System -> ReviewDB: **커맨드: 유용성투표저장**\n(후기ID, 투표자ID, 투표내용)
+activate ReviewDB
+ReviewDB --> System: **이벤트: 유용성투표기록됨**\n(투표ID, 총투표수업데이트)
+deactivate ReviewDB
+
+System --> User: **이벤트: 투표완료됨**\n(투표확인, 업데이트된투표수)
+
+User -> System: **커맨드: 후기댓글작성**\n(후기ID, 댓글내용)
+activate System
+
+System -> ContentModeration: **커맨드: 댓글내용검토**\n(댓글내용, 작성자정보)
+activate ContentModeration
+ContentModeration --> System: **이벤트: 댓글검토완료됨**\n(승인여부)
+deactivate ContentModeration
+
+System -> ReviewDB: **커맨드: 댓글저장**\n(후기ID, 댓글내용, 작성자ID)
+activate ReviewDB
+ReviewDB --> System: **이벤트: 댓글저장됨**\n(댓글ID)
+deactivate ReviewDB
+
+System -> NotificationSystem: **커맨드: 댓글알림발송**\n(원후기작성자ID, 댓글정보)
+activate NotificationSystem
+NotificationSystem --> System: **이벤트: 댓글알림발송됨**\n(알림ID)
+deactivate NotificationSystem
+
+System --> User: **이벤트: 댓글작성완료됨**\n(댓글확인, 작성자알림발송확인)
+
+== 이벤트: 후기 통계 및 분석 ==
+
+System -> AnalyticsEngine: **커맨드: 후기통계분석**\n(분석기간, 도구카테고리)
+activate AnalyticsEngine
+
+AnalyticsEngine -> ReviewDB: **커맨드: 후기데이터집계**\n(집계조건, 분석항목)
+activate ReviewDB
+ReviewDB --> AnalyticsEngine: **이벤트: 후기데이터집계됨**\n(평점통계, 키워드분석, 트렌드데이터)
+deactivate ReviewDB
+
+AnalyticsEngine --> System: **이벤트: 후기분석완료됨**\n(분석리포트, 인사이트, 개선제안)
+deactivate AnalyticsEngine
+
+System -> ToolDB: **커맨드: 도구평점업데이트**\n(도구ID, 새로운평점, 평가기준)
+activate ToolDB
+ToolDB --> System: **이벤트: 도구평점업데이트됨**\n(업데이트된평점, 순위변동)
+deactivate ToolDB
+
+deactivate System
+
+note over User, AnalyticsEngine
+  **필요한 데이터:**
+  - 커맨드 데이터: 도구ID, 사용자ID, 후기내용, 평점, 댓글내용
+  - 이벤트 데이터: 후기목록, 평점통계, 분석리포트, 알림정보
+  
+  **External System:**
+  - 컨텐츠조정시스템: AI 기반 부적절 내용 필터링
+  - 알림시스템: 실시간 알림 발송 서비스
+  - 분석엔진: 후기 데이터 분석 및 인사이트 도출
+end note
+
+@enduml
