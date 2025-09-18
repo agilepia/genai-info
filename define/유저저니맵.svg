@@ -1,0 +1,321 @@
+<svg viewBox="0 0 1400 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+    <linearGradient id="positiveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#56ab2f"/>
+      <stop offset="100%" style="stop-color:#a8e6cf"/>
+    </linearGradient>
+    <linearGradient id="negativeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff416c"/>
+      <stop offset="100%" style="stop-color:#ff4b2b"/>
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1400" height="800" fill="#f8fafc"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="1400" height="80" fill="url(#headerGrad)" filter="url(#shadow)"/>
+  <text x="700" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">
+    생성형 AI 서비스 User Journey Map
+  </text>
+  <text x="700" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="white" opacity="0.9">
+    업무 목적에 적합한 생성형 AI를 빠르게 찾고 싶은 직장인의 여정
+  </text>
+  
+  <!-- Journey Steps -->
+  <g transform="translate(50, 100)">
+    <!-- Step indicators -->
+    <g id="step-indicators">
+      <circle cx="82" cy="40" r="20" fill="#667eea" stroke="white" stroke-width="3"/>
+      <text x="82" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">1</text>
+      
+      <circle cx="239" cy="40" r="20" fill="#667eea" stroke="white" stroke-width="3"/>
+      <text x="239" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">2</text>
+      
+      <circle cx="396" cy="40" r="20" fill="#667eea" stroke="white" stroke-width="3"/>
+      <text x="396" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">3</text>
+      
+      <circle cx="553" cy="40" r="20" fill="#667eea" stroke="white" stroke-width="3"/>
+      <text x="553" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">4</text>
+      
+      <circle cx="710" cy="40" r="20" fill="#667eea" stroke="white" stroke-width="3"/>
+      <text x="710" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">5</text>
+      
+      <circle cx="867" cy="40" r="20" fill="#667eea" stroke="white" stroke-width="3"/>
+      <text x="867" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">6</text>
+      
+      <circle cx="1024" cy="40" r="20" fill="#667eea" stroke="white" stroke-width="3"/>
+      <text x="1024" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">7</text>
+      
+      <circle cx="1181" cy="40" r="20" fill="#667eea" stroke="white" stroke-width="3"/>
+      <text x="1181" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">8</text>
+    </g>
+    
+    <!-- Connection line -->
+    <line x1="102" y1="40" x2="1161" y2="40" stroke="#667eea" stroke-width="2" opacity="0.5"/>
+    
+    <!-- Step 1: 니즈 인식 -->
+    <g id="step1">
+      <rect x="10" y="70" width="144" height="50" fill="#3b82f6" rx="8" filter="url(#shadow)"/>
+      <text x="82" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">니즈 인식</text>
+      <text x="82" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Need Recognition</text>
+      
+      <!-- 행동 -->
+      <rect x="10" y="130" width="144" height="80" fill="white" stroke="#e5e7eb" rx="8" filter="url(#shadow)"/>
+      <text x="82" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">행동</text>
+      <text x="82" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• SNS, 뉴스에서 AI 정보 접촉</text>
+      <text x="82" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 동료들의 AI 활용 사례 청취</text>
+      <text x="82" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 회사 교육/세미나 참석</text>
+      <text x="82" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 업무 효율성 고민</text>
+      
+      <!-- 좋은 느낌 -->
+      <rect x="10" y="220" width="144" height="80" fill="url(#positiveGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="82" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😊 좋은 느낌</text>
+      <text x="82" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 업무 효율성 향상 기대</text>
+      <text x="82" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 새로운 기술 호기심</text>
+      <text x="82" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 창의적 업무 집중 가능성</text>
+      <text x="82" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 트렌드 따라가기</text>
+      
+      <!-- 나쁜 느낌 -->
+      <rect x="10" y="310" width="144" height="80" fill="url(#negativeGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="82" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😰 나쁜 느낌</text>
+      <text x="82" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 선택 기준 막막함</text>
+      <text x="82" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 회사 정책 불확실</text>
+      <text x="82" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 보안 이슈 우려</text>
+      <text x="82" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 러닝 커브 부담</text>
+    </g>
+    
+    <!-- Step 2: 솔루션 탐색 -->
+    <g id="step2">
+      <rect x="167" y="70" width="144" height="50" fill="#3b82f6" rx="8" filter="url(#shadow)"/>
+      <text x="239" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">솔루션 탐색</text>
+      <text x="239" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Solution Search</text>
+      
+      <!-- 행동 -->
+      <rect x="167" y="130" width="144" height="80" fill="white" stroke="#e5e7eb" rx="8" filter="url(#shadow)"/>
+      <text x="239" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">행동</text>
+      <text x="239" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 구글에서 AI 도구 검색</text>
+      <text x="239" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 유튜브 비교 영상 시청</text>
+      <text x="239" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 온라인 커뮤니티 후기 확인</text>
+      <text x="239" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 무료 체험판 테스트</text>
+      
+      <!-- 좋은 느낌 -->
+      <rect x="167" y="220" width="144" height="80" fill="url(#positiveGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="239" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😊 좋은 느낌</text>
+      <text x="239" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 다양한 선택지 안도감</text>
+      <text x="239" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 무료 체험 가능</text>
+      <text x="239" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 실제 업무 효과 확인</text>
+      <text x="239" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 풍부한 정보 접근</text>
+      
+      <!-- 나쁜 느낌 -->
+      <rect x="167" y="310" width="144" height="80" fill="url(#negativeGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="239" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😰 나쁜 느낌</text>
+      <text x="239" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 정보 과다로 혼란</text>
+      <text x="239" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 성능 차이 가늠 어려움</text>
+      <text x="239" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 체계적 비교 기준 부재</text>
+      <text x="239" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 업무 특화 기능 부족</text>
+    </g>
+    
+    <!-- Step 3: 기능 검증 -->
+    <g id="step3">
+      <rect x="324" y="70" width="144" height="50" fill="#3b82f6" rx="8" filter="url(#shadow)"/>
+      <text x="396" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">기능 검증</text>
+      <text x="396" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Feature Validation</text>
+      
+      <!-- 행동 -->
+      <rect x="324" y="130" width="144" height="80" fill="white" stroke="#e5e7eb" rx="8" filter="url(#shadow)"/>
+      <text x="396" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">행동</text>
+      <text x="396" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 개인 계정으로 가입/테스트</text>
+      <text x="396" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 실제 업무 데이터로 검증</text>
+      <text x="396" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 도구별 성능 비교</text>
+      <text x="396" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 보안 정책 문서 검토</text>
+      
+      <!-- 좋은 느낌 -->
+      <rect x="324" y="220" width="144" height="80" fill="url(#positiveGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="396" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😊 좋은 느낌</text>
+      <text x="396" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 실제 업무 도움 체감</text>
+      <text x="396" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 기대 이상 성능 확인</text>
+      <text x="396" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 다양한 언어 지원</text>
+      <text x="396" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 사용법 간편함</text>
+      
+      <!-- 나쁜 느낌 -->
+      <rect x="324" y="310" width="144" height="80" fill="url(#negativeGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="396" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😰 나쁜 느낌</text>
+      <text x="396" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 도구별 차이점 미묘</text>
+      <text x="396" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 보안 정책 복잡성</text>
+      <text x="396" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 성능 평가 기준 모호</text>
+      <text x="396" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 개인정보 처리 우려</text>
+    </g>
+    
+    <!-- Step 4: 도입 결정 -->
+    <g id="step4">
+      <rect x="481" y="70" width="144" height="50" fill="#3b82f6" rx="8" filter="url(#shadow)"/>
+      <text x="553" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">도입 결정</text>
+      <text x="553" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Adoption Decision</text>
+      
+      <!-- 행동 -->
+      <rect x="481" y="130" width="144" height="80" fill="white" stroke="#e5e7eb" rx="8" filter="url(#shadow)"/>
+      <text x="553" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">행동</text>
+      <text x="553" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 개인 신용카드 결제</text>
+      <text x="553" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 회사 IT팀에 승인 요청</text>
+      <text x="553" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 법무/보안팀 검토 절차</text>
+      <text x="553" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• ROI 계산 및 제안서 작성</text>
+      
+      <!-- 좋은 느낌 -->
+      <rect x="481" y="220" width="144" height="80" fill="url(#positiveGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="553" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😊 좋은 느낌</text>
+      <text x="553" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 빠른 결정으로 만족</text>
+      <text x="553" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 새 도구 사용 설렘</text>
+      <text x="553" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 체계적 도입 안정감</text>
+      <text x="553" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 팀 생산성 향상 기대</text>
+      
+      <!-- 나쁜 느낌 -->
+      <rect x="481" y="310" width="144" height="80" fill="url(#negativeGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="553" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😰 나쁜 느낌</text>
+      <text x="553" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 개인 비용 부담</text>
+      <text x="553" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 정책 위반 불안</text>
+      <text x="553" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 승인 절차 복잡함</text>
+      <text x="553" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 투자 대비 효과 불확실</text>
+    </g>
+    
+    <!-- Step 5: 업무 적용 -->
+    <g id="step5">
+      <rect x="638" y="70" width="144" height="50" fill="#3b82f6" rx="8" filter="url(#shadow)"/>
+      <text x="710" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">업무 적용</text>
+      <text x="710" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Work Application</text>
+      
+      <!-- 행동 -->
+      <rect x="638" y="130" width="144" height="80" fill="white" stroke="#e5e7eb" rx="8" filter="url(#shadow)"/>
+      <text x="710" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">행동</text>
+      <text x="710" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 일 2-5시간 적극 활용</text>
+      <text x="710" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• AI 결과물 수정/보완</text>
+      <text x="710" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 동료들에게 활용법 공유</text>
+      <text x="710" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 업무 프로세스에 통합</text>
+      
+      <!-- 좋은 느낌 -->
+      <rect x="638" y="220" width="144" height="80" fill="url(#positiveGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="710" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😊 좋은 느낌</text>
+      <text x="710" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 업무 효율 30% 이상 향상</text>
+      <text x="710" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 창의적 블록 해결</text>
+      <text x="710" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 반복 업무 감소</text>
+      <text x="710" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 업무 부담 경감</text>
+      
+      <!-- 나쁜 느낌 -->
+      <rect x="638" y="310" width="144" height="80" fill="url(#negativeGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="710" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😰 나쁜 느낌</text>
+      <text x="710" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• AI 의존도 증가 우려</text>
+      <text x="710" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 부정확한 정보로 스트레스</text>
+      <text x="710" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 과도한 수정 작업</text>
+      <text x="710" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 기본기 약화 걱정</text>
+    </g>
+    
+    <!-- Step 6: 성과 측정 -->
+    <g id="step6">
+      <rect x="795" y="70" width="144" height="50" fill="#3b82f6" rx="8" filter="url(#shadow)"/>
+      <text x="867" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">성과 측정</text>
+      <text x="867" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Performance Measure</text>
+      
+      <!-- 행동 -->
+      <rect x="795" y="130" width="144" height="80" fill="white" stroke="#e5e7eb" rx="8" filter="url(#shadow)"/>
+      <text x="867" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">행동</text>
+      <text x="867" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 월별 사용량/비용 체크</text>
+      <text x="867" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 히스토리 정리 및 템플릿화</text>
+      <text x="867" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 팀 생산성 지표 측정</text>
+      <text x="867" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 효과성 보고서 작성</text>
+      
+      <!-- 좋은 느낌 -->
+      <rect x="795" y="220" width="144" height="80" fill="url(#positiveGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="867" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😊 좋은 느낌</text>
+      <text x="867" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 체계적 관리로 효율 증대</text>
+      <text x="867" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 숙련도 향상 성취감</text>
+      <text x="867" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 지속적 생산성 향상</text>
+      <text x="867" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 선도적 활용 자신감</text>
+      
+      <!-- 나쁜 느낌 -->
+      <rect x="795" y="310" width="144" height="80" fill="url(#negativeGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="867" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😰 나쁜 느낌</text>
+      <text x="867" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 추가 관리 업무 부담</text>
+      <text x="867" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 비용 대비 효과 지속 고민</text>
+      <text x="867" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 복잡한 정책 관리</text>
+      <text x="867" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 기술 변화 피로감</text>
+    </g>
+    
+    <!-- Step 7: 최적화 -->
+    <g id="step7">
+      <rect x="952" y="70" width="144" height="50" fill="#3b82f6" rx="8" filter="url(#shadow)"/>
+      <text x="1024" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">최적화</text>
+      <text x="1024" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Optimization</text>
+      
+      <!-- 행동 -->
+      <rect x="952" y="130" width="144" height="80" fill="white" stroke="#e5e7eb" rx="8" filter="url(#shadow)"/>
+      <text x="1024" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">행동</text>
+      <text x="1024" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 프롬프트 템플릿 100+ 구축</text>
+      <text x="1024" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 워크플로우에 완전 통합</text>
+      <text x="1024" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 팀 전체 활용률 90%+</text>
+      <text x="1024" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 베스트 프랙티스 공유</text>
+      
+      <!-- 좋은 느낌 -->
+      <rect x="952" y="220" width="144" height="80" fill="url(#positiveGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="1024" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😊 좋은 느낌</text>
+      <text x="1024" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 전문가 수준 활용 자신감</text>
+      <text x="1024" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 업무 생산성 최적화</text>
+      <text x="1024" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 팀 전체 역량 강화</text>
+      <text x="1024" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 혁신 문화 구축 자부심</text>
+      
+      <!-- 나쁜 느낌 -->
+      <rect x="952" y="310" width="144" height="80" fill="url(#negativeGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="1024" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😰 나쁜 느낌</text>
+      <text x="1024" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 개선 여지 제한적</text>
+      <text x="1024" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 의존도 증가로 기본기 걱정</text>
+      <text x="1024" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 지속적 학습 압박</text>
+      <text x="1024" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 라이선스 비용 증가</text>
+    </g>
+    
+    <!-- Step 8: 확산 관리 -->
+    <g id="step8">
+      <rect x="1109" y="70" width="144" height="50" fill="#3b82f6" rx="8" filter="url(#shadow)"/>
+      <text x="1181" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">확산 관리</text>
+      <text x="1181" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">Scaling Management</text>
+      
+      <!-- 행동 -->
+      <rect x="1109" y="130" width="144" height="80" fill="white" stroke="#e5e7eb" rx="8" filter="url(#shadow)"/>
+      <text x="1181" y="145" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">행동</text>
+      <text x="1181" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 전사 AI 도입 전략 수립</text>
+      <text x="1181" y="175" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 부서별 성과 측정 KPI 구축</text>
+      <text x="1181" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• AI 활용 교육 프로그램 진행</text>
+      <text x="1181" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#6b7280">• 외부 전문가 네트워크 구축</text>
+      
+      <!-- 좋은 느낌 -->
+      <rect x="1109" y="220" width="144" height="80" fill="url(#positiveGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="1181" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😊 좋은 느낌</text>
+      <text x="1181" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 조직 혁신 리더 자부심</text>
+      <text x="1181" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 전략적 사고 역량 향상</text>
+      <text x="1181" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 디지털 전환 성공</text>
+      <text x="1181" y="295" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 전문성 인정 만족</text>
+      
+      <!-- 나쁜 느낌 -->
+      <rect x="1109" y="310" width="144" height="80" fill="url(#negativeGrad)" rx="8" filter="url(#shadow)"/>
+      <text x="1181" y="325" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">😰 나쁜 느낌</text>
+      <text x="1181" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 조직 전체 관리 책임 부담</text>
+      <text x="1181" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#white">• 빠른 기술 발전 압박</text>
+      <text x="1181" y="370" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 저항 요인 해결 어려움</text>
+      <text x="1181" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">• 전문 영역 깊이 한계</text>
+    </g>
+  </g>
+  
+  <!-- Footer -->
+  <rect x="50" y="720" width="1300" height="60" fill="#f1f5f9" rx="8"/>
+  <text x="700" y="745" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#64748b">
+    핵심 인사이트: 개인 부담 → 조직 지원으로 진화, 효율성 체감하지만 의존도 우려 지속
+  </text>
+  <text x="700" y="765" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#64748b">
+    주요 니즈: 빠른 비교 선택 서비스, 검증된 사용자 후기, 학습 지원, ROI 측정, 보안 가이드, 지속적 업데이트
+  </text>
+</svg>
