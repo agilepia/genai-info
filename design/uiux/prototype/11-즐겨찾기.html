@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>즐겨찾기 - AI도구 가이드</title>
+    <link rel="stylesheet" href="common-styles.css">
+    <style>
+        .favorites-container {
+            background: var(--gray-50);
+            min-height: 100vh;
+        }
+
+        .favorites-main {
+            padding: var(--space-xl) 0;
+        }
+
+        /* 페이지 헤더 */
+        .page-header {
+            background: linear-gradient(135deg, var(--warning), #ff7043);
+            color: white;
+            border-radius: 16px;
+            padding: var(--space-3xl);
+            margin-bottom: var(--space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(100px, -100px);
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: var(--space-2xl);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .btn-export {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: var(--space-md) var(--space-xl);
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition-base);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .btn-export:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* 컨트롤 영역 */
+        .controls-section {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-xl);
+            border: 1px solid var(--gray-200);
+            margin-bottom: var(--space-2xl);
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .controls-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .view-toggle {
+            display: flex;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .view-toggle button {
+            padding: var(--space-sm) var(--space-md);
+            border: none;
+            background: white;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .view-toggle button.active {
+            background: var(--primary-500);
+            color: white;
+        }
+
+        .controls-filters {
+            display: flex;
+            gap: var(--space-lg);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .filter-select {
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            padding: var(--space-sm) var(--space-md);
+            font-size: 14px;
+            background: white;
+            min-width: 120px;
+        }
+
+        .search-filter {
+            position: relative;
+        }
+
+        .search-input {
+            width: 250px;
+            padding: var(--space-sm) var(--space-md);
+            padding-right: 40px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: var(--space-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+        }
+
+        /* 즐겨찾기 그리드 */
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-3xl);
+        }
+
+        .favorites-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        /* 즐겨찾기 카드 */
+        .favorite-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+            transition: all var(--transition-base);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--warning);
+        }
+
+        .favorite-card.list-view {
+            display: flex;
+            align-items: center;
+            padding: var(--space-lg);
+        }
+
+        .favorite-card.list-view .card-image {
+            width: 80px;
+            height: 80px;
+            margin-right: var(--space-lg);
+            margin-bottom: 0;
+        }
+
+        .favorite-card.list-view .card-content {
+            flex: 1;
+            padding: 0;
+        }
+
+        .favorite-card.list-view .card-actions {
+            margin-top: 0;
+            margin-left: var(--space-lg);
+        }
+
+        .favorite-badge {
+            position: absolute;
+            top: var(--space-md);
+            left: var(--space-md);
+            background: var(--warning);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 1;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 160px;
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin-bottom: var(--space-lg);
+            position: relative;
+        }
+
+        .card-content {
+            padding: 0 var(--space-lg) var(--space-lg);
+        }
+
+        .card-header {
+            margin-bottom: var(--space-md);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .card-category {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin-bottom: var(--space-sm);
+        }
+
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            margin-bottom: var(--space-md);
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: var(--warning);
+            font-size: 14px;
+        }
+
+        .star.empty {
+            color: var(--gray-300);
+        }
+
+        .rating-score {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-left: var(--space-xs);
+        }
+
+        .card-description {
+            color: var(--gray-700);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: var(--space-lg);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-bottom: var(--space-lg);
+        }
+
+        .added-date {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .usage-count {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .card-note {
+            background: var(--gray-50);
+            border-radius: 6px;
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            font-size: 13px;
+            color: var(--gray-700);
+            border-left: 3px solid var(--primary-500);
+        }
+
+        .card-note.empty {
+            display: none;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+        }
+
+        .btn-sm {
+            padding: var(--space-sm) var(--space-md);
+            font-size: 13px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-visit {
+            background: var(--primary-500);
+            color: white;
+        }
+
+        .btn-visit:hover {
+            background: var(--primary-600);
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-note {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .btn-note:hover {
+            background: var(--gray-200);
+        }
+
+        .btn-remove {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-remove:hover {
+            background: #cc0000;
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-5xl) var(--space-xl);
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-md);
+        }
+
+        .empty-desc {
+            color: var(--gray-600);
+            margin-bottom: var(--space-xl);
+            line-height: 1.6;
+        }
+
+        .empty-actions {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+        }
+
+        /* 추천 도구 섹션 */
+        .suggestions-section {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-2xl);
+            border: 1px solid var(--gray-200);
+            margin-top: var(--space-2xl);
+        }
+
+        .suggestions-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .suggestions-subtitle {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-bottom: var(--space-xl);
+        }
+
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .suggestion-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: var(--space-lg);
+            text-align: center;
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .suggestion-card:hover {
+            border-color: var(--primary-500);
+            background: var(--primary-50);
+        }
+
+        .suggestion-icon {
+            font-size: 32px;
+            margin-bottom: var(--space-md);
+        }
+
+        .suggestion-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-xs);
+        }
+
+        .suggestion-category {
+            font-size: 12px;
+            color: var(--gray-600);
+            margin-bottom: var(--space-md);
+        }
+
+        .add-favorite-btn {
+            background: var(--warning);
+            color: white;
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .add-favorite-btn:hover {
+            background: #e68900;
+        }
+
+        /* 메모 모달 */
+        .note-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .note-modal.show {
+            display: flex;
+        }
+
+        .note-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-2xl);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: var(--space-lg);
+            right: var(--space-lg);
+            background: var(--gray-100);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--gray-600);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--space-lg);
+        }
+
+        .note-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: var(--space-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: var(--space-lg);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-md);
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: var(--space-xl);
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .header-stats {
+                flex-wrap: wrap;
+                gap: var(--space-lg);
+            }
+
+            .controls-filters {
+                flex-direction: column;
+                align-items: stretch;
+                gap: var(--space-md);
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .favorites-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .favorite-card.list-view {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .favorite-card.list-view .card-image {
+                margin-right: 0;
+                margin-bottom: var(--space-lg);
+            }
+
+            .favorite-card.list-view .card-actions {
+                margin-left: 0;
+                margin-top: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="favorites-container">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container header__container">
+                <a href="03-대시보드.html" class="header__logo">AI도구 가이드</a>
+                
+                <div class="search-bar">
+                    <input type="text" class="search-bar__input" placeholder="AI 도구를 검색해보세요...">
+                    <span class="search-bar__icon">🔍</span>
+                </div>
+
+                <nav class="header__nav">
+                    <a href="04-도구목록.html" class="header__nav-link">도구 탐색</a>
+                    <a href="08-도구비교.html" class="header__nav-link">비교분석</a>
+                    <a href="09-후기목록.html" class="header__nav-link">커뮤니티</a>
+                    <a href="12-사용가이드.html" class="header__nav-link">가이드</a>
+                </nav>
+
+                <div class="header__actions">
+                    <a href="14-알림센터.html" class="btn-ghost" title="알림">🔔</a>
+                    <a href="11-즐겨찾기.html" class="btn-ghost" title="즐겨찾기" style="color: var(--warning);">⭐</a>
+                    <div class="user-menu">
+                        <button class="btn-ghost" onclick="toggleUserMenu()">
+                            👤 김철수 ▼
+                        </button>
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <a href="07-프로필설정.html">프로필 설정</a>
+                            <a href="15-마이페이지.html">마이페이지</a>
+                            <a href="01-로그인.html">로그아웃</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container favorites-main">
+            <!-- 페이지 헤더 -->
+            <section class="page-header">
+                <div class="header-content">
+                    <h1 class="page-title">내 즐겨찾기 ⭐</h1>
+                    <p class="page-subtitle">
+                        자주 사용하는 AI 도구들을 한 곳에서 관리하고 빠르게 접근하세요
+                    </p>
+                    
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">24</span>
+                            <span class="stat-label">즐겨찾기 도구</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">8</span>
+                            <span class="stat-label">카테고리</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">156</span>
+                            <span class="stat-label">이번 달 사용</span>
+                        </div>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="btn-export" onclick="exportFavorites()">
+                            <span>📤</span>
+                            <span>목록 내보내기</span>
+                        </button>
+                        <button class="btn-export" onclick="shareFavorites()">
+                            <span>🔗</span>
+                            <span>공유하기</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 컨트롤 섹션 -->
+            <section class="controls-section">
+                <div class="controls-header">
+                    <h2 class="controls-title">즐겨찾기 관리</h2>
+                    <div class="view-toggle">
+                        <button class="active" onclick="toggleView('grid')">⊞ 그리드</button>
+                        <button onclick="toggleView('list')">☰ 리스트</button>
+                    </div>
+                </div>
+
+                <div class="controls-filters">
+                    <div class="filter-group">
+                        <label class="filter-label">카테고리</label>
+                        <select class="filter-select" id="categoryFilter" onchange="filterFavorites()">
+                            <option value="">전체</option>
+                            <option value="text-generation">텍스트 생성</option>
+                            <option value="design">디자인</option>
+                            <option value="productivity">생산성</option>
+                            <option value="image-generation">이미지 생성</option>
+                            <option value="writing">글쓰기</option>
+                            <option value="analysis">분석</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">정렬</label>
+                        <select class="filter-select" id="sortFilter" onchange="sortFavorites()">
+                            <option value="recent">최근 추가순</option>
+                            <option value="name">이름순</option>
+                            <option value="rating">평점순</option>
+                            <option value="usage">사용 빈도순</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group search-filter">
+                        <label class="filter-label">검색</label>
+                        <div style="position: relative;">
+                            <input type="text" class="search-input" placeholder="도구명을 검색하세요..." 
+                                   id="searchInput" oninput="searchFavorites()">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 즐겨찾기 그리드 -->
+            <div class="favorites-grid" id="favoritesGrid">
+                <!-- 즐겨찾기 1 -->
+                <article class="favorite-card" data-category="text-generation" data-name="ChatGPT" data-rating="4.8">
+                    <div class="favorite-badge">⭐ 즐겨찾기</div>
+                    <div class="card-image">🤖</div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">ChatGPT</h3>
+                            <div class="card-category">텍스트 생성 • OpenAI</div>
+                        </div>
+                        
+                        <div class="card-rating">
+                            <div class="rating-stars">
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                            </div>
+                            <span class="rating-score">4.8</span>
+                        </div>
+                        
+                        <p class="card-description">
+                            마케팅 카피 작성과 브레인스토밍에 매일 활용하는 필수 도구
+                        </p>
+                        
+                        <div class="card-meta">
+                            <div class="added-date">
+                                <span>📅</span>
+                                <span>3개월 전 추가</span>
+                            </div>
+                            <div class="usage-count">
+                                <span>🔥</span>
+                                <span>45회 사용</span>
+                            </div>
+                        </div>
+
+                        <div class="card-note">
+                            마케팅 카피 작성 시 "마케팅 전문가 입장에서" 프롬프트를 앞에 붙이면 더 좋은 결과가 나와요!
+                        </div>
+                        
+                        <div class="card-actions">
+                            <a href="https://chat.openai.com" target="_blank" class="btn-sm btn-visit">바로가기</a>
+                            <button class="btn-sm btn-note" onclick="openNoteModal('ChatGPT', 'chatgpt')">메모</button>
+                            <button class="btn-sm btn-remove" onclick="removeFavorite('chatgpt', this)">삭제</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 즐겨찾기 2 -->
+                <article class="favorite-card" data-category="design" data-name="Canva" data-rating="4.5">
+                    <div class="favorite-badge">⭐ 즐겨찾기</div>
+                    <div class="card-image">🖼️</div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Canva</h3>
+                            <div class="card-category">디자인 • Canva</div>
+                        </div>
+                        
+                        <div class="card-rating">
+                            <div class="rating-stars">
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star empty">⭐</span>
+                            </div>
+                            <span class="rating-score">4.5</span>
+                        </div>
+                        
+                        <p class="card-description">
+                            SNS 콘텐츠와 프레젠테이션 디자인을 빠르게 제작
+                        </p>
+                        
+                        <div class="card-meta">
+                            <div class="added-date">
+                                <span>📅</span>
+                                <span>2개월 전 추가</span>
+                            </div>
+                            <div class="usage-count">
+                                <span>🔥</span>
+                                <span>28회 사용</span>
+                            </div>
+                        </div>
+
+                        <div class="card-note empty"></div>
+                        
+                        <div class="card-actions">
+                            <a href="https://canva.com" target="_blank" class="btn-sm btn-visit">바로가기</a>
+                            <button class="btn-sm btn-note" onclick="openNoteModal('Canva', 'canva')">메모</button>
+                            <button class="btn-sm btn-remove" onclick="removeFavorite('canva', this)">삭제</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 즐겨찾기 3 -->
+                <article class="favorite-card" data-category="writing" data-name="Grammarly" data-rating="4.7">
+                    <div class="favorite-badge">⭐ 즐겨찾기</div>
+                    <div class="card-image">✏️</div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Grammarly</h3>
+                            <div class="card-category">글쓰기 도우미 • Grammarly</div>
+                        </div>
+                        
+                        <div class="card-rating">
+                            <div class="rating-stars">
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                            </div>
+                            <span class="rating-score">4.7</span>
+                        </div>
+                        
+                        <p class="card-description">
+                            영문 이메일과 문서 작성 시 문법 교정에 필수
+                        </p>
+                        
+                        <div class="card-meta">
+                            <div class="added-date">
+                                <span>📅</span>
+                                <span>4개월 전 추가</span>
+                            </div>
+                            <div class="usage-count">
+                                <span>🔥</span>
+                                <span>67회 사용</span>
+                            </div>
+                        </div>
+
+                        <div class="card-note">
+                            Chrome 확장 프로그램으로 설치해서 Gmail에서 바로 사용 중
+                        </div>
+                        
+                        <div class="card-actions">
+                            <a href="https://grammarly.com" target="_blank" class="btn-sm btn-visit">바로가기</a>
+                            <button class="btn-sm btn-note" onclick="openNoteModal('Grammarly', 'grammarly')">메모</button>
+                            <button class="btn-sm btn-remove" onclick="removeFavorite('grammarly', this)">삭제</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 즐겨찾기 4 -->
+                <article class="favorite-card" data-category="productivity" data-name="Notion AI" data-rating="4.3">
+                    <div class="favorite-badge">⭐ 즐겨찾기</div>
+                    <div class="card-image">📝</div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Notion AI</h3>
+                            <div class="card-category">생산성 • Notion</div>
+                        </div>
+                        
+                        <div class="card-rating">
+                            <div class="rating-stars">
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star empty">⭐</span>
+                            </div>
+                            <span class="rating-score">4.3</span>
+                        </div>
+                        
+                        <p class="card-description">
+                            업무 문서 작성과 회의록 정리에 효율적
+                        </p>
+                        
+                        <div class="card-meta">
+                            <div class="added-date">
+                                <span>📅</span>
+                                <span>1개월 전 추가</span>
+                            </div>
+                            <div class="usage-count">
+                                <span>🔥</span>
+                                <span>12회 사용</span>
+                            </div>
+                        </div>
+
+                        <div class="card-note empty"></div>
+                        
+                        <div class="card-actions">
+                            <a href="https://notion.so" target="_blank" class="btn-sm btn-visit">바로가기</a>
+                            <button class="btn-sm btn-note" onclick="openNoteModal('Notion AI', 'notion-ai')">메모</button>
+                            <button class="btn-sm btn-remove" onclick="removeFavorite('notion-ai', this)">삭제</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 즐겨찾기 5 -->
+                <article class="favorite-card" data-category="image-generation" data-name="Midjourney" data-rating="4.7">
+                    <div class="favorite-badge">⭐ 즐겨찾기</div>
+                    <div class="card-image">🎨</div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Midjourney</h3>
+                            <div class="card-category">이미지 생성 • Midjourney</div>
+                        </div>
+                        
+                        <div class="card-rating">
+                            <div class="rating-stars">
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                            </div>
+                            <span class="rating-score">4.7</span>
+                        </div>
+                        
+                        <p class="card-description">
+                            마케팅 콘텐츠용 이미지와 컨셉 아트 제작
+                        </p>
+                        
+                        <div class="card-meta">
+                            <div class="added-date">
+                                <span>📅</span>
+                                <span>5개월 전 추가</span>
+                            </div>
+                            <div class="usage-count">
+                                <span>🔥</span>
+                                <span>21회 사용</span>
+                            </div>
+                        </div>
+
+                        <div class="card-note">
+                            "--ar 16:9" 옵션으로 가로형 이미지 생성, "--stylize 250" 으로 스타일 강도 조절
+                        </div>
+                        
+                        <div class="card-actions">
+                            <a href="https://midjourney.com" target="_blank" class="btn-sm btn-visit">바로가기</a>
+                            <button class="btn-sm btn-note" onclick="openNoteModal('Midjourney', 'midjourney')">메모</button>
+                            <button class="btn-sm btn-remove" onclick="removeFavorite('midjourney', this)">삭제</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 즐겨찾기 6 -->
+                <article class="favorite-card" data-category="analysis" data-name="Claude" data-rating="4.6">
+                    <div class="favorite-badge">⭐ 즐겨찾기</div>
+                    <div class="card-image">🤖</div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Claude</h3>
+                            <div class="card-category">AI 분석 • Anthropic</div>
+                        </div>
+                        
+                        <div class="card-rating">
+                            <div class="rating-stars">
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                                <span class="star">⭐</span>
+                            </div>
+                            <span class="rating-score">4.6</span>
+                        </div>
+                        
+                        <p class="card-description">
+                            긴 문서 분석과 데이터 해석에 특화된 AI 어시스턴트
+                        </p>
+                        
+                        <div class="card-meta">
+                            <div class="added-date">
+                                <span>📅</span>
+                                <span>2주일 전 추가</span>
+                            </div>
+                            <div class="usage-count">
+                                <span>🔥</span>
+                                <span>8회 사용</span>
+                            </div>
+                        </div>
+
+                        <div class="card-note empty"></div>
+                        
+                        <div class="card-actions">
+                            <a href="https://claude.ai" target="_blank" class="btn-sm btn-visit">바로가기</a>
+                            <button class="btn-sm btn-note" onclick="openNoteModal('Claude', 'claude')">메모</button>
+                            <button class="btn-sm btn-remove" onclick="removeFavorite('claude', this)">삭제</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- 추천 도구 섹션 -->
+            <section class="suggestions-section">
+                <h2 class="suggestions-title">
+                    <span>💡</span>
+                    <span>추천 도구</span>
+                </h2>
+                <p class="suggestions-subtitle">
+                    당신의 업무 패턴을 기반으로 관심을 가질만한 새로운 AI 도구들을 추천합니다
+                </p>
+
+                <div class="suggestions-grid">
+                    <div class="suggestion-card" onclick="addToFavorites('jasper')">
+                        <div class="suggestion-icon">✍️</div>
+                        <div class="suggestion-name">Jasper AI</div>
+                        <div class="suggestion-category">콘텐츠 작성</div>
+                        <button class="add-favorite-btn">⭐ 즐겨찾기 추가</button>
+                    </div>
+
+                    <div class="suggestion-card" onclick="addToFavorites('copy-ai')">
+                        <div class="suggestion-icon">📝</div>
+                        <div class="suggestion-name">Copy.ai</div>
+                        <div class="suggestion-category">카피라이팅</div>
+                        <button class="add-favorite-btn">⭐ 즐겨찾기 추가</button>
+                    </div>
+
+                    <div class="suggestion-card" onclick="addToFavorites('gamma')">
+                        <div class="suggestion-icon">📊</div>
+                        <div class="suggestion-name">Gamma</div>
+                        <div class="suggestion-category">프레젠테이션</div>
+                        <button class="add-favorite-btn">⭐ 즐겨찾기 추가</button>
+                    </div>
+
+                    <div class="suggestion-card" onclick="addToFavorites('speechify')">
+                        <div class="suggestion-icon">🎤</div>
+                        <div class="suggestion-name">Speechify</div>
+                        <div class="suggestion-category">음성 변환</div>
+                        <button class="add-favorite-btn">⭐ 즐겨찾기 추가</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 메모 모달 -->
+        <div class="note-modal" id="noteModal">
+            <div class="note-modal-content">
+                <button class="modal-close" onclick="closeNoteModal()">×</button>
+                <h3 class="modal-title" id="modalTitle">ChatGPT 메모</h3>
+                
+                <textarea class="note-textarea" id="noteTextarea" 
+                          placeholder="이 도구에 대한 개인 메모나 사용 팁을 작성하세요..."></textarea>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeNoteModal()">취소</button>
+                    <button class="btn btn-primary" onclick="saveNote()">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTool = '';
+        let currentToolId = '';
+
+        // 사용자 메뉴 토글
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 보기 방식 토글
+        function toggleView(view) {
+            const grid = document.getElementById('favoritesGrid');
+            const buttons = document.querySelectorAll('.view-toggle button');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (view === 'list') {
+                grid.className = 'favorites-grid list-view';
+                grid.querySelectorAll('.favorite-card').forEach(card => {
+                    card.classList.add('list-view');
+                });
+            } else {
+                grid.className = 'favorites-grid';
+                grid.querySelectorAll('.favorite-card').forEach(card => {
+                    card.classList.remove('list-view');
+                });
+            }
+        }
+
+        // 즐겨찾기 필터링
+        function filterFavorites() {
+            const category = document.getElementById('categoryFilter').value;
+            const cards = document.querySelectorAll('.favorite-card');
+            
+            cards.forEach(card => {
+                const cardCategory = card.dataset.category;
+                if (category === '' || cardCategory === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 즐겨찾기 정렬
+        function sortFavorites() {
+            const sortBy = document.getElementById('sortFilter').value;
+            const grid = document.getElementById('favoritesGrid');
+            const cards = Array.from(grid.querySelectorAll('.favorite-card'));
+            
+            cards.sort((a, b) => {
+                switch (sortBy) {
+                    case 'name':
+                        return a.dataset.name.localeCompare(b.dataset.name);
+                    case 'rating':
+                        return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+                    case 'usage':
+                        const aUsage = parseInt(a.querySelector('.usage-count span:last-child').textContent);
+                        const bUsage = parseInt(b.querySelector('.usage-count span:last-child').textContent);
+                        return bUsage - aUsage;
+                    default: // recent
+                        return 0; // 기본 순서 유지
+                }
+            });
+            
+            cards.forEach(card => grid.appendChild(card));
+        }
+
+        // 즐겨찾기 검색
+        function searchFavorites() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.favorite-card');
+            
+            cards.forEach(card => {
+                const name = card.dataset.name.toLowerCase();
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const category = card.querySelector('.card-category').textContent.toLowerCase();
+                
+                if (name.includes(query) || title.includes(query) || category.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 즐겨찾기 삭제
+        function removeFavorite(toolId, button) {
+            if (confirm('이 도구를 즐겨찾기에서 삭제하시겠습니까?')) {
+                const card = button.closest('.favorite-card');
+                card.remove();
+                
+                // 통계 업데이트
+                const statNumber = document.querySelector('.stat-number');
+                const currentCount = parseInt(statNumber.textContent);
+                statNumber.textContent = currentCount - 1;
+                
+                alert('즐겨찾기에서 삭제되었습니다.');
+            }
+        }
+
+        // 추천 도구를 즐겨찾기에 추가
+        function addToFavorites(toolId) {
+            alert(`${toolId}를 즐겨찾기에 추가했습니다!`);
+            // 실제 서비스에서는 서버에 저장하고 UI 업데이트
+        }
+
+        // 메모 모달 열기
+        function openNoteModal(toolName, toolId) {
+            currentTool = toolName;
+            currentToolId = toolId;
+            
+            document.getElementById('modalTitle').textContent = `${toolName} 메모`;
+            
+            // 기존 메모 불러오기 (실제 서비스에서는 서버에서 가져옴)
+            const existingNote = localStorage.getItem(`note-${toolId}`) || '';
+            document.getElementById('noteTextarea').value = existingNote;
+            
+            document.getElementById('noteModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 메모 모달 닫기
+        function closeNoteModal() {
+            document.getElementById('noteModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // 메모 저장
+        function saveNote() {
+            const note = document.getElementById('noteTextarea').value.trim();
+            
+            // 실제 서비스에서는 서버에 저장
+            localStorage.setItem(`note-${currentToolId}`, note);
+            
+            // 카드의 메모 영역 업데이트
+            const card = document.querySelector(`[onclick*="${currentToolId}"]`)?.closest('.favorite-card');
+            if (card) {
+                const noteElement = card.querySelector('.card-note');
+                if (note) {
+                    noteElement.textContent = note;
+                    noteElement.classList.remove('empty');
+                } else {
+                    noteElement.textContent = '';
+                    noteElement.classList.add('empty');
+                }
+            }
+            
+            closeNoteModal();
+            alert('메모가 저장되었습니다!');
+        }
+
+        // 즐겨찾기 내보내기
+        function exportFavorites() {
+            alert('즐겨찾기 목록을 CSV 파일로 내보냅니다.');
+        }
+
+        // 즐겨찾기 공유
+        function shareFavorites() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '내 AI 도구 즐겨찾기',
+                    text: '유용한 AI 도구들을 모아둔 나만의 즐겨찾기 목록입니다!',
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('링크가 클립보드에 복사되었습니다!');
+                });
+            }
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('noteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeNoteModal();
+            }
+        });
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeNoteModal();
+            }
+        });
+
+        // 외부 클릭 시 사용자 메뉴 닫기
+        document.addEventListener('click', function(e) {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userMenu.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // 페이지 로드 시 저장된 메모 불러오기
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.favorite-card');
+            cards.forEach(card => {
+                const removeButton = card.querySelector('.btn-remove');
+                const toolId = removeButton.getAttribute('onclick').match(/'([^']+)'/)[1];
+                const note = localStorage.getItem(`note-${toolId}`);
+                
+                if (note) {
+                    const noteElement = card.querySelector('.card-note');
+                    noteElement.textContent = note;
+                    noteElement.classList.remove('empty');
+                }
+            });
+        });
+
+        // 사용자 드롭다운 스타일
+        const style = document.createElement('style');
+        style.textContent = `
+            .user-menu {
+                position: relative;
+            }
+            
+            .user-dropdown {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border: 1px solid var(--gray-200);
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                min-width: 150px;
+                z-index: 1000;
+                margin-top: 4px;
+            }
+            
+            .user-dropdown a {
+                display: block;
+                padding: var(--space-md) var(--space-lg);
+                color: var(--gray-700);
+                text-decoration: none;
+                transition: background var(--transition-base);
+            }
+            
+            .user-dropdown a:hover {
+                background: var(--gray-50);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
