@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 관리 - AI 도구 찾기</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .profile-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .profile-content {
+            flex: 1;
+            padding: var(--space-xl) 0;
+        }
+        
+        .profile-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: var(--space-xl);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .profile-sidebar {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+            position: sticky;
+            top: var(--space-xl);
+        }
+        
+        .profile-avatar-section {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        
+        .profile-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-h1);
+            font-weight: 700;
+            margin: 0 auto var(--space-md);
+        }
+        
+        .profile-name {
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .profile-email {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .profile-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .profile-nav-item {
+            margin-bottom: var(--space-xs);
+        }
+        
+        .profile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-md);
+            border-radius: var(--radius-lg);
+            color: var(--color-gray-700);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .profile-nav-link:hover {
+            background: var(--color-gray-50);
+        }
+        
+        .profile-nav-link.active {
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .profile-main {
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        .profile-header {
+            background: var(--color-gray-50);
+            padding: var(--space-xl);
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        
+        .profile-title {
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .profile-subtitle {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .profile-section {
+            padding: var(--space-xl);
+            display: none;
+        }
+        
+        .profile-section.active {
+            display: block;
+        }
+        
+        .form-section {
+            margin-bottom: var(--space-xxxl);
+        }
+        
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-section-title {
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-lg);
+            border: 1px solid var(--color-gray-100);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .history-item:hover {
+            box-shadow: var(--shadow-sm);
+            border-color: var(--color-primary);
+        }
+        
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-lg);
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .history-content {
+            flex: 1;
+        }
+        
+        .history-title {
+            font-weight: 500;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .history-meta {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-caption);
+        }
+        
+        .history-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            color: var(--color-warning);
+        }
+        
+        .settings-group {
+            margin-bottom: var(--space-xl);
+        }
+        
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg) 0;
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-info {
+            flex: 1;
+        }
+        
+        .settings-title {
+            font-weight: 500;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .settings-description {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-caption);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: var(--color-gray-200);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: var(--color-primary);
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+        
+        .danger-zone {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-top: var(--space-xxxl);
+        }
+        
+        .danger-title {
+            color: var(--color-error);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+        
+        .danger-text {
+            color: var(--color-gray-700);
+            margin-bottom: var(--space-lg);
+            font-size: var(--font-size-body);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: var(--space-xxxl);
+            color: var(--color-gray-500);
+        }
+        
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: flex-end;
+            margin-top: var(--space-xl);
+            padding-top: var(--space-xl);
+            border-top: 1px solid var(--color-gray-100);
+        }
+        
+        @media (max-width: 1024px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+            
+            .profile-sidebar {
+                position: static;
+                order: 2;
+            }
+            
+            .profile-main {
+                order: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 0 var(--space-md);
+            }
+            
+            .profile-avatar-section {
+                display: flex;
+                align-items: center;
+                gap: var(--space-md);
+                text-align: left;
+            }
+            
+            .profile-avatar-large {
+                width: 60px;
+                height: 60px;
+                font-size: var(--font-size-h3);
+                margin: 0;
+            }
+            
+            .profile-nav {
+                display: flex;
+                gap: var(--space-sm);
+                overflow-x: auto;
+                padding-bottom: var(--space-sm);
+            }
+            
+            .profile-nav-item {
+                margin-bottom: 0;
+                min-width: max-content;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-layout">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container">
+                <div class="header__content">
+                    <a href="03-메인대시보드.html" class="header__logo">AI 도구 찾기</a>
+                    <div class="header__nav">
+                        <a href="03-메인대시보드.html" class="btn btn-text">← 메인으로</a>
+                        <div class="header__user">
+                            <div class="header__avatar" id="userAvatar">김</div>
+                            <span id="userName">김철수</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="profile-content">
+            <div class="container">
+                <div class="profile-container">
+                    <!-- 사이드바 -->
+                    <aside class="profile-sidebar fade-in">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar-large" id="profileAvatar">김</div>
+                            <div class="profile-name" id="profileName">김철수</div>
+                            <div class="profile-email" id="profileEmail">test@example.com</div>
+                        </div>
+                        
+                        <nav>
+                            <ul class="profile-nav">
+                                <li class="profile-nav-item">
+                                    <a class="profile-nav-link active" data-section="basic">
+                                        <span class="nav-icon">👤</span>
+                                        <span>기본정보</span>
+                                    </a>
+                                </li>
+                                <li class="profile-nav-item">
+                                    <a class="profile-nav-link" data-section="work">
+                                        <span class="nav-icon">💼</span>
+                                        <span>직무정보</span>
+                                    </a>
+                                </li>
+                                <li class="profile-nav-item">
+                                    <a class="profile-nav-link" data-section="history">
+                                        <span class="nav-icon">📋</span>
+                                        <span>이용이력</span>
+                                    </a>
+                                </li>
+                                <li class="profile-nav-item">
+                                    <a class="profile-nav-link" data-section="settings">
+                                        <span class="nav-icon">⚙️</span>
+                                        <span>설정</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </aside>
+                    
+                    <!-- 메인 콘텐츠 -->
+                    <div class="profile-main slide-up">
+                        <!-- 기본정보 섹션 -->
+                        <section class="profile-section active" id="basicSection">
+                            <div class="profile-header">
+                                <h1 class="profile-title">기본정보</h1>
+                                <p class="profile-subtitle">개인정보와 로그인 정보를 관리하세요</p>
+                            </div>
+                            
+                            <div style="padding: var(--space-xl);">
+                                <form id="basicInfoForm">
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">개인정보</h3>
+                                        
+                                        <div class="form-group">
+                                            <label for="name" class="form-label">이름</label>
+                                            <input type="text" id="name" name="name" class="form-input" value="김철수">
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="email" class="form-label">이메일</label>
+                                            <input type="email" id="email" name="email" class="form-input" value="test@example.com" readonly>
+                                            <small class="caption">이메일은 변경할 수 없습니다.</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">비밀번호 변경</h3>
+                                        
+                                        <div class="form-group">
+                                            <label for="currentPassword" class="form-label">현재 비밀번호</label>
+                                            <input type="password" id="currentPassword" name="currentPassword" class="form-input">
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="newPassword" class="form-label">새 비밀번호</label>
+                                                <input type="password" id="newPassword" name="newPassword" class="form-input">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="confirmPassword" class="form-label">새 비밀번호 확인</label>
+                                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-input">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" id="resetBasicBtn">취소</button>
+                                        <button type="submit" class="btn btn-primary">변경사항 저장</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
+                        
+                        <!-- 직무정보 섹션 -->
+                        <section class="profile-section" id="workSection">
+                            <div class="profile-header">
+                                <h1 class="profile-title">직무정보</h1>
+                                <p class="profile-subtitle">더 정확한 AI 도구 추천을 위해 직무 정보를 업데이트하세요</p>
+                            </div>
+                            
+                            <div style="padding: var(--space-xl);">
+                                <form id="workInfoForm">
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">소속 정보</h3>
+                                        
+                                        <div class="form-group">
+                                            <label for="company" class="form-label">회사/소속</label>
+                                            <input type="text" id="company" name="company" class="form-input" value="테크 컴퍼니">
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="department" class="form-label">부서</label>
+                                                <input type="text" id="department" name="department" class="form-input" value="제품팀">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="position" class="form-label">직책</label>
+                                                <input type="text" id="position" name="position" class="form-input" value="프로덕트 매니저">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-section">
+                                        <h3 class="form-section-title">업무 정보</h3>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="role" class="form-label">주요 직무</label>
+                                                <select id="role" name="role" class="form-select">
+                                                    <option value="기획" selected>기획</option>
+                                                    <option value="개발">개발</option>
+                                                    <option value="디자인">디자인</option>
+                                                    <option value="마케팅">마케팅</option>
+                                                    <option value="영업">영업</option>
+                                                    <option value="운영">운영</option>
+                                                    <option value="인사">인사</option>
+                                                    <option value="재무">재무</option>
+                                                    <option value="기타">기타</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="experience" class="form-label">경력</label>
+                                                <select id="experience" name="experience" class="form-select">
+                                                    <option value="신입">신입 (1년 미만)</option>
+                                                    <option value="1-3년">1-3년</option>
+                                                    <option value="3-7년" selected>3-7년</option>
+                                                    <option value="7년+">7년 이상</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="industry" class="form-label">산업 분야</label>
+                                            <select id="industry" name="industry" class="form-select">
+                                                <option value="IT/소프트웨어" selected>IT/소프트웨어</option>
+                                                <option value="금융">금융</option>
+                                                <option value="제조">제조</option>
+                                                <option value="교육">교육</option>
+                                                <option value="헬스케어">헬스케어</option>
+                                                <option value="마케팅/광고">마케팅/광고</option>
+                                                <option value="미디어/엔터테인먼트">미디어/엔터테인먼트</option>
+                                                <option value="소매/유통">소매/유통</option>
+                                                <option value="컨설팅">컨설팅</option>
+                                                <option value="기타">기타</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" id="resetWorkBtn">취소</button>
+                                        <button type="submit" class="btn btn-primary">변경사항 저장</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
+                        
+                        <!-- 이용이력 섹션 -->
+                        <section class="profile-section" id="historySection">
+                            <div class="profile-header">
+                                <h1 class="profile-title">이용이력</h1>
+                                <p class="profile-subtitle">추천받은 AI 도구와 평가 이력을 확인하세요</p>
+                            </div>
+                            
+                            <div style="padding: var(--space-xl);" id="historyContent">
+                                <!-- 동적으로 생성 -->
+                            </div>
+                        </section>
+                        
+                        <!-- 설정 섹션 -->
+                        <section class="profile-section" id="settingsSection">
+                            <div class="profile-header">
+                                <h1 class="profile-title">설정</h1>
+                                <p class="profile-subtitle">알림 설정과 개인화 옵션을 관리하세요</p>
+                            </div>
+                            
+                            <div style="padding: var(--space-xl);">
+                                <div class="settings-group">
+                                    <h3 class="form-section-title">알림 설정</h3>
+                                    
+                                    <div class="settings-item">
+                                        <div class="settings-info">
+                                            <div class="settings-title">이메일 알림</div>
+                                            <div class="settings-description">새로운 AI 도구 추천 및 서비스 소식을 이메일로 받아보세요</div>
+                                        </div>
+                                        <div class="toggle-switch active" data-setting="email">
+                                            <div class="toggle-slider"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="settings-item">
+                                        <div class="settings-info">
+                                            <div class="settings-title">추천 알림</div>
+                                            <div class="settings-description">새로운 AI 도구가 추가되면 개인화된 추천을 받아보세요</div>
+                                        </div>
+                                        <div class="toggle-switch active" data-setting="recommendation">
+                                            <div class="toggle-slider"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="settings-group">
+                                    <h3 class="form-section-title">개인화 설정</h3>
+                                    
+                                    <div class="settings-item">
+                                        <div class="settings-info">
+                                            <div class="settings-title">사용 데이터 수집</div>
+                                            <div class="settings-description">더 나은 추천을 위해 사용 패턴 데이터를 수집합니다</div>
+                                        </div>
+                                        <div class="toggle-switch active" data-setting="analytics">
+                                            <div class="toggle-slider"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="settings-item">
+                                        <div class="settings-info">
+                                            <div class="settings-title">마케팅 정보 수신</div>
+                                            <div class="settings-description">특별 혜택과 프로모션 정보를 받아보세요</div>
+                                        </div>
+                                        <div class="toggle-switch" data-setting="marketing">
+                                            <div class="toggle-slider"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 위험 영역 -->
+                                <div class="danger-zone">
+                                    <h3 class="danger-title">⚠️ 계정 삭제</h3>
+                                    <p class="danger-text">
+                                        계정을 삭제하면 모든 데이터가 영구적으로 삭제되며, 복구할 수 없습니다. 
+                                        신중하게 결정해주세요.
+                                    </p>
+                                    <button class="btn btn-secondary" style="color: var(--color-error); border-color: var(--color-error);" id="deleteAccountBtn">
+                                        계정 삭제
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 체크
+            if (!AppState.user) {
+                Utils.navigateTo('01-로그인');
+                return;
+            }
+            
+            // UI 초기화
+            initializeUI();
+            
+            // 탭 이벤트 리스너 설정
+            setupTabListeners();
+            
+            // 폼 이벤트 리스너 설정
+            setupFormListeners();
+            
+            // 설정 토글 이벤트 리스너 설정
+            setupSettingsListeners();
+            
+            // 이용이력 로드
+            loadHistory();
+            
+            function initializeUI() {
+                // 사용자 정보 표시
+                const user = AppState.user;
+                
+                Utils.$('#userAvatar').textContent = user.avatar || user.name.charAt(0);
+                Utils.$('#userName').textContent = user.name;
+                
+                Utils.$('#profileAvatar').textContent = user.avatar || user.name.charAt(0);
+                Utils.$('#profileName').textContent = user.name;
+                Utils.$('#profileEmail').textContent = user.email;
+                
+                // 폼 필드 초기값 설정
+                if (user.name) Utils.$('#name').value = user.name;
+                if (user.email) Utils.$('#email').value = user.email;
+                if (user.company) Utils.$('#company').value = user.company;
+                if (user.role) Utils.$('#role').value = user.role;
+            }
+            
+            function setupTabListeners() {
+                const navLinks = Utils.$$('.profile-nav-link');
+                const sections = Utils.$$('.profile-section');
+                
+                navLinks.forEach(link => {
+                    Utils.on(link, 'click', function(e) {
+                        e.preventDefault();
+                        
+                        const targetSection = this.dataset.section;
+                        
+                        // 모든 네비게이션 비활성화
+                        navLinks.forEach(nl => nl.classList.remove('active'));
+                        sections.forEach(section => section.classList.remove('active'));
+                        
+                        // 선택된 네비게이션과 섹션 활성화
+                        this.classList.add('active');
+                        Utils.$('#' + targetSection + 'Section').classList.add('active');
+                    });
+                });
+            }
+            
+            function setupFormListeners() {
+                // 기본정보 폼
+                Utils.on(Utils.$('#basicInfoForm'), 'submit', async function(e) {
+                    e.preventDefault();
+                    await saveBasicInfo();
+                });
+                
+                // 직무정보 폼
+                Utils.on(Utils.$('#workInfoForm'), 'submit', async function(e) {
+                    e.preventDefault();
+                    await saveWorkInfo();
+                });
+                
+                // 취소 버튼들
+                Utils.on(Utils.$('#resetBasicBtn'), 'click', function() {
+                    resetBasicForm();
+                });
+                
+                Utils.on(Utils.$('#resetWorkBtn'), 'click', function() {
+                    resetWorkForm();
+                });
+                
+                // 계정 삭제 버튼
+                Utils.on(Utils.$('#deleteAccountBtn'), 'click', function() {
+                    deleteAccount();
+                });
+            }
+            
+            function setupSettingsListeners() {
+                const toggles = Utils.$$('.toggle-switch');
+                
+                toggles.forEach(toggle => {
+                    Utils.on(toggle, 'click', function() {
+                        this.classList.toggle('active');
+                        
+                        const setting = this.dataset.setting;
+                        const isActive = this.classList.contains('active');
+                        
+                        // 설정 저장 (실제 환경에서는 API 호출)
+                        console.log(`Setting ${setting} changed to:`, isActive);
+                        Utils.showToast(`설정이 ${isActive ? '활성화' : '비활성화'}되었습니다.`, 'success');
+                    });
+                });
+            }
+            
+            async function saveBasicInfo() {
+                const formData = Utils.getFormData(Utils.$('#basicInfoForm'));
+                
+                // 비밀번호 변경 검증
+                if (formData.newPassword || formData.confirmPassword || formData.currentPassword) {
+                    if (!validatePasswordChange(formData)) {
+                        return;
+                    }
+                }
+                
+                const submitBtn = Utils.$('#basicInfoForm button[type="submit"]');
+                Utils.showLoading(submitBtn, '저장 중...');
+                
+                try {
+                    // 시뮬레이션
+                    await Utils.delay(1000);
+                    
+                    // 사용자 정보 업데이트
+                    const updatedUser = { ...AppState.user };
+                    if (formData.name) updatedUser.name = formData.name;
+                    AppState.setUser(updatedUser);
+                    
+                    Utils.showToast('기본정보가 저장되었습니다.', 'success');
+                    
+                    // UI 업데이트
+                    initializeUI();
+                    
+                    // 비밀번호 필드 초기화
+                    Utils.$('#currentPassword').value = '';
+                    Utils.$('#newPassword').value = '';
+                    Utils.$('#confirmPassword').value = '';
+                    
+                } catch (error) {
+                    Utils.showToast('저장 중 오류가 발생했습니다.', 'error');
+                } finally {
+                    submitBtn.innerHTML = '변경사항 저장';
+                    submitBtn.disabled = false;
+                }
+            }
+            
+            async function saveWorkInfo() {
+                const formData = Utils.getFormData(Utils.$('#workInfoForm'));
+                
+                const submitBtn = Utils.$('#workInfoForm button[type="submit"]');
+                Utils.showLoading(submitBtn, '저장 중...');
+                
+                try {
+                    // 시뮬레이션
+                    await Utils.delay(1000);
+                    
+                    // 사용자 정보 업데이트
+                    const updatedUser = { ...AppState.user, ...formData };
+                    AppState.setUser(updatedUser);
+                    
+                    Utils.showToast('직무정보가 저장되었습니다.', 'success');
+                    
+                } catch (error) {
+                    Utils.showToast('저장 중 오류가 발생했습니다.', 'error');
+                } finally {
+                    submitBtn.innerHTML = '변경사항 저장';
+                    submitBtn.disabled = false;
+                }
+            }
+            
+            function validatePasswordChange(data) {
+                if (!data.currentPassword) {
+                    Utils.showToast('현재 비밀번호를 입력해주세요.', 'warning');
+                    return false;
+                }
+                
+                if (!data.newPassword) {
+                    Utils.showToast('새 비밀번호를 입력해주세요.', 'warning');
+                    return false;
+                }
+                
+                if (data.newPassword.length < 8) {
+                    Utils.showToast('새 비밀번호는 8자 이상이어야 합니다.', 'warning');
+                    return false;
+                }
+                
+                if (data.newPassword !== data.confirmPassword) {
+                    Utils.showToast('새 비밀번호가 일치하지 않습니다.', 'warning');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            function resetBasicForm() {
+                const form = Utils.$('#basicInfoForm');
+                form.reset();
+                initializeUI();
+            }
+            
+            function resetWorkForm() {
+                const form = Utils.$('#workInfoForm');
+                form.reset();
+                initializeUI();
+            }
+            
+            function loadHistory() {
+                const container = Utils.$('#historyContent');
+                
+                if (AppState.recommendations && AppState.recommendations.length > 0) {
+                    const historyHTML = AppState.recommendations.map((tool, index) => `
+                        <div class="history-item" onclick="viewToolDetail(${tool.id})">
+                            <div class="history-icon">${tool.logo || (tool.name.charAt(0))}</div>
+                            <div class="history-content">
+                                <div class="history-title">${tool.name}</div>
+                                <div class="history-meta">
+                                    ${tool.company} • ${getRelativeDate(index)} • 
+                                    ${tool.price === 'free' ? '무료' : tool.price === 'freemium' ? '일부무료' : '유료'}
+                                </div>
+                            </div>
+                            <div class="history-rating">
+                                <span>⭐</span>
+                                <span>${tool.rating}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    container.innerHTML = `
+                        <div class="form-section">
+                            <h3 class="form-section-title">추천 이력</h3>
+                            ${historyHTML}
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3 class="form-section-title">평가 이력</h3>
+                            <div class="empty-state">
+                                <div class="empty-icon">📝</div>
+                                <p>아직 평가한 도구가 없습니다.</p>
+                                <p class="caption">도구를 사용한 후 만족도를 평가해보세요!</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            <p>아직 추천받은 AI 도구가 없습니다.</p>
+                            <p class="caption">업무 상황을 입력하여 맞춤 추천을 받아보세요!</p>
+                            <button class="btn btn-primary" onclick="Utils.navigateTo('04-업무상황입력')" style="margin-top: var(--space-lg);">
+                                AI 도구 찾기 시작
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+            
+            function getRelativeDate(index) {
+                const dates = ['오늘', '어제', '3일 전', '5일 전', '1주 전'];
+                return dates[index] || `${index + 1}일 전`;
+            }
+            
+            function deleteAccount() {
+                if (confirm('정말로 계정을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 모든 데이터가 영구적으로 삭제됩니다.')) {
+                    if (confirm('마지막 확인: 계정 삭제를 진행하시겠습니까?')) {
+                        Utils.showToast('계정 삭제가 처리되었습니다. (프로토타입)', 'success');
+                        
+                        // 실제 환경에서는 API 호출 후 로그아웃 처리
+                        setTimeout(() => {
+                            AppState.setUser(null);
+                            localStorage.clear();
+                            Utils.navigateTo('01-로그인');
+                        }, 2000);
+                    }
+                }
+            }
+        });
+        
+        // 전역 함수
+        window.viewToolDetail = function(id) {
+            const tool = AppState.recommendations.find(t => t.id === id) || 
+                         SampleData.aiTools.find(t => t.id === id);
+            if (tool) {
+                AppState.setSelectedTool(tool);
+                Utils.navigateTo('06-도구상세보기');
+            }
+        };
+    </script>
+</body>
+</html>

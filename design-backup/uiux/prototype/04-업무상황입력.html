@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>업무상황 입력 - AI 도구 찾기</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .situation-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .situation-content {
+            flex: 1;
+            padding: var(--space-xl) 0;
+        }
+        
+        .situation-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-xl);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .situation-form {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .form-title {
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .form-subtitle {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .progress-section {
+            margin-bottom: var(--space-xl);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .progress-text {
+            font-size: var(--font-size-caption);
+            color: var(--color-gray-500);
+        }
+        
+        .progress-percentage {
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+        
+        .input-section {
+            margin-bottom: var(--space-xl);
+            padding: var(--space-lg);
+            border: 1px solid var(--color-gray-100);
+            border-radius: var(--radius-lg);
+            transition: all 0.2s ease;
+        }
+        
+        .input-section.filled {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-md);
+        }
+        
+        .required-mark {
+            color: var(--color-error);
+        }
+        
+        .section-description {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+        
+        .tag-option {
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        
+        .tag-option:hover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+        
+        .tag-option.selected {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        
+        .slider-container {
+            margin: var(--space-lg) 0;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--color-gray-100);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            border: none;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--space-sm);
+            font-size: var(--font-size-caption);
+            color: var(--color-gray-500);
+        }
+        
+        .slider-value {
+            text-align: center;
+            margin-top: var(--space-sm);
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: var(--space-md);
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            cursor: pointer;
+        }
+        
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+            position: sticky;
+            top: var(--space-xl);
+        }
+        
+        .sidebar-title {
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .tip-item {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .tip-title {
+            font-weight: 500;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .tip-content {
+            font-size: var(--font-size-caption);
+            color: var(--color-gray-500);
+            line-height: 1.5;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: var(--space-xl);
+            padding-top: var(--space-xl);
+            border-top: 1px solid var(--color-gray-100);
+        }
+        
+        @media (max-width: 1024px) {
+            .situation-container {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tag-group {
+                justify-content: center;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+            
+            .situation-container {
+                padding: 0 var(--space-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="situation-layout">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container">
+                <div class="header__content">
+                    <a href="03-메인대시보드.html" class="header__logo">AI 도구 찾기</a>
+                    <div class="header__nav">
+                        <div class="header__user">
+                            <div class="header__avatar" id="userAvatar">김</div>
+                            <span id="userName">김철수</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="situation-content">
+            <div class="container">
+                <div class="situation-container">
+                    <!-- 입력 폼 -->
+                    <div class="situation-form fade-in">
+                        <div class="form-header">
+                            <h1 class="form-title">업무 상황을 알려주세요</h1>
+                            <p class="form-subtitle">여러분의 상황에 맞는 최적의 AI 도구를 추천해드립니다</p>
+                        </div>
+                        
+                        <!-- 진행률 -->
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <span class="progress-text">완성도</span>
+                                <span class="progress-percentage" id="progressPercentage">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar__fill" id="progressFill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        
+                        <form id="situationForm">
+                            <!-- 1. 업무유형 -->
+                            <div class="input-section" id="workTypeSection">
+                                <h3 class="section-title">
+                                    <span>1.</span>
+                                    <span>주요 업무는 무엇인가요?</span>
+                                    <span class="required-mark">*</span>
+                                </h3>
+                                <p class="section-description">여러 개를 선택할 수 있습니다</p>
+                                <div class="tag-group" id="workTypeTags">
+                                    <!-- 동적으로 생성 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 2. 산업분야 -->
+                            <div class="input-section" id="industrySection">
+                                <h3 class="section-title">
+                                    <span>2.</span>
+                                    <span>어떤 분야에서 일하시나요?</span>
+                                </h3>
+                                <p class="section-description">가장 가까운 분야를 선택해주세요</p>
+                                <select class="form-select" id="industrySelect" name="industry">
+                                    <option value="">산업 분야 선택</option>
+                                    <!-- 동적으로 생성 -->
+                                </select>
+                            </div>
+                            
+                            <!-- 3. 팀규모 -->
+                            <div class="input-section" id="teamSizeSection">
+                                <h3 class="section-title">
+                                    <span>3.</span>
+                                    <span>팀 규모는 어떻게 되나요?</span>
+                                </h3>
+                                <p class="section-description">함께 일하는 사람 수를 알려주세요</p>
+                                <div class="slider-container">
+                                    <input type="range" class="slider" id="teamSizeSlider" 
+                                           min="1" max="100" value="5" name="teamSize">
+                                    <div class="slider-labels">
+                                        <span>1명</span>
+                                        <span>100명+</span>
+                                    </div>
+                                    <div class="slider-value" id="teamSizeValue">5명</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 4. 예산범위 -->
+                            <div class="input-section" id="budgetSection">
+                                <h3 class="section-title">
+                                    <span>4.</span>
+                                    <span>예산 범위는 어떻게 되나요?</span>
+                                </h3>
+                                <p class="section-description">월 기준으로 생각해주세요</p>
+                                <div class="tag-group">
+                                    <div class="tag-option" data-value="free">무료만</div>
+                                    <div class="tag-option" data-value="low">~10만원</div>
+                                    <div class="tag-option" data-value="medium">10~50만원</div>
+                                    <div class="tag-option" data-value="high">50만원 이상</div>
+                                </div>
+                                <input type="hidden" id="budgetValue" name="budget">
+                            </div>
+                            
+                            <!-- 5. 긴급도 -->
+                            <div class="input-section" id="urgencySection">
+                                <h3 class="section-title">
+                                    <span>5.</span>
+                                    <span>얼마나 급하신가요?</span>
+                                </h3>
+                                <p class="section-description">도구를 사용해야 하는 시급성을 알려주세요</p>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="urgency" value="1">
+                                        <span>매우 급함</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="urgency" value="2">
+                                        <span>급함</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="urgency" value="3">
+                                        <span>보통</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="urgency" value="4">
+                                        <span>여유있음</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="urgency" value="5">
+                                        <span>매우 여유있음</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- 6. 기술수준 -->
+                            <div class="input-section" id="techLevelSection">
+                                <h3 class="section-title">
+                                    <span>6.</span>
+                                    <span>기술 활용 수준은 어떠신가요?</span>
+                                    <span class="required-mark">*</span>
+                                </h3>
+                                <p class="section-description">새로운 도구 학습에 대한 자신감을 알려주세요</p>
+                                <div class="tag-group">
+                                    <div class="tag-option" data-value="1">초급 (간단한 도구만)</div>
+                                    <div class="tag-option" data-value="2">중급 (어느정도 복잡해도 OK)</div>
+                                    <div class="tag-option" data-value="3">고급 (복잡한 설정도 가능)</div>
+                                </div>
+                                <input type="hidden" id="techLevelValue" name="techLevel">
+                            </div>
+                            
+                            <!-- 제출 버튼 -->
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary btn-large" id="submitBtn" disabled>
+                                    AI 도구 추천받기 (완성도 60% 이상 필요)
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- 사이드바 -->
+                    <div class="sidebar slide-up">
+                        <h3 class="sidebar-title">💡 입력 가이드</h3>
+                        
+                        <div class="tip-item">
+                            <div class="tip-title">정확한 정보 입력</div>
+                            <div class="tip-content">
+                                실제 업무 상황을 솔직하게 입력할수록 더 정확한 추천을 받을 수 있습니다.
+                            </div>
+                        </div>
+                        
+                        <div class="tip-item">
+                            <div class="tip-title">복수 선택 가능</div>
+                            <div class="tip-content">
+                                업무유형은 여러 개를 선택할 수 있습니다. 주로 하는 일을 모두 선택해주세요.
+                            </div>
+                        </div>
+                        
+                        <div class="tip-item">
+                            <div class="tip-title">예산 고려사항</div>
+                            <div class="tip-content">
+                                개인 사용과 팀 사용의 비용이 다를 수 있으니, 실제 상황을 고려해주세요.
+                            </div>
+                        </div>
+                        
+                        <div class="tip-item">
+                            <div class="tip-title">기술 수준</div>
+                            <div class="tip-content">
+                                과도하게 복잡한 도구보다는 실제 활용 가능한 수준의 도구를 추천해드립니다.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 체크
+            if (!AppState.user) {
+                Utils.navigateTo('01-로그인');
+                return;
+            }
+            
+            // 사용자 정보 표시
+            initializeUserInfo();
+            
+            // 폼 초기화
+            initializeForm();
+            
+            // 이벤트 리스너 설정
+            setupEventListeners();
+            
+            function initializeUserInfo() {
+                const userAvatar = Utils.$('#userAvatar');
+                const userName = Utils.$('#userName');
+                
+                if (AppState.user) {
+                    userAvatar.textContent = AppState.user.avatar || AppState.user.name.charAt(0);
+                    userName.textContent = AppState.user.name;
+                }
+            }
+            
+            function initializeForm() {
+                // 업무유형 태그 생성
+                const workTypeTags = Utils.$('#workTypeTags');
+                SampleData.workTypes.forEach(type => {
+                    const tag = Utils.createElement('div', 'tag-option', type);
+                    tag.dataset.value = type;
+                    workTypeTags.appendChild(tag);
+                });
+                
+                // 산업분야 옵션 생성
+                const industrySelect = Utils.$('#industrySelect');
+                SampleData.industries.forEach(industry => {
+                    const option = Utils.createElement('option', '', industry);
+                    option.value = industry;
+                    industrySelect.appendChild(option);
+                });
+                
+                // 기존 데이터가 있으면 복원
+                if (AppState.workSituation) {
+                    restoreFormData();
+                }
+            }
+            
+            function setupEventListeners() {
+                const form = Utils.$('#situationForm');
+                
+                // 업무유형 태그 클릭
+                Utils.on(Utils.$('#workTypeTags'), 'click', function(e) {
+                    if (e.target.classList.contains('tag-option')) {
+                        e.target.classList.toggle('selected');
+                        updateProgress();
+                    }
+                });
+                
+                // 예산범위 태그 클릭 (단일 선택)
+                const budgetTags = Utils.$('#budgetSection .tag-group');
+                Utils.on(budgetTags, 'click', function(e) {
+                    if (e.target.classList.contains('tag-option')) {
+                        // 모든 태그 비활성화
+                        budgetTags.querySelectorAll('.tag-option').forEach(tag => {
+                            tag.classList.remove('selected');
+                        });
+                        // 선택된 태그 활성화
+                        e.target.classList.add('selected');
+                        Utils.$('#budgetValue').value = e.target.dataset.value;
+                        updateProgress();
+                    }
+                });
+                
+                // 기술수준 태그 클릭 (단일 선택)
+                const techLevelTags = Utils.$('#techLevelSection .tag-group');
+                Utils.on(techLevelTags, 'click', function(e) {
+                    if (e.target.classList.contains('tag-option')) {
+                        // 모든 태그 비활성화
+                        techLevelTags.querySelectorAll('.tag-option').forEach(tag => {
+                            tag.classList.remove('selected');
+                        });
+                        // 선택된 태그 활성화
+                        e.target.classList.add('selected');
+                        Utils.$('#techLevelValue').value = e.target.dataset.value;
+                        updateProgress();
+                    }
+                });
+                
+                // 팀규모 슬라이더
+                const teamSizeSlider = Utils.$('#teamSizeSlider');
+                const teamSizeValue = Utils.$('#teamSizeValue');
+                Utils.on(teamSizeSlider, 'input', function() {
+                    teamSizeValue.textContent = this.value + '명';
+                    updateProgress();
+                });
+                
+                // 산업분야 선택
+                Utils.on(Utils.$('#industrySelect'), 'change', function() {
+                    updateProgress();
+                });
+                
+                // 긴급도 라디오 버튼
+                const urgencyRadios = form.querySelectorAll('input[name="urgency"]');
+                urgencyRadios.forEach(radio => {
+                    Utils.on(radio, 'change', function() {
+                        updateProgress();
+                    });
+                });
+                
+                // 폼 제출
+                Utils.on(form, 'submit', async function(e) {
+                    e.preventDefault();
+                    
+                    if (getCompletionPercentage() < 60) {
+                        Utils.showToast('완성도가 60% 이상이어야 추천을 받을 수 있습니다.', 'warning');
+                        return;
+                    }
+                    
+                    const formData = collectFormData();
+                    AppState.setWorkSituation(formData);
+                    
+                    const submitBtn = Utils.$('#submitBtn');
+                    Utils.showLoading(submitBtn, '분석 중...');
+                    
+                    try {
+                        const result = await MockAPI.getRecommendations(formData);
+                        
+                        if (result.success) {
+                            AppState.setRecommendations(result.recommendations);
+                            Utils.navigateTo('05-추천결과');
+                        } else {
+                            Utils.showToast('추천 생성 중 오류가 발생했습니다.', 'error');
+                            submitBtn.innerHTML = 'AI 도구 추천받기';
+                            submitBtn.disabled = false;
+                        }
+                        
+                    } catch (error) {
+                        console.error('Recommendation error:', error);
+                        Utils.showToast('추천 생성 중 오류가 발생했습니다.', 'error');
+                        submitBtn.innerHTML = 'AI 도구 추천받기';
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+            
+            function updateProgress() {
+                const percentage = getCompletionPercentage();
+                const progressFill = Utils.$('#progressFill');
+                const progressPercentage = Utils.$('#progressPercentage');
+                const submitBtn = Utils.$('#submitBtn');
+                
+                // 진행률 업데이트
+                progressFill.style.width = percentage + '%';
+                progressPercentage.textContent = percentage + '%';
+                
+                // 버튼 상태 업데이트
+                if (percentage >= 60) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'AI 도구 추천받기';
+                } else {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `AI 도구 추천받기 (완성도 ${percentage}%, 60% 이상 필요)`;
+                }
+                
+                // 섹션 완성 상태 표시
+                updateSectionStates();
+            }
+            
+            function getCompletionPercentage() {
+                const weights = {
+                    workType: 25,      // 필수
+                    industry: 15,
+                    teamSize: 10,
+                    budget: 15,
+                    urgency: 10,
+                    techLevel: 25      // 필수
+                };
+                
+                let score = 0;
+                
+                // 업무유형 (필수)
+                const selectedWorkTypes = Utils.$$('#workTypeTags .tag-option.selected');
+                if (selectedWorkTypes.length > 0) {
+                    score += weights.workType;
+                }
+                
+                // 산업분야
+                if (Utils.$('#industrySelect').value) {
+                    score += weights.industry;
+                }
+                
+                // 팀규모 (기본값이 있으므로 항상 점수)
+                score += weights.teamSize;
+                
+                // 예산범위
+                if (Utils.$('#budgetValue').value) {
+                    score += weights.budget;
+                }
+                
+                // 긴급도
+                const urgencyChecked = Utils.$('input[name="urgency"]:checked');
+                if (urgencyChecked) {
+                    score += weights.urgency;
+                }
+                
+                // 기술수준 (필수)
+                if (Utils.$('#techLevelValue').value) {
+                    score += weights.techLevel;
+                }
+                
+                return Math.round(score);
+            }
+            
+            function updateSectionStates() {
+                const sections = [
+                    { id: 'workTypeSection', check: () => Utils.$$('#workTypeTags .tag-option.selected').length > 0 },
+                    { id: 'industrySection', check: () => Utils.$('#industrySelect').value !== '' },
+                    { id: 'teamSizeSection', check: () => true }, // 기본값 존재
+                    { id: 'budgetSection', check: () => Utils.$('#budgetValue').value !== '' },
+                    { id: 'urgencySection', check: () => Utils.$('input[name="urgency"]:checked') !== null },
+                    { id: 'techLevelSection', check: () => Utils.$('#techLevelValue').value !== '' }
+                ];
+                
+                sections.forEach(section => {
+                    const element = Utils.$('#' + section.id);
+                    if (section.check()) {
+                        element.classList.add('filled');
+                    } else {
+                        element.classList.remove('filled');
+                    }
+                });
+            }
+            
+            function collectFormData() {
+                // 업무유형 수집
+                const workTypes = Array.from(Utils.$$('#workTypeTags .tag-option.selected'))
+                    .map(tag => tag.dataset.value);
+                
+                return {
+                    workType: workTypes,
+                    industry: Utils.$('#industrySelect').value,
+                    teamSize: parseInt(Utils.$('#teamSizeSlider').value),
+                    budget: Utils.$('#budgetValue').value,
+                    urgency: Utils.$('input[name="urgency"]:checked')?.value || null,
+                    techLevel: parseInt(Utils.$('#techLevelValue').value) || null
+                };
+            }
+            
+            function restoreFormData() {
+                const data = AppState.workSituation;
+                
+                // 업무유형 복원
+                if (data.workType && data.workType.length > 0) {
+                    data.workType.forEach(type => {
+                        const tag = Utils.$(`#workTypeTags .tag-option[data-value="${type}"]`);
+                        if (tag) tag.classList.add('selected');
+                    });
+                }
+                
+                // 산업분야 복원
+                if (data.industry) {
+                    Utils.$('#industrySelect').value = data.industry;
+                }
+                
+                // 팀규모 복원
+                if (data.teamSize) {
+                    const slider = Utils.$('#teamSizeSlider');
+                    slider.value = data.teamSize;
+                    Utils.$('#teamSizeValue').textContent = data.teamSize + '명';
+                }
+                
+                // 예산 복원
+                if (data.budget) {
+                    const budgetTag = Utils.$(`#budgetSection .tag-option[data-value="${data.budget}"]`);
+                    if (budgetTag) {
+                        budgetTag.classList.add('selected');
+                        Utils.$('#budgetValue').value = data.budget;
+                    }
+                }
+                
+                // 긴급도 복원
+                if (data.urgency) {
+                    const urgencyRadio = Utils.$(`input[name="urgency"][value="${data.urgency}"]`);
+                    if (urgencyRadio) urgencyRadio.checked = true;
+                }
+                
+                // 기술수준 복원
+                if (data.techLevel) {
+                    const techTag = Utils.$(`#techLevelSection .tag-option[data-value="${data.techLevel}"]`);
+                    if (techTag) {
+                        techTag.classList.add('selected');
+                        Utils.$('#techLevelValue').value = data.techLevel;
+                    }
+                }
+                
+                // 진행률 업데이트
+                updateProgress();
+            }
+            
+            // 초기 진행률 계산
+            updateProgress();
+        });
+    </script>
+</body>
+</html>

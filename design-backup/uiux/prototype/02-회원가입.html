@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - AI 도구 찾기</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .signup-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: var(--space-xxl);
+            margin: var(--space-lg);
+        }
+        
+        .signup-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .signup-logo {
+            width: 60px;
+            height: 60px;
+            background: var(--color-primary);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-md);
+            font-size: var(--font-size-h2);
+            font-weight: 700;
+            color: white;
+        }
+        
+        .step-container {
+            margin-bottom: var(--space-xl);
+        }
+        
+        .step-content {
+            display: none;
+        }
+        
+        .step-content.active {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+        
+        .password-strength {
+            margin-top: var(--space-xs);
+        }
+        
+        .strength-bar {
+            height: 4px;
+            background: var(--color-gray-100);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+        }
+        
+        .strength-weak { background: var(--color-error); width: 20%; }
+        .strength-fair { background: var(--color-warning); width: 40%; }
+        .strength-good { background: var(--color-warning); width: 60%; }
+        .strength-strong { background: var(--color-success); width: 80%; }
+        .strength-very-strong { background: var(--color-success); width: 100%; }
+        
+        .strength-text {
+            font-size: var(--font-size-caption);
+            color: var(--color-gray-500);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+        }
+        
+        .signup-footer {
+            text-align: center;
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--color-gray-100);
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .signup-container {
+                margin: var(--space-md);
+                padding: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container fade-in">
+        <div class="signup-header">
+            <div class="signup-logo">AI</div>
+            <h1 class="signup-title">회원가입</h1>
+            <p class="signup-subtitle">AI 도구 추천 서비스에 가입하세요</p>
+        </div>
+        
+        <!-- 진행 단계 표시 -->
+        <div class="step-container">
+            <div class="step-progress">
+                <div class="step-progress__item">
+                    <div class="step-progress__circle step-progress__circle--active" id="step1Circle">1</div>
+                    <span class="step-progress__label">기본정보</span>
+                </div>
+                <div class="step-progress__item">
+                    <div class="step-progress__circle step-progress__circle--inactive" id="step2Circle">2</div>
+                    <span class="step-progress__label">직무정보</span>
+                </div>
+            </div>
+        </div>
+        
+        <form id="signupForm">
+            <!-- 1단계: 기본정보 -->
+            <div class="step-content active" id="step1">
+                <div class="form-group">
+                    <label for="name" class="form-label">이름</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        class="form-input" 
+                        placeholder="이름을 입력하세요"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">이메일</label>
+                    <div class="flex gap-sm">
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-input" 
+                            placeholder="이메일을 입력하세요"
+                            required
+                            style="flex: 1;"
+                        >
+                        <button type="button" class="btn btn-secondary" id="checkEmail">중복확인</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="8자 이상 입력하세요"
+                        required
+                    >
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText">비밀번호 강도</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passwordConfirm" class="form-label">비밀번호 확인</label>
+                    <input 
+                        type="password" 
+                        id="passwordConfirm" 
+                        name="passwordConfirm" 
+                        class="form-input" 
+                        placeholder="비밀번호를 다시 입력하세요"
+                        required
+                    >
+                </div>
+            </div>
+            
+            <!-- 2단계: 직무정보 -->
+            <div class="step-content" id="step2">
+                <div class="form-group">
+                    <label for="company" class="form-label">소속</label>
+                    <input 
+                        type="text" 
+                        id="company" 
+                        name="company" 
+                        class="form-input" 
+                        placeholder="회사명 또는 소속을 입력하세요"
+                    >
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="role" class="form-label">직무</label>
+                        <select id="role" name="role" class="form-select" required>
+                            <option value="">직무를 선택하세요</option>
+                            <option value="기획">기획</option>
+                            <option value="개발">개발</option>
+                            <option value="디자인">디자인</option>
+                            <option value="마케팅">마케팅</option>
+                            <option value="영업">영업</option>
+                            <option value="운영">운영</option>
+                            <option value="인사">인사</option>
+                            <option value="재무">재무</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience" class="form-label">경력</label>
+                        <select id="experience" name="experience" class="form-select" required>
+                            <option value="">경력을 선택하세요</option>
+                            <option value="신입">신입 (1년 미만)</option>
+                            <option value="1-3년">1-3년</option>
+                            <option value="3-7년">3-7년</option>
+                            <option value="7년+">7년 이상</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                    이전
+                </button>
+                <div style="flex: 1;"></div>
+                <button type="button" class="btn btn-primary" id="nextBtn">
+                    다음
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">
+                    가입 완료
+                </button>
+            </div>
+        </form>
+        
+        <div class="signup-footer">
+            <p class="caption">이미 계정이 있으신가요?</p>
+            <a href="01-로그인.html" class="btn btn-text">로그인하기</a>
+        </div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentStep = 1;
+            const totalSteps = 2;
+            
+            const signupForm = Utils.$('#signupForm');
+            const nextBtn = Utils.$('#nextBtn');
+            const prevBtn = Utils.$('#prevBtn');
+            const submitBtn = Utils.$('#submitBtn');
+            const checkEmailBtn = Utils.$('#checkEmail');
+            const passwordInput = Utils.$('#password');
+            const passwordConfirmInput = Utils.$('#passwordConfirm');
+            
+            // 비밀번호 강도 체크
+            Utils.on(passwordInput, 'input', function() {
+                updatePasswordStrength(this.value);
+            });
+            
+            // 이메일 중복 확인
+            Utils.on(checkEmailBtn, 'click', async function() {
+                const email = Utils.$('#email').value.trim();
+                
+                if (!email) {
+                    Utils.showToast('이메일을 입력해주세요.', 'warning');
+                    return;
+                }
+                
+                if (!Validator.email(email)) {
+                    Utils.showToast('올바른 이메일 형식이 아닙니다.', 'error');
+                    return;
+                }
+                
+                Utils.showLoading(checkEmailBtn, '확인중...');
+                
+                // 시뮬레이션
+                await Utils.delay(1000);
+                
+                if (email === 'existing@example.com') {
+                    Utils.showToast('이미 사용 중인 이메일입니다.', 'error');
+                } else {
+                    Utils.showToast('사용 가능한 이메일입니다.', 'success');
+                }
+                
+                checkEmailBtn.innerHTML = '중복확인';
+                checkEmailBtn.disabled = false;
+            });
+            
+            // 다음 버튼
+            Utils.on(nextBtn, 'click', function() {
+                if (validateCurrentStep()) {
+                    nextStep();
+                }
+            });
+            
+            // 이전 버튼
+            Utils.on(prevBtn, 'click', function() {
+                prevStep();
+            });
+            
+            // 폼 제출
+            Utils.on(signupForm, 'submit', async function(e) {
+                e.preventDefault();
+                
+                if (!validateCurrentStep()) {
+                    return;
+                }
+                
+                const formData = Utils.getFormData(signupForm);
+                
+                Utils.showLoading(submitBtn, '가입 중...');
+                
+                try {
+                    const result = await MockAPI.register(formData);
+                    
+                    if (result.success) {
+                        Utils.showToast('회원가입이 완료되었습니다!', 'success');
+                        
+                        setTimeout(() => {
+                            Utils.navigateTo('01-로그인');
+                        }, 1500);
+                        
+                    } else {
+                        Utils.showToast(result.message, 'error');
+                        submitBtn.innerHTML = '가입 완료';
+                        submitBtn.disabled = false;
+                    }
+                    
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    Utils.showToast('가입 중 오류가 발생했습니다.', 'error');
+                    submitBtn.innerHTML = '가입 완료';
+                    submitBtn.disabled = false;
+                }
+            });
+            
+            // 단계별 검증
+            function validateCurrentStep() {
+                if (currentStep === 1) {
+                    return validateStep1();
+                } else if (currentStep === 2) {
+                    return validateStep2();
+                }
+                return false;
+            }
+            
+            function validateStep1() {
+                let isValid = true;
+                
+                const name = Utils.$('#name').value.trim();
+                const email = Utils.$('#email').value.trim();
+                const password = Utils.$('#password').value;
+                const passwordConfirm = Utils.$('#passwordConfirm').value;
+                
+                if (!Validator.required(name)) {
+                    showFieldError(Utils.$('#name'), '이름을 입력해주세요.');
+                    isValid = false;
+                }
+                
+                if (!Validator.required(email)) {
+                    showFieldError(Utils.$('#email'), '이메일을 입력해주세요.');
+                    isValid = false;
+                } else if (!Validator.email(email)) {
+                    showFieldError(Utils.$('#email'), '올바른 이메일 형식이 아닙니다.');
+                    isValid = false;
+                }
+                
+                if (!Validator.required(password)) {
+                    showFieldError(Utils.$('#password'), '비밀번호를 입력해주세요.');
+                    isValid = false;
+                } else if (!Validator.minLength(password, 8)) {
+                    showFieldError(Utils.$('#password'), '비밀번호는 8자 이상이어야 합니다.');
+                    isValid = false;
+                }
+                
+                if (password !== passwordConfirm) {
+                    showFieldError(Utils.$('#passwordConfirm'), '비밀번호가 일치하지 않습니다.');
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            function validateStep2() {
+                let isValid = true;
+                
+                const role = Utils.$('#role').value;
+                const experience = Utils.$('#experience').value;
+                
+                if (!Validator.required(role)) {
+                    showFieldError(Utils.$('#role'), '직무를 선택해주세요.');
+                    isValid = false;
+                }
+                
+                if (!Validator.required(experience)) {
+                    showFieldError(Utils.$('#experience'), '경력을 선택해주세요.');
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            function showFieldError(field, message) {
+                const existingError = field.parentNode.querySelector('.form-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                if (message) {
+                    const errorEl = Utils.createElement('div', 'form-error', message);
+                    field.parentNode.appendChild(errorEl);
+                    field.style.borderColor = 'var(--color-error)';
+                } else {
+                    field.style.borderColor = '';
+                }
+            }
+            
+            function nextStep() {
+                if (currentStep < totalSteps) {
+                    // 현재 단계 숨기기
+                    Utils.$(`#step${currentStep}`).classList.remove('active');
+                    Utils.$(`#step${currentStep}Circle`).classList.remove('step-progress__circle--active');
+                    Utils.$(`#step${currentStep}Circle`).classList.add('step-progress__circle--completed');
+                    
+                    currentStep++;
+                    
+                    // 다음 단계 보이기
+                    Utils.$(`#step${currentStep}`).classList.add('active');
+                    Utils.$(`#step${currentStep}Circle`).classList.remove('step-progress__circle--inactive');
+                    Utils.$(`#step${currentStep}Circle`).classList.add('step-progress__circle--active');
+                    
+                    updateButtons();
+                }
+            }
+            
+            function prevStep() {
+                if (currentStep > 1) {
+                    // 현재 단계 숨기기
+                    Utils.$(`#step${currentStep}`).classList.remove('active');
+                    Utils.$(`#step${currentStep}Circle`).classList.remove('step-progress__circle--active');
+                    Utils.$(`#step${currentStep}Circle`).classList.add('step-progress__circle--inactive');
+                    
+                    currentStep--;
+                    
+                    // 이전 단계 보이기
+                    Utils.$(`#step${currentStep}`).classList.add('active');
+                    Utils.$(`#step${currentStep}Circle`).classList.remove('step-progress__circle--completed');
+                    Utils.$(`#step${currentStep}Circle`).classList.add('step-progress__circle--active');
+                    
+                    updateButtons();
+                }
+            }
+            
+            function updateButtons() {
+                if (currentStep === 1) {
+                    prevBtn.style.display = 'none';
+                    nextBtn.style.display = 'block';
+                    submitBtn.style.display = 'none';
+                } else if (currentStep === totalSteps) {
+                    prevBtn.style.display = 'block';
+                    nextBtn.style.display = 'none';
+                    submitBtn.style.display = 'block';
+                } else {
+                    prevBtn.style.display = 'block';
+                    nextBtn.style.display = 'block';
+                    submitBtn.style.display = 'none';
+                }
+            }
+            
+            function updatePasswordStrength(password) {
+                const strength = Validator.passwordStrength(password);
+                const strengthFill = Utils.$('#strengthFill');
+                const strengthText = Utils.$('#strengthText');
+                
+                strengthFill.className = 'strength-fill';
+                
+                if (strength === 0) {
+                    strengthText.textContent = '비밀번호 강도';
+                } else if (strength === 1) {
+                    strengthFill.classList.add('strength-weak');
+                    strengthText.textContent = '매우 약함';
+                    strengthText.style.color = 'var(--color-error)';
+                } else if (strength === 2) {
+                    strengthFill.classList.add('strength-fair');
+                    strengthText.textContent = '약함';
+                    strengthText.style.color = 'var(--color-warning)';
+                } else if (strength === 3) {
+                    strengthFill.classList.add('strength-good');
+                    strengthText.textContent = '보통';
+                    strengthText.style.color = 'var(--color-warning)';
+                } else if (strength === 4) {
+                    strengthFill.classList.add('strength-strong');
+                    strengthText.textContent = '강함';
+                    strengthText.style.color = 'var(--color-success)';
+                } else if (strength === 5) {
+                    strengthFill.classList.add('strength-very-strong');
+                    strengthText.textContent = '매우 강함';
+                    strengthText.style.color = 'var(--color-success)';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

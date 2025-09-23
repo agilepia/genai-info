@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도구 상세보기 - AI 도구 찾기</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .detail-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-content {
+            flex: 1;
+            padding: var(--space-xl) 0;
+        }
+        
+        .tool-header-section {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .tool-logo-large {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-xl);
+            background: var(--color-gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--font-size-h2);
+            color: var(--color-primary);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .tool-info {
+            flex: 1;
+        }
+        
+        .tool-title {
+            font-size: var(--font-size-h1);
+            font-weight: 700;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .tool-company {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body-large);
+            margin-bottom: var(--space-md);
+        }
+        
+        .tool-rating {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+        
+        .rating-stars {
+            color: var(--color-warning);
+            font-size: var(--font-size-body-large);
+        }
+        
+        .rating-text {
+            font-weight: 600;
+            color: var(--color-gray-900);
+        }
+        
+        .rating-count {
+            color: var(--color-gray-500);
+        }
+        
+        .tool-badges {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+        
+        .tool-actions {
+            display: flex;
+            gap: var(--space-md);
+            align-items: center;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--space-xl);
+        }
+        
+        .detail-tabs {
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        .tab-nav {
+            display: flex;
+            background: var(--color-gray-50);
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: var(--space-md) var(--space-lg);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--color-gray-500);
+            transition: all 0.2s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-button.active {
+            color: var(--color-primary);
+            background: white;
+            border-bottom-color: var(--color-primary);
+        }
+        
+        .tab-content {
+            padding: var(--space-xl);
+        }
+        
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-lg) 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            background: var(--color-gray-50);
+            border-radius: var(--radius-md);
+        }
+        
+        .feature-icon {
+            color: var(--color-success);
+            font-weight: bold;
+        }
+        
+        .pricing-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-lg);
+            margin: var(--space-lg) 0;
+        }
+        
+        .pricing-plan {
+            border: 2px solid var(--color-gray-100);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .pricing-plan:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .pricing-plan.featured {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+        
+        .plan-name {
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .plan-price {
+            font-size: var(--font-size-h2);
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: var(--space-md);
+        }
+        
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-lg) 0;
+        }
+        
+        .plan-features li {
+            padding: var(--space-xs) 0;
+            font-size: var(--font-size-body);
+            color: var(--color-gray-700);
+        }
+        
+        .plan-features li:before {
+            content: "✓";
+            color: var(--color-success);
+            font-weight: bold;
+            margin-right: var(--space-sm);
+        }
+        
+        .review-item {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--color-gray-100);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .review-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .reviewer-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--color-gray-300);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-caption);
+            font-weight: 600;
+            color: var(--color-gray-600);
+        }
+        
+        .reviewer-name {
+            font-weight: 500;
+            color: var(--color-gray-900);
+        }
+        
+        .review-rating {
+            color: var(--color-warning);
+        }
+        
+        .review-text {
+            color: var(--color-gray-700);
+            line-height: 1.6;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .info-card h3 {
+            margin-bottom: var(--space-lg);
+            color: var(--color-gray-900);
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .info-value {
+            color: var(--color-gray-900);
+            font-weight: 500;
+        }
+        
+        .related-tools {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .related-tool {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .related-tool:hover {
+            background: var(--color-gray-50);
+        }
+        
+        .related-tool-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            background: var(--color-gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: var(--font-size-caption);
+            color: var(--color-primary);
+        }
+        
+        .related-tool-info {
+            flex: 1;
+        }
+        
+        .related-tool-name {
+            font-weight: 500;
+            color: var(--color-gray-900);
+            font-size: var(--font-size-body);
+        }
+        
+        .related-tool-rating {
+            font-size: var(--font-size-caption);
+            color: var(--color-gray-500);
+        }
+        
+        .floating-actions {
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            display: flex;
+            gap: var(--space-sm);
+            z-index: 100;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tool-header {
+                flex-direction: column;
+                text-align: center;
+                gap: var(--space-md);
+            }
+            
+            .tool-actions {
+                justify-content: center;
+            }
+            
+            .floating-actions {
+                position: static;
+                justify-content: center;
+                margin-top: var(--space-lg);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tab-nav {
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            .tab-nav::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .tab-button {
+                white-space: nowrap;
+                min-width: 100px;
+            }
+            
+            .pricing-table {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-layout">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container">
+                <div class="header__content">
+                    <a href="03-메인대시보드.html" class="header__logo">AI 도구 찾기</a>
+                    <div class="header__nav">
+                        <a href="05-추천결과.html" class="btn btn-text">← 추천결과로</a>
+                        <div class="header__user">
+                            <div class="header__avatar" id="userAvatar">김</div>
+                            <span id="userName">김철수</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="detail-content">
+            <div class="container">
+                <!-- 도구 헤더 -->
+                <section class="tool-header-section fade-in">
+                    <div class="tool-header">
+                        <div class="tool-logo-large" id="toolLogo">AI</div>
+                        
+                        <div class="tool-info">
+                            <h1 class="tool-title" id="toolTitle">도구 이름</h1>
+                            <div class="tool-company" id="toolCompany">개발사</div>
+                            
+                            <div class="tool-rating">
+                                <span class="rating-stars" id="toolRatingStars">⭐⭐⭐⭐⭐</span>
+                                <span class="rating-text" id="toolRatingText">4.8</span>
+                                <span class="rating-count" id="toolRatingCount">(1,250개 리뷰)</span>
+                            </div>
+                            
+                            <div class="tool-badges" id="toolBadges">
+                                <!-- 동적으로 생성 -->
+                            </div>
+                        </div>
+                        
+                        <div class="tool-actions">
+                            <button class="btn btn-secondary" id="websiteBtn">
+                                🌐 웹사이트 방문
+                            </button>
+                            <button class="btn btn-primary btn-large" id="tryBtn">
+                                🚀 사용해보기
+                            </button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 메인 그리드 -->
+                <div class="main-grid">
+                    <!-- 탭 콘텐츠 -->
+                    <section class="detail-tabs slide-up">
+                        <nav class="tab-nav">
+                            <button class="tab-button active" data-tab="overview">개요</button>
+                            <button class="tab-button" data-tab="pricing">가격</button>
+                            <button class="tab-button" data-tab="reviews">리뷰</button>
+                            <button class="tab-button" data-tab="compare">비교</button>
+                        </nav>
+                        
+                        <div class="tab-content">
+                            <!-- 개요 탭 -->
+                            <div class="tab-panel active" id="overview">
+                                <h3>주요 기능</h3>
+                                <div class="feature-list" id="featureList">
+                                    <!-- 동적으로 생성 -->
+                                </div>
+                                
+                                <h3 style="margin-top: var(--space-xl);">상세 설명</h3>
+                                <div class="tool-description" id="toolDescription">
+                                    <!-- 동적으로 생성 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 가격 탭 -->
+                            <div class="tab-panel" id="pricing">
+                                <h3>요금제</h3>
+                                <div class="pricing-table" id="pricingTable">
+                                    <!-- 동적으로 생성 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 리뷰 탭 -->
+                            <div class="tab-panel" id="reviews">
+                                <h3>사용자 리뷰</h3>
+                                <div id="reviewList">
+                                    <!-- 동적으로 생성 -->
+                                </div>
+                            </div>
+                            
+                            <!-- 비교 탭 -->
+                            <div class="tab-panel" id="compare">
+                                <h3>유사 도구 비교</h3>
+                                <p class="mb-lg">이 도구와 비슷한 다른 AI 도구들과 비교해보세요.</p>
+                                <div id="comparisonTable">
+                                    <!-- 동적으로 생성 -->
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- 사이드바 -->
+                    <aside class="sidebar slide-up">
+                        <!-- 기본 정보 -->
+                        <div class="info-card">
+                            <h3>기본 정보</h3>
+                            <div id="basicInfo">
+                                <!-- 동적으로 생성 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 추천 이유 -->
+                        <div class="info-card" id="recommendationReason" style="display: none;">
+                            <h3>✨ 추천 이유</h3>
+                            <div class="recommendation-reason" style="margin: 0; border-left: none; padding-left: 0;">
+                                <div class="reason-content" id="reasonText">
+                                    <!-- 동적으로 생성 -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 관련 도구 -->
+                        <div class="info-card">
+                            <h3>관련 도구</h3>
+                            <div class="related-tools" id="relatedTools">
+                                <!-- 동적으로 생성 -->
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 플로팅 액션 버튼 -->
+        <div class="floating-actions">
+            <button class="btn btn-primary" id="evaluateBtn">
+                📝 만족도 평가하기
+            </button>
+        </div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 체크
+            if (!AppState.user) {
+                Utils.navigateTo('01-로그인');
+                return;
+            }
+            
+            // 선택된 도구가 없으면 이전 화면으로
+            if (!AppState.selectedTool) {
+                Utils.navigateTo('05-추천결과');
+                return;
+            }
+            
+            // 사용자 정보 및 도구 정보 로드
+            initializeUI();
+            
+            // 탭 이벤트 리스너 설정
+            setupTabListeners();
+            
+            // 액션 버튼 이벤트 리스너 설정
+            setupActionListeners();
+            
+            function initializeUI() {
+                // 사용자 정보 표시
+                const userAvatar = Utils.$('#userAvatar');
+                const userName = Utils.$('#userName');
+                
+                if (AppState.user) {
+                    userAvatar.textContent = AppState.user.avatar || AppState.user.name.charAt(0);
+                    userName.textContent = AppState.user.name;
+                }
+                
+                // 도구 정보 표시
+                const tool = AppState.selectedTool;
+                renderToolInfo(tool);
+                renderToolDetails(tool);
+            }
+            
+            function renderToolInfo(tool) {
+                // 기본 정보
+                Utils.$('#toolLogo').textContent = tool.logo;
+                Utils.$('#toolTitle').textContent = tool.name;
+                Utils.$('#toolCompany').textContent = tool.company;
+                
+                // 평점
+                const ratingStars = '⭐'.repeat(Math.floor(tool.rating)) + '☆'.repeat(5 - Math.floor(tool.rating));
+                Utils.$('#toolRatingStars').textContent = ratingStars;
+                Utils.$('#toolRatingText').textContent = tool.rating;
+                Utils.$('#toolRatingCount').textContent = `(${tool.reviewCount.toLocaleString()}개 리뷰)`;
+                
+                // 배지
+                const badges = [];
+                if (tool.price === 'free') badges.push('<div class="badge badge-success">무료</div>');
+                else if (tool.price === 'freemium') badges.push('<div class="badge badge-warning">일부무료</div>');
+                else badges.push('<div class="badge badge-info">유료</div>');
+                
+                badges.push(`<div class="badge badge-info">난이도: ${'★'.repeat(tool.difficulty)}${'☆'.repeat(3 - tool.difficulty)}</div>`);
+                
+                Utils.$('#toolBadges').innerHTML = badges.join('');
+            }
+            
+            function renderToolDetails(tool) {
+                // 개요 탭
+                renderOverview(tool);
+                
+                // 가격 탭
+                renderPricing(tool);
+                
+                // 리뷰 탭
+                renderReviews(tool);
+                
+                // 비교 탭
+                renderComparison(tool);
+                
+                // 사이드바
+                renderSidebar(tool);
+            }
+            
+            function renderOverview(tool) {
+                // 주요 기능
+                const featureList = Utils.$('#featureList');
+                featureList.innerHTML = tool.features.map(feature => `
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>${feature}</span>
+                    </div>
+                `).join('');
+                
+                // 상세 설명
+                Utils.$('#toolDescription').innerHTML = `
+                    <p>${tool.description}</p>
+                    <p style="margin-top: var(--space-lg);">
+                        ${tool.name}은(는) ${tool.category.replace('-', ' ')} 분야의 대표적인 AI 도구로, 
+                        사용자들에게 높은 만족도를 제공하고 있습니다. 
+                        특히 ${tool.features.slice(0, 2).join(', ')} 기능이 뛰어나며, 
+                        다양한 업무 시나리오에서 활용할 수 있습니다.
+                    </p>
+                `;
+            }
+            
+            function renderPricing(tool) {
+                const pricingTable = Utils.$('#pricingTable');
+                pricingTable.innerHTML = tool.pricing.map((plan, index) => `
+                    <div class="pricing-plan ${index === 1 ? 'featured' : ''}">
+                        <div class="plan-name">${plan.plan}</div>
+                        <div class="plan-price">${plan.price}</div>
+                        <ul class="plan-features">
+                            ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
+                        </ul>
+                        <button class="btn ${index === 1 ? 'btn-primary' : 'btn-secondary'} btn-large" style="width: 100%;">
+                            ${plan.price === '$0' ? '무료 시작' : '선택하기'}
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            function renderReviews(tool) {
+                // 모의 리뷰 데이터
+                const sampleReviews = [
+                    {
+                        name: '김**',
+                        rating: 5,
+                        text: '정말 유용한 도구입니다. 업무 효율성이 크게 향상되었어요. 특히 사용법이 직관적이어서 빠르게 적응할 수 있었습니다.',
+                        avatar: '김'
+                    },
+                    {
+                        name: '이**',
+                        rating: 4,
+                        text: '전반적으로 만족스럽습니다. 가끔 속도가 느릴 때가 있지만 결과물의 품질은 우수합니다.',
+                        avatar: '이'
+                    },
+                    {
+                        name: '박**',
+                        rating: 5,
+                        text: '팀 프로젝트에서 사용해봤는데 협업 기능이 특히 좋았습니다. 추천합니다!',
+                        avatar: '박'
+                    }
+                ];
+                
+                const reviewList = Utils.$('#reviewList');
+                reviewList.innerHTML = sampleReviews.map(review => `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">${review.avatar}</div>
+                                <span class="reviewer-name">${review.name}</span>
+                            </div>
+                            <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                        </div>
+                        <div class="review-text">${review.text}</div>
+                    </div>
+                `).join('');
+            }
+            
+            function renderComparison(tool) {
+                // 유사 도구 찾기
+                const similarTools = SampleData.aiTools
+                    .filter(t => t.id !== tool.id && t.category === tool.category)
+                    .slice(0, 3);
+                
+                const comparisonTable = Utils.$('#comparisonTable');
+                
+                if (similarTools.length > 0) {
+                    comparisonTable.innerHTML = `
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; margin: var(--space-lg) 0;">
+                                <thead>
+                                    <tr style="background: var(--color-gray-50);">
+                                        <th style="padding: var(--space-md); text-align: left; border: 1px solid var(--color-gray-200);">도구</th>
+                                        <th style="padding: var(--space-md); text-align: center; border: 1px solid var(--color-gray-200);">평점</th>
+                                        <th style="padding: var(--space-md); text-align: center; border: 1px solid var(--color-gray-200);">가격</th>
+                                        <th style="padding: var(--space-md); text-align: center; border: 1px solid var(--color-gray-200);">난이도</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="background: var(--color-primary-light);">
+                                        <td style="padding: var(--space-md); border: 1px solid var(--color-gray-200); font-weight: 600;">
+                                            ${tool.name} (현재)
+                                        </td>
+                                        <td style="padding: var(--space-md); border: 1px solid var(--color-gray-200); text-align: center;">
+                                            ${tool.rating}
+                                        </td>
+                                        <td style="padding: var(--space-md); border: 1px solid var(--color-gray-200); text-align: center;">
+                                            ${tool.price === 'free' ? '무료' : tool.price === 'freemium' ? '일부무료' : '유료'}
+                                        </td>
+                                        <td style="padding: var(--space-md); border: 1px solid var(--color-gray-200); text-align: center;">
+                                            ${'★'.repeat(tool.difficulty)}${'☆'.repeat(3 - tool.difficulty)}
+                                        </td>
+                                    </tr>
+                                    ${similarTools.map(similarTool => `
+                                        <tr style="cursor: pointer;" onclick="viewToolDetail(${similarTool.id})">
+                                            <td style="padding: var(--space-md); border: 1px solid var(--color-gray-200);">
+                                                ${similarTool.name}
+                                            </td>
+                                            <td style="padding: var(--space-md); border: 1px solid var(--color-gray-200); text-align: center;">
+                                                ${similarTool.rating}
+                                            </td>
+                                            <td style="padding: var(--space-md); border: 1px solid var(--color-gray-200); text-align: center;">
+                                                ${similarTool.price === 'free' ? '무료' : similarTool.price === 'freemium' ? '일부무료' : '유료'}
+                                            </td>
+                                            <td style="padding: var(--space-md); border: 1px solid var(--color-gray-200); text-align: center;">
+                                                ${'★'.repeat(similarTool.difficulty)}${'☆'.repeat(3 - similarTool.difficulty)}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    comparisonTable.innerHTML = `
+                        <div class="empty-state">
+                            <p>비교할 수 있는 유사 도구가 없습니다.</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            function renderSidebar(tool) {
+                // 기본 정보
+                const basicInfo = Utils.$('#basicInfo');
+                basicInfo.innerHTML = `
+                    <div class="info-item">
+                        <span class="info-label">카테고리</span>
+                        <span class="info-value">${getCategoryLabel(tool.category)}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">난이도</span>
+                        <span class="info-value">${getDifficultyLabel(tool.difficulty)}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">가격 모델</span>
+                        <span class="info-value">${getPriceLabel(tool.price)}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">지원 언어</span>
+                        <span class="info-value">한국어, 영어</span>
+                    </div>
+                `;
+                
+                // 추천 이유 (추천 결과에서 온 경우)
+                if (tool.reason) {
+                    const reasonCard = Utils.$('#recommendationReason');
+                    Utils.$('#reasonText').textContent = tool.reason;
+                    reasonCard.style.display = 'block';
+                }
+                
+                // 관련 도구
+                const relatedTools = SampleData.aiTools
+                    .filter(t => t.id !== tool.id)
+                    .slice(0, 3);
+                
+                const relatedToolsContainer = Utils.$('#relatedTools');
+                relatedToolsContainer.innerHTML = relatedTools.map(relatedTool => `
+                    <div class="related-tool" onclick="viewToolDetail(${relatedTool.id})">
+                        <div class="related-tool-logo">${relatedTool.logo}</div>
+                        <div class="related-tool-info">
+                            <div class="related-tool-name">${relatedTool.name}</div>
+                            <div class="related-tool-rating">⭐ ${relatedTool.rating}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            function setupTabListeners() {
+                const tabButtons = Utils.$$('.tab-button');
+                const tabPanels = Utils.$$('.tab-panel');
+                
+                tabButtons.forEach(button => {
+                    Utils.on(button, 'click', function() {
+                        const targetTab = this.dataset.tab;
+                        
+                        // 모든 탭 비활성화
+                        tabButtons.forEach(btn => btn.classList.remove('active'));
+                        tabPanels.forEach(panel => panel.classList.remove('active'));
+                        
+                        // 선택된 탭 활성화
+                        this.classList.add('active');
+                        Utils.$('#' + targetTab).classList.add('active');
+                    });
+                });
+            }
+            
+            function setupActionListeners() {
+                // 웹사이트 방문
+                Utils.on(Utils.$('#websiteBtn'), 'click', function() {
+                    Utils.showToast('웹사이트로 이동합니다 (프로토타입)', 'info');
+                });
+                
+                // 사용해보기
+                Utils.on(Utils.$('#tryBtn'), 'click', function() {
+                    Utils.showToast('도구 사용 페이지로 이동합니다 (프로토타입)', 'info');
+                });
+                
+                // 만족도 평가
+                Utils.on(Utils.$('#evaluateBtn'), 'click', function() {
+                    Utils.navigateTo('07-만족도평가');
+                });
+            }
+            
+            function getCategoryLabel(category) {
+                const labels = {
+                    'text-generation': '텍스트 생성',
+                    'image-generation': '이미지 생성',
+                    'code-generation': '코드 생성',
+                    'productivity': '생산성 도구',
+                    'data-analysis': '데이터 분석'
+                };
+                return labels[category] || category;
+            }
+            
+            function getDifficultyLabel(difficulty) {
+                const labels = { 1: '초급', 2: '중급', 3: '고급' };
+                return labels[difficulty];
+            }
+            
+            function getPriceLabel(price) {
+                const labels = {
+                    'free': '완전 무료',
+                    'freemium': '부분 무료',
+                    'paid': '유료'
+                };
+                return labels[price];
+            }
+        });
+        
+        // 전역 함수
+        window.viewToolDetail = function(id) {
+            const tool = SampleData.aiTools.find(t => t.id === id);
+            if (tool) {
+                AppState.setSelectedTool(tool);
+                location.reload(); // 페이지 새로고침으로 새 도구 로드
+            }
+        };
+    </script>
+</body>
+</html>

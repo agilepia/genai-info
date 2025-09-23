@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - AI 도구 찾기</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: var(--space-xxl);
+            margin: var(--space-lg);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .login-logo {
+            width: 60px;
+            height: 60px;
+            background: var(--color-primary);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-md);
+            font-size: var(--font-size-h2);
+            font-weight: 700;
+            color: white;
+        }
+        
+        .login-title {
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .login-subtitle {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+        }
+        
+        .login-footer {
+            text-align: center;
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--color-gray-100);
+        }
+        
+        .demo-info {
+            background: var(--color-primary-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            font-size: var(--font-size-caption);
+            color: #1E40AF;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                margin: var(--space-md);
+                padding: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container fade-in">
+        <div class="login-header">
+            <div class="login-logo">AI</div>
+            <h1 class="login-title">AI 도구 찾기</h1>
+            <p class="login-subtitle">업무에 맞는 생성형 AI를 빠르게 찾아보세요</p>
+        </div>
+        
+        <div class="demo-info">
+            <strong>데모 계정:</strong> test@example.com / password
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email" class="form-label">이메일</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    class="form-input" 
+                    placeholder="이메일을 입력하세요"
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">비밀번호</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    class="form-input" 
+                    placeholder="비밀번호를 입력하세요"
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <div class="form-checkbox">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">로그인 상태 유지</label>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-large" id="loginBtn">
+                    로그인
+                </button>
+                
+                <a href="#" class="btn btn-text" id="forgotPassword">
+                    비밀번호를 잊으셨나요?
+                </a>
+            </div>
+        </form>
+        
+        <div class="login-footer">
+            <p class="caption">아직 계정이 없으신가요?</p>
+            <a href="02-회원가입.html" class="btn btn-secondary" style="margin-top: var(--space-sm);">
+                회원가입
+            </a>
+        </div>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = Utils.$('#loginForm');
+            const loginBtn = Utils.$('#loginBtn');
+            const forgotPasswordLink = Utils.$('#forgotPassword');
+            
+            // 로그인 폼 제출 처리
+            Utils.on(loginForm, 'submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = Utils.getFormData(loginForm);
+                
+                // 폼 검증
+                if (!validateLoginForm(formData)) {
+                    return;
+                }
+                
+                // 로딩 상태
+                Utils.showLoading(loginBtn, '로그인 중...');
+                
+                try {
+                    const result = await MockAPI.login(formData.email, formData.password);
+                    
+                    if (result.success) {
+                        // 사용자 정보 저장
+                        AppState.setUser(result.user);
+                        
+                        // 성공 메시지
+                        Utils.showToast('로그인 성공!', 'success');
+                        
+                        // 메인 대시보드로 이동
+                        setTimeout(() => {
+                            Utils.navigateTo('03-메인대시보드');
+                        }, 1000);
+                        
+                    } else {
+                        // 에러 메시지 표시
+                        Utils.showToast(result.message, 'error');
+                        resetLoginButton();
+                    }
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    Utils.showToast('로그인 중 오류가 발생했습니다.', 'error');
+                    resetLoginButton();
+                }
+            });
+            
+            // 비밀번호 찾기 링크
+            Utils.on(forgotPasswordLink, 'click', function(e) {
+                e.preventDefault();
+                Utils.showToast('준비 중인 기능입니다.', 'warning');
+            });
+            
+            // 입력 필드 엔터키 처리
+            const inputs = loginForm.querySelectorAll('input');
+            inputs.forEach((input, index) => {
+                Utils.on(input, 'keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        } else {
+                            loginForm.dispatchEvent(new Event('submit'));
+                        }
+                    }
+                });
+            });
+            
+            // 이미 로그인된 사용자 체크
+            if (AppState.user) {
+                Utils.navigateTo('03-메인대시보드');
+            }
+            
+            // 폼 검증 함수
+            function validateLoginForm(data) {
+                let isValid = true;
+                
+                if (!Validator.required(data.email)) {
+                    showFieldError(Utils.$('#email'), '이메일을 입력해주세요.');
+                    isValid = false;
+                }
+                
+                if (!Validator.email(data.email)) {
+                    showFieldError(Utils.$('#email'), '올바른 이메일 형식이 아닙니다.');
+                    isValid = false;
+                }
+                
+                if (!Validator.required(data.password)) {
+                    showFieldError(Utils.$('#password'), '비밀번호를 입력해주세요.');
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            function showFieldError(field, message) {
+                const existingError = field.parentNode.querySelector('.form-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                if (message) {
+                    const errorEl = Utils.createElement('div', 'form-error', message);
+                    field.parentNode.appendChild(errorEl);
+                    field.style.borderColor = 'var(--color-error)';
+                } else {
+                    field.style.borderColor = '';
+                }
+            }
+            
+            function resetLoginButton() {
+                loginBtn.innerHTML = '로그인';
+                loginBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

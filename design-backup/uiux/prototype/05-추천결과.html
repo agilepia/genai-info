@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>추천 결과 - AI 도구 찾기</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .results-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .results-content {
+            flex: 1;
+            padding: var(--space-xl) 0;
+        }
+        
+        .results-header {
+            background: white;
+            padding: var(--space-xl) 0;
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .results-summary {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .results-title {
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .results-subtitle {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .situation-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+        }
+        
+        .situation-tag {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-caption);
+            font-weight: 500;
+        }
+        
+        .filters-bar {
+            background: white;
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+        
+        .results-count {
+            font-weight: 600;
+            color: var(--color-gray-900);
+        }
+        
+        .sort-select {
+            padding: var(--space-xs) var(--space-md);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-md);
+            background: white;
+            font-size: var(--font-size-caption);
+        }
+        
+        .filter-groups {
+            display: flex;
+            gap: var(--space-xl);
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+        
+        .filter-label {
+            font-size: var(--font-size-caption);
+            font-weight: 500;
+            color: var(--color-gray-700);
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+        
+        .filter-option {
+            padding: var(--space-xs) var(--space-sm);
+            border: 1px solid var(--color-gray-300);
+            border-radius: var(--radius-sm);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: var(--font-size-caption);
+        }
+        
+        .filter-option:hover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+        
+        .filter-option.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+        
+        .recommendations-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-lg);
+        }
+        
+        .recommendation-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .recommendation-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+        }
+        
+        .recommendation-rank {
+            position: absolute;
+            top: var(--space-lg);
+            left: var(--space-lg);
+            width: 32px;
+            height: 32px;
+            background: var(--color-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--font-size-body);
+        }
+        
+        .recommendation-content {
+            margin-left: 50px;
+        }
+        
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .tool-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-xl);
+            background: var(--color-gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--font-size-h4);
+            color: var(--color-primary);
+        }
+        
+        .tool-info {
+            flex: 1;
+        }
+        
+        .tool-name {
+            font-size: var(--font-size-h3);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .tool-company {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .tool-badges {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+        }
+        
+        .tool-description {
+            color: var(--color-gray-700);
+            line-height: 1.6;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .recommendation-reason {
+            background: var(--color-primary-light);
+            border-left: 4px solid var(--color-primary);
+            padding: var(--space-md);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .reason-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: var(--space-xs);
+            font-size: var(--font-size-body);
+        }
+        
+        .reason-content {
+            color: var(--color-gray-700);
+            font-size: var(--font-size-body);
+        }
+        
+        .tool-metrics {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-gray-100);
+        }
+        
+        .metrics-left {
+            display: flex;
+            gap: var(--space-lg);
+            align-items: center;
+        }
+        
+        .metric {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: var(--font-size-caption);
+            color: var(--color-gray-500);
+        }
+        
+        .difficulty-stars {
+            color: var(--color-warning);
+        }
+        
+        .rating-stars {
+            color: var(--color-warning);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .back-section {
+            text-align: center;
+            margin-top: var(--space-xxxl);
+            padding: var(--space-xl);
+            background: white;
+            border-radius: var(--radius-lg);
+        }
+        
+        @media (max-width: 768px) {
+            .filters-bar {
+                padding: var(--space-md);
+            }
+            
+            .filter-groups {
+                flex-direction: column;
+                gap: var(--space-lg);
+            }
+            
+            .situation-tags {
+                justify-content: flex-start;
+            }
+            
+            .tool-metrics {
+                flex-direction: column;
+                gap: var(--space-md);
+                align-items: flex-start;
+            }
+            
+            .recommendation-content {
+                margin-left: 40px;
+            }
+            
+            .recommendation-rank {
+                width: 24px;
+                height: 24px;
+                font-size: var(--font-size-caption);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="results-layout">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container">
+                <div class="header__content">
+                    <a href="03-메인대시보드.html" class="header__logo">AI 도구 찾기</a>
+                    <div class="header__nav">
+                        <div class="header__user">
+                            <div class="header__avatar" id="userAvatar">김</div>
+                            <span id="userName">김철수</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 결과 헤더 -->
+        <div class="results-header">
+            <div class="container">
+                <div class="results-summary fade-in">
+                    <h1 class="results-title">맞춤 AI 도구 추천 결과</h1>
+                    <p class="results-subtitle" id="resultsSubtitle">분석 완료! 5개의 추천 도구를 찾았습니다</p>
+                    
+                    <div class="situation-tags" id="situationTags">
+                        <!-- 동적으로 생성 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="results-content">
+            <div class="container">
+                <!-- 필터 바 -->
+                <div class="filters-bar slide-up">
+                    <div class="filters-header">
+                        <span class="results-count" id="resultsCount">5개의 추천 도구</span>
+                        <select class="sort-select" id="sortSelect">
+                            <option value="score">추천순</option>
+                            <option value="rating">평점순</option>
+                            <option value="price">가격순</option>
+                            <option value="difficulty">난이도순</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-groups">
+                        <div class="filter-group">
+                            <span class="filter-label">가격</span>
+                            <div class="filter-options">
+                                <div class="filter-option active" data-filter="price" data-value="all">전체</div>
+                                <div class="filter-option" data-filter="price" data-value="free">무료</div>
+                                <div class="filter-option" data-filter="price" data-value="paid">유료</div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <span class="filter-label">난이도</span>
+                            <div class="filter-options">
+                                <div class="filter-option active" data-filter="difficulty" data-value="all">전체</div>
+                                <div class="filter-option" data-filter="difficulty" data-value="1">초급</div>
+                                <div class="filter-option" data-filter="difficulty" data-value="2">중급</div>
+                                <div class="filter-option" data-filter="difficulty" data-value="3">고급</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 추천 목록 -->
+                <div class="recommendations-container" id="recommendationsContainer">
+                    <!-- 동적으로 생성 -->
+                </div>
+                
+                <!-- 다시 찾기 섹션 -->
+                <div class="back-section">
+                    <h3>원하는 결과를 찾지 못하셨나요?</h3>
+                    <p class="mb-lg">업무 상황을 다시 입력하여 더 정확한 추천을 받아보세요.</p>
+                    <div class="flex gap-md justify-center">
+                        <button class="btn btn-secondary" onclick="history.back()">이전으로</button>
+                        <button class="btn btn-primary" id="retryBtn">다시 찾기</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 체크
+            if (!AppState.user) {
+                Utils.navigateTo('01-로그인');
+                return;
+            }
+            
+            // 추천 결과가 없으면 이전 화면으로
+            if (!AppState.recommendations || AppState.recommendations.length === 0) {
+                Utils.navigateTo('04-업무상황입력');
+                return;
+            }
+            
+            // 사용자 정보 및 UI 초기화
+            initializeUI();
+            
+            // 추천 결과 렌더링
+            renderRecommendations();
+            
+            // 이벤트 리스너 설정
+            setupEventListeners();
+            
+            function initializeUI() {
+                // 사용자 정보 표시
+                const userAvatar = Utils.$('#userAvatar');
+                const userName = Utils.$('#userName');
+                
+                if (AppState.user) {
+                    userAvatar.textContent = AppState.user.avatar || AppState.user.name.charAt(0);
+                    userName.textContent = AppState.user.name;
+                }
+                
+                // 상황 태그 생성
+                createSituationTags();
+                
+                // 결과 개수 업데이트
+                updateResultsCount();
+            }
+            
+            function createSituationTags() {
+                const container = Utils.$('#situationTags');
+                const situation = AppState.workSituation;
+                const tags = [];
+                
+                if (situation.workType && situation.workType.length > 0) {
+                    tags.push(...situation.workType);
+                }
+                
+                if (situation.industry) {
+                    tags.push(situation.industry);
+                }
+                
+                if (situation.budget) {
+                    const budgetLabels = {
+                        'free': '무료만',
+                        'low': '~10만원',
+                        'medium': '10~50만원',
+                        'high': '50만원+'
+                    };
+                    tags.push(budgetLabels[situation.budget] || situation.budget);
+                }
+                
+                if (situation.techLevel) {
+                    const levelLabels = { 1: '초급', 2: '중급', 3: '고급' };
+                    tags.push(levelLabels[situation.techLevel]);
+                }
+                
+                container.innerHTML = tags.map(tag => 
+                    `<span class="situation-tag">${tag}</span>`
+                ).join('');
+            }
+            
+            function renderRecommendations(filteredRecommendations = null) {
+                const recommendations = filteredRecommendations || AppState.recommendations;
+                const container = Utils.$('#recommendationsContainer');
+                
+                container.innerHTML = recommendations.map((tool, index) => `
+                    <div class="recommendation-card fade-in" onclick="viewToolDetail(${tool.id})" style="animation-delay: ${index * 0.1}s">
+                        <div class="recommendation-rank">${index + 1}</div>
+                        <div class="recommendation-content">
+                            <div class="tool-header">
+                                <div class="tool-logo">${tool.logo}</div>
+                                <div class="tool-info">
+                                    <div class="tool-name">${tool.name}</div>
+                                    <div class="tool-company">${tool.company}</div>
+                                </div>
+                                <div class="tool-badges">
+                                    <div class="badge badge-${tool.price === 'free' ? 'success' : tool.price === 'freemium' ? 'warning' : 'info'}">
+                                        ${tool.price === 'free' ? '무료' : tool.price === 'freemium' ? '일부무료' : '유료'}
+                                    </div>
+                                    <div class="confidence-indicator">
+                                        <div class="confidence-indicator__bar">
+                                            <div class="confidence-indicator__fill" style="width: ${tool.confidence || tool.score}%;"></div>
+                                        </div>
+                                        <span class="confidence-indicator__text">${tool.confidence || tool.score}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tool-description">
+                                ${tool.description}
+                            </div>
+                            
+                            <div class="recommendation-reason">
+                                <div class="reason-title">✨ 추천 이유</div>
+                                <div class="reason-content">${tool.reason || '업무 요구사항에 적합한 기능을 제공합니다'}</div>
+                            </div>
+                            
+                            <div class="tool-metrics">
+                                <div class="metrics-left">
+                                    <div class="metric">
+                                        <span class="rating-stars">⭐</span>
+                                        <span>${tool.rating}</span>
+                                        <span>(${tool.reviewCount})</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span>난이도:</span>
+                                        <span class="difficulty-stars">${'★'.repeat(tool.difficulty)}${'☆'.repeat(3 - tool.difficulty)}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary btn-small" onclick="event.stopPropagation(); openExternalLink('${tool.name}')">
+                                        웹사이트 방문
+                                    </button>
+                                    <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); viewToolDetail(${tool.id})">
+                                        상세보기
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                updateResultsCount(recommendations.length);
+            }
+            
+            function setupEventListeners() {
+                // 정렬 옵션 변경
+                Utils.on(Utils.$('#sortSelect'), 'change', function() {
+                    sortRecommendations(this.value);
+                });
+                
+                // 필터 옵션 클릭
+                const filterOptions = Utils.$$('.filter-option');
+                filterOptions.forEach(option => {
+                    Utils.on(option, 'click', function() {
+                        const filterType = this.dataset.filter;
+                        const filterValue = this.dataset.value;
+                        
+                        // 같은 그룹의 다른 옵션들 비활성화
+                        const siblingOptions = this.parentNode.querySelectorAll('.filter-option');
+                        siblingOptions.forEach(sibling => sibling.classList.remove('active'));
+                        
+                        // 현재 옵션 활성화
+                        this.classList.add('active');
+                        
+                        // 필터 적용
+                        applyFilters();
+                    });
+                });
+                
+                // 다시 찾기 버튼
+                Utils.on(Utils.$('#retryBtn'), 'click', function() {
+                    Utils.navigateTo('04-업무상황입력');
+                });
+            }
+            
+            function sortRecommendations(sortBy) {
+                let sorted = [...AppState.recommendations];
+                
+                switch (sortBy) {
+                    case 'score':
+                        sorted.sort((a, b) => (b.score || b.confidence || 0) - (a.score || a.confidence || 0));
+                        break;
+                    case 'rating':
+                        sorted.sort((a, b) => b.rating - a.rating);
+                        break;
+                    case 'price':
+                        const priceOrder = { 'free': 0, 'freemium': 1, 'paid': 2 };
+                        sorted.sort((a, b) => priceOrder[a.price] - priceOrder[b.price]);
+                        break;
+                    case 'difficulty':
+                        sorted.sort((a, b) => a.difficulty - b.difficulty);
+                        break;
+                }
+                
+                AppState.setRecommendations(sorted);
+                renderRecommendations();
+            }
+            
+            function applyFilters() {
+                let filtered = [...AppState.recommendations];
+                
+                // 가격 필터
+                const priceFilter = Utils.$('.filter-option.active[data-filter="price"]').dataset.value;
+                if (priceFilter !== 'all') {
+                    if (priceFilter === 'free') {
+                        filtered = filtered.filter(tool => tool.price === 'free');
+                    } else if (priceFilter === 'paid') {
+                        filtered = filtered.filter(tool => tool.price !== 'free');
+                    }
+                }
+                
+                // 난이도 필터
+                const difficultyFilter = Utils.$('.filter-option.active[data-filter="difficulty"]').dataset.value;
+                if (difficultyFilter !== 'all') {
+                    filtered = filtered.filter(tool => tool.difficulty === parseInt(difficultyFilter));
+                }
+                
+                renderRecommendations(filtered);
+            }
+            
+            function updateResultsCount(count = null) {
+                const displayCount = count !== null ? count : AppState.recommendations.length;
+                Utils.$('#resultsCount').textContent = `${displayCount}개의 추천 도구`;
+                
+                const subtitle = Utils.$('#resultsSubtitle');
+                if (displayCount === 0) {
+                    subtitle.textContent = '조건에 맞는 도구를 찾을 수 없습니다.';
+                } else {
+                    subtitle.textContent = `분석 완료! ${displayCount}개의 추천 도구를 찾았습니다`;
+                }
+            }
+        });
+        
+        // 전역 함수들
+        window.viewToolDetail = function(id) {
+            const tool = AppState.recommendations.find(t => t.id === id) || 
+                         SampleData.aiTools.find(t => t.id === id);
+            if (tool) {
+                AppState.setSelectedTool(tool);
+                Utils.navigateTo('06-도구상세보기');
+            }
+        };
+        
+        window.openExternalLink = function(toolName) {
+            // 실제 환경에서는 실제 URL로 연결
+            Utils.showToast(`${toolName} 웹사이트로 이동합니다 (프로토타입에서는 시뮬레이션)`, 'info');
+            // 실제 구현: window.open(tool.website, '_blank');
+        };
+    </script>
+</body>
+</html>

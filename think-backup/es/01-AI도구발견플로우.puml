@@ -1,0 +1,73 @@
+@startuml AI 도구 발견 플로우
+!theme mono
+title 01. AI 도구 발견 플로우
+
+actor "직장인 사용자" as User
+participant "웹 인터페이스" as UI
+participant "사용자 인증 시스템" as Auth
+participant "업무 분석 엔진" as Analyzer
+participant "AI 도구 DB" as ToolDB
+participant "추천 엔진" as Recommender
+participant "외부 API" as ExtAPI
+participant "로그 시스템" as Logger
+
+== 플랫폼 접속 ==
+User -> UI : 플랫폼 접속하기\n[사용자ID, 세션정보, 접속시간, 접속경로]
+UI -> Auth : 인증 확인
+Auth -> UI : 인증 결과
+UI -> Logger : 접속 이벤트 기록\n[접속시간, 접속IP, 사용자Agent, 리퍼러정보]
+UI --> User : 메인 화면 표시
+
+== 업무 상황 입력 ==
+User -> UI : 업무 상황 입력하기\n[업무유형, 산업분야, 팀규모, 예산범위, 긴급도, 기술수준]
+UI -> UI : 입력 데이터 검증\n**Policy: 최소 3개 이상 정보 입력 필요**
+alt 입력 정보 부족
+    UI --> User : 추가 정보 요청
+    User -> UI : 추가 정보 입력
+end
+UI -> Logger : 업무 상황 입력 이벤트\n[입력완료시간, 입력데이터 검증결과, 완성도점수]
+UI --> User : 입력 완료 확인
+
+== 니즈 분석 ==
+UI -> Analyzer : 니즈 분석 요청하기\n[입력된 업무상황, 사용자 프로필, 과거 사용이력]
+Analyzer -> ToolDB : 사용자 이력 조회
+ToolDB -> Analyzer : 과거 사용 데이터
+Analyzer -> Analyzer : 니즈 분석 수행\n**Policy: 과거 사용 이력 가중치 적용**
+Analyzer -> Logger : 니즈 분석 완료 이벤트\n[분석시간, 신뢰도점수, 추출된 키워드, 유사사례매치도]
+Analyzer -> UI : 분석 결과
+
+== AI 도구 추천 ==
+UI -> Recommender : AI 도구 추천 요청하기\n[분석된 니즈, 추천 필터조건, 개인화 설정]
+Recommender -> ToolDB : 도구 정보 조회
+ToolDB -> Recommender : 매칭 도구 목록
+Recommender -> ExtAPI : 실시간 도구 정보 확인
+ExtAPI -> Recommender : 최신 정보
+Recommender -> Recommender : 추천 목록 생성\n**Policy: 최대 5개, 신뢰도 70% 이상만 포함**
+Recommender -> Logger : 추천 목록 생성 이벤트\n[생성시간, 추천개수, 추천알고리즘버전, 개인화점수]
+Recommender -> UI : 추천 결과
+
+== 추천 결과 표시 ==
+UI -> UI : 결과 화면 구성\n**Policy: 무료/유료 구분, 사용 난이도 레벨 표시**
+UI -> Logger : 추천 결과 표시 이벤트\n[표시시간, 렌더링시간, 표시형태, 필터적용상태]
+UI --> User : 추천 결과 조회하기\n[추천결과ID, 정렬기준, 페이지네이션 정보]
+
+== AI 도구 선택 ==
+User -> UI : AI 도구 선택하기\n[도구ID, 사용자ID, 선택시간, 선택이유]
+UI -> Logger : 도구 선택 이벤트\n[선택시간, 추천순서, 선택근거, 망설임시간]
+UI -> ToolDB : 도구 상세정보 요청하기\n[도구ID, 요청 정보 유형]
+ToolDB -> UI : 도구 상세 정보
+UI -> Logger : 상세정보 조회 이벤트\n[조회시간, 조회깊이, 체류시간, 관심섹션]
+UI --> User : 도구 상세 정보 표시
+
+== 만족도 평가 ==
+User -> UI : 만족도 평가하기\n[도구ID, 평가점수, 평가 코멘트, 개선점]
+UI -> UI : 평가 처리\n**Policy: 3점 이하 시 추가 피드백 요청**
+alt 평가점수 3점 이하
+    UI --> User : 추가 피드백 요청
+    User -> UI : 추가 의견 입력
+end
+UI -> Logger : 만족도 평가 이벤트\n[평가시간, 평가완성도, 추가피드백여부]
+UI -> Recommender : 추천 엔진 피드백
+UI --> User : 평가 완료 확인
+
+@enduml

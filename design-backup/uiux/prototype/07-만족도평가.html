@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>만족도 평가 - AI 도구 찾기</title>
+    <link rel="stylesheet" href="common.css">
+    <style>
+        .evaluation-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .evaluation-content {
+            flex: 1;
+            padding: var(--space-xl) 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .evaluation-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            padding: var(--space-xxxl);
+            margin: var(--space-lg);
+        }
+        
+        .evaluation-header {
+            text-align: center;
+            margin-bottom: var(--space-xxxl);
+        }
+        
+        .evaluation-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-lg);
+            font-size: var(--font-size-h1);
+            color: white;
+        }
+        
+        .evaluation-title {
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .evaluation-subtitle {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .tool-summary {
+            background: var(--color-gray-50);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xxxl);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .tool-logo-small {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-lg);
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--font-size-h4);
+        }
+        
+        .tool-info-summary {
+            flex: 1;
+        }
+        
+        .tool-name-summary {
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .tool-company-summary {
+            color: var(--color-gray-500);
+            font-size: var(--font-size-body);
+        }
+        
+        .rating-section {
+            margin-bottom: var(--space-xxxl);
+        }
+        
+        .section-title {
+            font-size: var(--font-size-h3);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+        }
+        
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .star {
+            font-size: 48px;
+            color: var(--color-gray-200);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        
+        .star:hover,
+        .star.active {
+            color: var(--color-warning);
+            transform: scale(1.1);
+        }
+        
+        .rating-text {
+            text-align: center;
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: var(--space-lg);
+            min-height: 30px;
+        }
+        
+        .feedback-section {
+            margin-bottom: var(--space-xxxl);
+        }
+        
+        .feedback-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .feedback-option {
+            padding: var(--space-md);
+            border: 2px solid var(--color-gray-100);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            background: white;
+        }
+        
+        .feedback-option:hover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+        }
+        
+        .feedback-option.selected {
+            border-color: var(--color-primary);
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .feedback-icon {
+            font-size: var(--font-size-h2);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .feedback-title {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+        
+        .feedback-description {
+            font-size: var(--font-size-caption);
+            opacity: 0.8;
+        }
+        
+        .improvement-section {
+            display: none;
+            margin-bottom: var(--space-xl);
+        }
+        
+        .improvement-section.show {
+            display: block;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .improvement-title {
+            font-size: var(--font-size-h4);
+            font-weight: 600;
+            color: var(--color-error);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+        }
+        
+        .improvement-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .improvement-option {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .improvement-option:hover {
+            background: var(--color-gray-50);
+        }
+        
+        .comments-section {
+            margin-bottom: var(--space-xl);
+        }
+        
+        .comments-title {
+            font-weight: 500;
+            color: var(--color-gray-900);
+            margin-bottom: var(--space-md);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            margin-top: var(--space-xxxl);
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: var(--space-xxxl);
+        }
+        
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .success-title {
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            color: var(--color-success);
+            margin-bottom: var(--space-md);
+        }
+        
+        .success-text {
+            color: var(--color-gray-700);
+            margin-bottom: var(--space-xl);
+        }
+        
+        @media (max-width: 768px) {
+            .evaluation-container {
+                margin: var(--space-md);
+                padding: var(--space-xl);
+            }
+            
+            .star {
+                font-size: 40px;
+            }
+            
+            .feedback-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="evaluation-layout">
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container">
+                <div class="header__content">
+                    <a href="03-메인대시보드.html" class="header__logo">AI 도구 찾기</a>
+                    <div class="header__nav">
+                        <div class="header__user">
+                            <div class="header__avatar" id="userAvatar">김</div>
+                            <span id="userName">김철수</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 메인 콘텐츠 -->
+        <main class="evaluation-content">
+            <div class="evaluation-container fade-in" id="evaluationForm">
+                <div class="evaluation-header">
+                    <div class="evaluation-icon">📝</div>
+                    <h1 class="evaluation-title">만족도 평가</h1>
+                    <p class="evaluation-subtitle">추천 결과에 만족하셨나요? 여러분의 의견을 들려주세요.</p>
+                </div>
+                
+                <!-- 도구 요약 -->
+                <div class="tool-summary">
+                    <div class="tool-logo-small" id="toolLogoSmall">AI</div>
+                    <div class="tool-info-summary">
+                        <div class="tool-name-summary" id="toolNameSummary">도구 이름</div>
+                        <div class="tool-company-summary" id="toolCompanySummary">개발사</div>
+                    </div>
+                </div>
+                
+                <form id="feedbackForm">
+                    <!-- 별점 평가 -->
+                    <div class="rating-section">
+                        <h2 class="section-title">추천 결과에 얼마나 만족하셨나요?</h2>
+                        
+                        <div class="star-rating" id="starRating">
+                            <span class="star" data-rating="1">⭐</span>
+                            <span class="star" data-rating="2">⭐</span>
+                            <span class="star" data-rating="3">⭐</span>
+                            <span class="star" data-rating="4">⭐</span>
+                            <span class="star" data-rating="5">⭐</span>
+                        </div>
+                        
+                        <div class="rating-text" id="ratingText"></div>
+                        <input type="hidden" id="ratingValue" name="rating" required>
+                    </div>
+                    
+                    <!-- 피드백 옵션 -->
+                    <div class="feedback-section" id="positiveSection">
+                        <h3 class="section-title" style="font-size: var(--font-size-h4);">어떤 점이 좋았나요? (복수 선택 가능)</h3>
+                        
+                        <div class="feedback-options">
+                            <div class="feedback-option" data-feedback="accuracy">
+                                <div class="feedback-icon">🎯</div>
+                                <div class="feedback-title">정확한 추천</div>
+                                <div class="feedback-description">필요에 딱 맞는 도구</div>
+                            </div>
+                            
+                            <div class="feedback-option" data-feedback="variety">
+                                <div class="feedback-icon">🔄</div>
+                                <div class="feedback-title">다양한 옵션</div>
+                                <div class="feedback-description">선택의 폭이 넓음</div>
+                            </div>
+                            
+                            <div class="feedback-option" data-feedback="explanation">
+                                <div class="feedback-icon">💡</div>
+                                <div class="feedback-title">명확한 설명</div>
+                                <div class="feedback-description">추천 이유가 이해됨</div>
+                            </div>
+                            
+                            <div class="feedback-option" data-feedback="easyuse">
+                                <div class="feedback-icon">👍</div>
+                                <div class="feedback-title">사용 편의성</div>
+                                <div class="feedback-description">쉽고 빠른 이용</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 개선 필요 영역 (3점 이하 시 표시) -->
+                    <div class="improvement-section" id="improvementSection">
+                        <h3 class="improvement-title">어떤 부분이 개선되면 좋을까요?</h3>
+                        
+                        <div class="improvement-options">
+                            <label class="improvement-option">
+                                <input type="checkbox" name="improvements" value="more_options">
+                                <span>더 많은 도구 옵션</span>
+                            </label>
+                            
+                            <label class="improvement-option">
+                                <input type="checkbox" name="improvements" value="better_matching">
+                                <span>더 정확한 매칭</span>
+                            </label>
+                            
+                            <label class="improvement-option">
+                                <input type="checkbox" name="improvements" value="detailed_info">
+                                <span>더 상세한 도구 정보</span>
+                            </label>
+                            
+                            <label class="improvement-option">
+                                <input type="checkbox" name="improvements" value="faster_response">
+                                <span>더 빠른 응답 속도</span>
+                            </label>
+                            
+                            <label class="improvement-option">
+                                <input type="checkbox" name="improvements" value="ui_improvement">
+                                <span>사용자 인터페이스 개선</span>
+                            </label>
+                            
+                            <label class="improvement-option">
+                                <input type="checkbox" name="improvements" value="other">
+                                <span>기타</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- 자유 의견 -->
+                    <div class="comments-section">
+                        <label class="comments-title" for="comments">추가 의견이나 제안사항이 있으시면 남겨주세요 (선택사항)</label>
+                        <textarea 
+                            class="form-textarea" 
+                            id="comments" 
+                            name="comments" 
+                            placeholder="서비스 개선을 위한 소중한 의견을 들려주세요..."
+                            rows="4"
+                        ></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="skipBtn">건너뛰기</button>
+                        <button type="submit" class="btn btn-primary btn-large" id="submitBtn">평가 완료</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- 완료 메시지 -->
+            <div class="evaluation-container success-message" id="successMessage">
+                <div class="success-icon">🎉</div>
+                <h2 class="success-title">평가 완료!</h2>
+                <p class="success-text">
+                    소중한 의견을 주셔서 감사합니다.<br>
+                    더 나은 AI 도구 추천 서비스를 만들어 나가겠습니다.
+                </p>
+                
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="backToResultsBtn">추천 결과로</button>
+                    <button class="btn btn-primary" id="backToMainBtn">메인으로</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 체크
+            if (!AppState.user) {
+                Utils.navigateTo('01-로그인');
+                return;
+            }
+            
+            // 선택된 도구가 없으면 이전 화면으로
+            if (!AppState.selectedTool) {
+                Utils.navigateTo('05-추천결과');
+                return;
+            }
+            
+            // UI 초기화
+            initializeUI();
+            
+            // 이벤트 리스너 설정
+            setupEventListeners();
+            
+            function initializeUI() {
+                // 사용자 정보 표시
+                const userAvatar = Utils.$('#userAvatar');
+                const userName = Utils.$('#userName');
+                
+                if (AppState.user) {
+                    userAvatar.textContent = AppState.user.avatar || AppState.user.name.charAt(0);
+                    userName.textContent = AppState.user.name;
+                }
+                
+                // 도구 정보 표시
+                const tool = AppState.selectedTool;
+                Utils.$('#toolLogoSmall').textContent = tool.logo;
+                Utils.$('#toolNameSummary').textContent = tool.name;
+                Utils.$('#toolCompanySummary').textContent = tool.company;
+            }
+            
+            function setupEventListeners() {
+                // 별점 클릭
+                const stars = Utils.$$('.star');
+                stars.forEach(star => {
+                    Utils.on(star, 'click', function() {
+                        const rating = parseInt(this.dataset.rating);
+                        setRating(rating);
+                    });
+                    
+                    Utils.on(star, 'mouseover', function() {
+                        const rating = parseInt(this.dataset.rating);
+                        highlightStars(rating);
+                    });
+                });
+                
+                // 별점 영역에서 마우스가 나갈 때
+                Utils.on(Utils.$('#starRating'), 'mouseleave', function() {
+                    const currentRating = parseInt(Utils.$('#ratingValue').value) || 0;
+                    highlightStars(currentRating);
+                });
+                
+                // 피드백 옵션 클릭
+                const feedbackOptions = Utils.$$('.feedback-option');
+                feedbackOptions.forEach(option => {
+                    Utils.on(option, 'click', function() {
+                        this.classList.toggle('selected');
+                    });
+                });
+                
+                // 폼 제출
+                Utils.on(Utils.$('#feedbackForm'), 'submit', async function(e) {
+                    e.preventDefault();
+                    await submitFeedback();
+                });
+                
+                // 건너뛰기 버튼
+                Utils.on(Utils.$('#skipBtn'), 'click', function() {
+                    Utils.navigateTo('03-메인대시보드');
+                });
+                
+                // 완료 후 버튼들
+                Utils.on(Utils.$('#backToResultsBtn'), 'click', function() {
+                    Utils.navigateTo('05-추천결과');
+                });
+                
+                Utils.on(Utils.$('#backToMainBtn'), 'click', function() {
+                    Utils.navigateTo('03-메인대시보드');
+                });
+            }
+            
+            function setRating(rating) {
+                Utils.$('#ratingValue').value = rating;
+                highlightStars(rating);
+                updateRatingText(rating);
+                
+                // 3점 이하일 때 개선 섹션 표시
+                const improvementSection = Utils.$('#improvementSection');
+                const positiveSection = Utils.$('#positiveSection');
+                
+                if (rating <= 3) {
+                    improvementSection.classList.add('show');
+                    positiveSection.style.display = 'none';
+                } else {
+                    improvementSection.classList.remove('show');
+                    positiveSection.style.display = 'block';
+                }
+            }
+            
+            function highlightStars(rating) {
+                const stars = Utils.$$('.star');
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+            }
+            
+            function updateRatingText(rating) {
+                const texts = {
+                    1: '매우 불만족',
+                    2: '불만족',
+                    3: '보통',
+                    4: '만족',
+                    5: '매우 만족'
+                };
+                
+                const colors = {
+                    1: 'var(--color-error)',
+                    2: 'var(--color-error)',
+                    3: 'var(--color-warning)',
+                    4: 'var(--color-success)',
+                    5: 'var(--color-success)'
+                };
+                
+                const ratingText = Utils.$('#ratingText');
+                ratingText.textContent = texts[rating] || '';
+                ratingText.style.color = colors[rating] || 'var(--color-primary)';
+            }
+            
+            async function submitFeedback() {
+                const formData = collectFormData();
+                
+                // 별점은 필수
+                if (!formData.rating) {
+                    Utils.showToast('별점을 선택해주세요.', 'warning');
+                    return;
+                }
+                
+                const submitBtn = Utils.$('#submitBtn');
+                Utils.showLoading(submitBtn, '평가 저장 중...');
+                
+                try {
+                    const result = await MockAPI.saveFeedback(formData);
+                    
+                    if (result.success) {
+                        // 성공 화면 표시
+                        showSuccessMessage();
+                    } else {
+                        Utils.showToast('평가 저장 중 오류가 발생했습니다.', 'error');
+                        submitBtn.innerHTML = '평가 완료';
+                        submitBtn.disabled = false;
+                    }
+                    
+                } catch (error) {
+                    console.error('Feedback submission error:', error);
+                    Utils.showToast('평가 저장 중 오류가 발생했습니다.', 'error');
+                    submitBtn.innerHTML = '평가 완료';
+                    submitBtn.disabled = false;
+                }
+            }
+            
+            function collectFormData() {
+                const rating = parseInt(Utils.$('#ratingValue').value);
+                
+                // 긍정적 피드백 (4점 이상)
+                const selectedFeedbacks = Array.from(Utils.$$('.feedback-option.selected'))
+                    .map(option => option.dataset.feedback);
+                
+                // 개선 필요 사항 (3점 이하)
+                const selectedImprovements = Array.from(Utils.$$('input[name="improvements"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                const comments = Utils.$('#comments').value.trim();
+                
+                return {
+                    toolId: AppState.selectedTool.id,
+                    toolName: AppState.selectedTool.name,
+                    rating: rating,
+                    positiveFeedback: rating > 3 ? selectedFeedbacks : [],
+                    improvements: rating <= 3 ? selectedImprovements : [],
+                    comments: comments,
+                    userId: AppState.user.id,
+                    timestamp: new Date().toISOString()
+                };
+            }
+            
+            function showSuccessMessage() {
+                const evaluationForm = Utils.$('#evaluationForm');
+                const successMessage = Utils.$('#successMessage');
+                
+                evaluationForm.style.display = 'none';
+                successMessage.style.display = 'block';
+                successMessage.classList.add('fade-in');
+            }
+        });
+    </script>
+</body>
+</html>
