@@ -1,0 +1,365 @@
+@startuml 05-커뮤니티기여
+!theme mono
+
+title 05. 커뮤니티 기여 (GitHub 스타일)
+
+actor "커뮤니티 기여자" as Contributor
+actor "관리자/리뷰어" as Admin
+participant "웹 인터페이스" as UI
+participant "기여 서비스" as Contribution
+participant "버전 관리 시스템" as VCS
+participant "리뷰 시스템" as Review
+participant "알림 서비스" as Notification
+database "리소스 DB" as ResourceDB
+database "사용자 DB" as UserDB
+participant "GitHub API" as GitHub
+
+== 기여 시작 ==
+
+Contributor -> UI : "기여하기" 페이지 접속
+activate UI
+
+UI --> Contributor : 기여 가이드 표시\n(프롬프트 제안, 사례 공유, 치트시트 개선)
+
+Contributor -> UI : 기여 유형 선택
+note right of Contributor
+**Command**: 기여 유형 선택
+**데이터**: 
+- 기여 유형 (prompt/case/cheatsheet/improvement)
+- 대상 리소스 ID (개선의 경우)
+end note
+
+alt 신규 프롬프트 제안
+    Contributor -> UI : "새 프롬프트 제안" 선택
+    
+    UI --> Contributor : 프롬프트 작성 폼 표시
+    
+    Contributor -> UI : 프롬프트 정보 입력
+    note right of Contributor
+    **Command**: 프롬프트 제안 제출
+    **데이터**: 
+    - 프롬프트 제목
+    - 프롬프트 내용
+    - 대상 AI 도구
+    - 직무 카테고리
+    - 업무 유형
+    - 사용 예시
+    - 예상 결과물
+    - 활용 팁
+    - 태그
+    end note
+
+else 실무 사례 공유
+    Contributor -> UI : "실무 사례 공유" 선택
+    
+    UI --> Contributor : 사례 작성 폼 표시
+    
+    Contributor -> UI : 사례 정보 입력
+    note right of Contributor
+    **Command**: 실무 사례 제출
+    **데이터**: 
+    - 업종 및 직무
+    - 해결한 과제
+    - 사용한 AI 도구
+    - 사용한 프롬프트 (링크)
+    - 적용 과정 (단계별)
+    - Before/After 지표
+      * 소요 시간
+      * 비용
+      * 품질 지표
+    - 주의사항 및 팁
+    - 첨부 파일 (스크린샷 등)
+    end note
+
+else 기존 리소스 개선
+    Contributor -> UI : "개선 제안" 선택
+    
+    UI --> Contributor : 개선 대상 검색
+    
+    Contributor -> UI : 대상 리소스 선택 및 개선안 작성
+    note right of Contributor
+    **Command**: 개선 제안 제출
+    **데이터**: 
+    - 대상 리소스 ID
+    - 개선 유형 (오류 수정/내용 추가/품질 개선)
+    - 현재 문제점
+    - 개선 내용
+    - 개선 이유
+    end note
+end
+
+UI -> Contribution : 기여 제출 요청
+activate Contribution
+
+note over Contribution
+**Policy**: 기여 제출 규칙
+- 로그인 필수
+- 최소 작성 기준 충족 확인
+- 중복 제출 방지
+- 스팸 필터링 (AI 기반)
+end note
+
+Contribution -> Contribution : 기여 내용 검증
+
+alt 검증 실패
+    Contribution --> UI : 검증 오류 메시지
+    UI --> Contributor : 수정 요청
+    Contributor -> UI : 내용 수정 후 재제출
+end
+
+Contribution -> VCS : 버전 관리 레코드 생성
+activate VCS
+
+note over VCS
+**Event**: 기여 제출됨 (Pull Request 생성)
+**데이터**:
+- PR ID
+- 기여자 ID
+- 기여 유형
+- 대상 리소스 (신규 or 기존)
+- 제출 내용
+- 제출 시각
+- 상태 (pending_review)
+end note
+
+VCS -> ResourceDB : 임시 브랜치에 저장
+activate ResourceDB
+ResourceDB --> VCS : 저장 완료
+deactivate ResourceDB
+
+VCS --> Contribution : PR 생성 완료
+deactivate VCS
+
+Contribution -> Notification : 리뷰어에게 알림 전송
+activate Notification
+
+note over Notification
+**Event**: 리뷰 요청 알림 발송
+**데이터**:
+- 대상: 관리자/리뷰어
+- PR ID
+- 기여 유형
+- 우선순위 (일반/긴급)
+end note
+
+Notification -> Admin : 이메일/앱 푸시 알림
+Notification --> Contribution : 알림 완료
+deactivate Notification
+
+Contribution --> UI : 제출 완료 (PR 번호)
+deactivate Contribution
+
+UI --> Contributor : 제출 완료 페이지\n(PR 번호, 예상 리뷰 시간, 상태 확인 링크)
+
+note over Contributor
+기여자는 PR 상태를 
+실시간으로 추적할 수 있음
+end note
+
+== 리뷰 프로세스 ==
+
+Admin -> UI : 리뷰 대기 목록 확인
+activate UI
+
+UI -> Review : 리뷰 대기 목록 요청
+activate Review
+
+Review -> VCS : 대기 중인 PR 목록 조회
+activate VCS
+VCS --> Review : PR 목록
+deactivate VCS
+
+Review --> UI : PR 목록 반환
+deactivate Review
+
+UI --> Admin : PR 목록 표시\n(우선순위, 제출 시간, 기여자 평판 점수)
+
+Admin -> UI : 특정 PR 선택하여 리뷰 시작
+note right of Admin
+**Command**: PR 리뷰 시작
+**데이터**: 
+- PR ID
+end note
+
+UI -> Review : PR 상세 정보 요청
+activate Review
+
+Review -> VCS : PR 상세 및 변경 내역 조회
+activate VCS
+VCS --> Review : PR 전체 정보
+deactivate VCS
+
+Review --> UI : PR 상세 정보
+deactivate Review
+
+UI --> Admin : PR 리뷰 화면 표시\n(변경 내역, 이전 버전 비교, 댓글 작성)
+
+Admin -> UI : 리뷰 의견 작성
+note right of Admin
+**Command**: 리뷰 의견 작성
+**데이터**: 
+- PR ID
+- 리뷰 상태 (request_changes/approve/comment)
+- 코멘트 내용
+- 수정 요청 사항
+end note
+
+UI -> Review : 리뷰 저장
+activate Review
+
+note over Review
+**Event**: 리뷰 작성됨
+**데이터**:
+- PR ID
+- 리뷰어 ID
+- 리뷰 시각
+- 리뷰 상태
+- 코멘트
+end note
+
+Review -> Notification : 기여자에게 알림
+activate Notification
+Notification -> Contributor : 리뷰 완료 알림
+deactivate Notification
+
+Review --> UI : 리뷰 저장 완료
+deactivate Review
+
+UI --> Admin : 리뷰 완료 확인
+
+alt 수정 요청
+    Contributor -> UI : 수정사항 반영
+    note right of Contributor
+    **Command**: PR 수정
+    **데이터**: 
+    - PR ID
+    - 수정 내용
+    end note
+    
+    UI -> VCS : PR 업데이트
+    activate VCS
+    
+    note over VCS
+    **Event**: PR 업데이트됨
+    **데이터**:
+    - 수정 내용
+    - 수정 시각
+    - 버전 번호 증가
+    end note
+    
+    VCS --> UI : 업데이트 완료
+    deactivate VCS
+    
+    UI -> Notification : 리뷰어에게 재검토 알림
+    activate Notification
+    Notification -> Admin : 재검토 요청 알림
+    deactivate Notification
+
+else 승인
+    Admin -> UI : "승인 및 머지" 버튼 클릭
+    note right of Admin
+    **Command**: PR 승인 및 병합
+    **데이터**: 
+    - PR ID
+    - 승인 메시지
+    end note
+    
+    UI -> Review : PR 승인 처리
+    activate Review
+    
+    Review -> VCS : PR 병합 (Merge)
+    activate VCS
+    
+    note over VCS
+    **Policy**: 병합 규칙
+    - Squash merge 사용 (단일 커밋)
+    - 병합 전 자동 테스트 실행
+    - 버전 번호 자동 증가
+    end note
+    
+    VCS -> ResourceDB : 메인 브랜치에 반영
+    activate ResourceDB
+    
+    note over ResourceDB
+    **Event**: 리소스 업데이트됨
+    **데이터**:
+    - 리소스 ID (신규 or 업데이트)
+    - 버전 번호
+    - 변경 내역
+    - 기여자 정보
+    - 병합 시각
+    end note
+    
+    ResourceDB --> VCS : 반영 완료
+    deactivate ResourceDB
+    
+    VCS --> Review : 병합 완료
+    deactivate VCS
+    
+    Review -> UserDB : 기여자 평판 점수 증가
+    activate UserDB
+    
+    note over UserDB
+    **Event**: 기여 평판 증가
+    **Policy**: 평판 점수 규칙
+    - 프롬프트 승인: +10점
+    - 사례 승인: +20점
+    - 치트시트 승인: +30점
+    - 개선 승인: +5점
+    - 100점마다 배지 부여
+    end note
+    
+    UserDB --> Review : 점수 업데이트 완료
+    deactivate UserDB
+    
+    Review -> Notification : 기여자에게 승인 알림
+    activate Notification
+    
+    note over Notification
+    **Event**: 기여 승인 알림 발송
+    **데이터**:
+    - 기여자 ID
+    - PR ID
+    - 획득 평판 점수
+    - 배지 획득 여부
+    end note
+    
+    Notification -> Contributor : 승인 완료 및 축하 메시지
+    deactivate Notification
+    
+    Review --> UI : 승인 및 병합 완료
+    deactivate Review
+    
+    UI --> Admin : 처리 완료
+end
+
+deactivate UI
+
+== GitHub 동기화 (선택사항) ==
+
+alt GitHub 저장소 연동 활성화 시
+    VCS -> GitHub : GitHub API를 통한 PR 생성
+    activate GitHub
+    
+    note over GitHub
+    **External System**: GitHub API
+    **Event**: GitHub PR 생성
+    
+    오픈소스 커뮤니티의 기여도
+    GitHub에도 자동 동기화
+    end note
+    
+    GitHub --> VCS : PR 번호 반환
+    deactivate GitHub
+end
+
+note over Contributor, Admin
+기여자는 자신의 기여 이력을 프로필에서 확인 가능
+- 총 기여 수
+- 승인율
+- 평판 점수
+- 획득 배지
+- 기여 활동 그래프
+end note
+
+@enduml

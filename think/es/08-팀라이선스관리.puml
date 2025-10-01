@@ -1,0 +1,866 @@
+@startuml 08-팀라이선스관리
+!theme mono
+
+title 08. 기업 팀 라이선스 관리
+
+actor "기업 관리자" as CorpAdmin
+actor "팀원" as Member
+actor "영업 담당자" as Sales
+participant "웹 인터페이스" as UI
+participant "팀 라이선스 서비스" as TeamService
+participant "결제 게이트웨이" as Payment
+participant "초대 시스템" as InviteSystem
+participant "이메일 서비스" as Email
+participant "접근 제어 시스템" as AccessControl
+participant "리소스 관리 시스템" as ResourceMgmt
+participant "분석 대시보드" as Dashboard
+database "팀 DB" as TeamDB
+database "사용자 DB" as UserDB
+database "구독 DB" as SubDB
+
+== 팀 라이선스 탐색 및 견적 ==
+
+CorpAdmin -> UI : 기업용 페이지 접속
+activate UI
+
+note right of CorpAdmin
+**Command**: 팀요금제조회
+**데이터**:
+- 기업 정보 (선택)
+end note
+
+UI -> TeamService : 팀 요금제 정보 요청
+activate TeamService
+
+TeamService -> SubDB : 팀 요금제 조회
+activate SubDB
+
+note over SubDB
+**Policy**: 팀 라이선스 가격 정책
+- 최소 5인 이상 구매 가능
+- 5~9인: 9,900원/인/월
+- 10~29인: 8,900원/인/월 (10% 할인)
+- 30~99인: 7,900원/인/월 (20% 할인)
+- 100인 이상: 별도 문의 (맞춤 계약)
+
+연간 계약 시:
+- 12개월 가격에 14개월 사용 (2개월 무료)
+- 맞춤 프롬프트 제작 포함 (30인 이상)
+end note
+
+SubDB --> TeamService : 요금제 정보
+deactivate SubDB
+
+TeamService --> UI : 요금제 반환
+deactivate TeamService
+
+UI --> CorpAdmin : 팀 요금제 페이지 표시
+
+note over UI
+**Event**: 기업팀요금제조회됨
+**데이터**:
+- 요금제 목록
+- 할인 정책
+- 포함 혜택
+- 고객 사례
+end note
+
+CorpAdmin -> UI : 팀 규모 입력
+note right of CorpAdmin
+**Command**: 팀규모입력
+**데이터**:
+- 예상 팀원 수
+- 계약 기간 (월간/연간)
+- 직무 구성 (선택)
+end note
+
+UI -> TeamService : 견적서 생성 요청
+activate TeamService
+
+TeamService -> TeamService : 할인율 계산
+
+note over TeamService
+**Policy**: 견적 계산 규칙
+- 인원수별 단가 적용
+- 연간 계약 할인 반영
+- 프로모션 코드 적용 가능
+- 부가세 10% 포함
+end note
+
+TeamService --> UI : 견적서 반환
+deactivate TeamService
+
+UI --> CorpAdmin : 견적서 표시\n(총 금액, 인당 비용, 포함 혜택)
+
+note over UI
+**Event**: 견적서생성됨
+**데이터**:
+- 견적 ID
+- 팀원 수
+- 월/연 단가
+- 총 금액
+- 할인 내역
+- 유효 기간
+end note
+
+alt 30인 이상 또는 컨설팅 요청
+    CorpAdmin -> UI : "영업팀 상담 신청" 클릭
+    
+    UI -> TeamService : 상담 요청 등록
+    activate TeamService
+    
+    TeamService -> Sales : 상담 요청 알림
+    
+    note over Sales
+    **Event**: 기업상담요청됨
+    **데이터**:
+    - 기업명
+    - 담당자 정보
+    - 팀 규모
+    - 요청 사항
+    end note
+    
+    Sales -> CorpAdmin : 연락 및 맞춤 제안
+    deactivate TeamService
+end
+
+== 팀 라이선스 구매 ==
+
+CorpAdmin -> UI : "구매하기" 버튼 클릭
+
+note right of CorpAdmin
+**Command**: 팀라이선스구매
+**데이터**:
+- 팀원 수
+- 계약 기간
+- 기업 정보
+- 결제 정보
+- 사업자등록번호 (세금계산서용)
+end note
+
+UI -> TeamService : 팀 라이선스 주문 생성
+activate TeamService
+
+TeamService -> TeamDB : 팀 레코드 생성
+activate TeamDB
+
+note over TeamDB
+**Event**: 팀생성됨
+**데이터**:
+- 팀 ID
+- 팀명
+- 기업 정보
+- 라이선스 수
+- 계약 시작일
+- 계약 종료일
+- 상태: pending_payment
+end note
+
+TeamDB --> TeamService : 팀 생성 완료
+deactivate TeamDB
+
+TeamService -> Payment : 결제 요청
+activate Payment
+
+note over Payment
+**External System**: 기업용 결제
+- 법인카드 결제
+- 계좌이체
+- 세금계산서 발행
+end note
+
+Payment -> Payment : 결제 처리
+
+alt 결제 성공
+    Payment --> TeamService : 결제 승인
+    
+    note over Payment
+    **Event**: 팀라이선스구매됨
+    **데이터**:
+    - 결제 ID
+    - 거래 번호
+    - 결제 금액
+    - 결제 시각
+    - 세금계산서 번호
+    end note
+    
+    TeamService -> TeamDB : 팀 상태 활성화
+    activate TeamDB
+    
+    note over TeamDB
+    **Event**: 팀활성화됨
+    **데이터**:
+    - 상태: active
+    - 활성화 시각
+    - 사용 가능 라이선스 수
+    end note
+    
+    TeamDB --> TeamService : 활성화 완료
+    deactivate TeamDB
+    
+    TeamService -> SubDB : 구독 레코드 생성
+    activate SubDB
+    
+    note over SubDB
+    **Event**: 팀구독생성됨
+    **데이터**:
+    - 구독 유형: team
+    - 팀 ID
+    - 라이선스 수
+    - 갱신일
+    - 자동 갱신 여부
+    end note
+    
+    SubDB --> TeamService : 구독 생성 완료
+    deactivate SubDB
+    
+    TeamService --> UI : 구매 완료
+    deactivate TeamService
+    
+    UI --> CorpAdmin : "구매가 완료되었습니다!\n관리자 계정을 설정하세요."
+    
+else 결제 실패
+    Payment --> TeamService : 결제 실패
+    deactivate Payment
+    TeamService --> UI : 결제 오류
+    deactivate TeamService
+    UI --> CorpAdmin : 결제 실패 안내
+end
+
+== 관리자 계정 설정 ==
+
+CorpAdmin -> UI : 관리자 정보 입력
+
+note right of CorpAdmin
+**Command**: 관리자계정설정
+**데이터**:
+- 관리자 이메일
+- 관리자 이름
+- 부서/직급
+- 연락처
+end note
+
+UI -> TeamService : 관리자 등록
+activate TeamService
+
+TeamService -> UserDB : 관리자 권한 부여
+activate UserDB
+
+note over UserDB
+**Event**: 관리자계정생성됨
+**데이터**:
+- 사용자 ID
+- 권한: team_admin
+- 팀 ID
+- 등록 시각
+end note
+
+note over UserDB
+**Policy**: 관리자 권한
+- 팀원 초대/제거
+- 라이선스 관리
+- 사용 현황 조회
+- 맞춤 리소스 관리
+- 결제 정보 수정
+end note
+
+UserDB --> TeamService : 관리자 등록 완료
+deactivate UserDB
+
+TeamService -> Email : 관리자 환영 이메일
+activate Email
+
+note over Email
+**Event**: 관리자환영이메일발송됨
+**데이터**:
+- 팀 관리 대시보드 링크
+- 팀원 초대 가이드
+- 시작 가이드
+end note
+
+Email -> CorpAdmin : 환영 이메일 수신
+deactivate Email
+
+TeamService --> UI : 관리자 설정 완료
+deactivate TeamService
+
+UI --> CorpAdmin : "관리자 대시보드로 이동합니다"
+
+== 팀원 초대 ==
+
+CorpAdmin -> UI : 팀 관리 대시보드 접속
+activate UI
+
+UI -> TeamService : 팀 정보 조회
+activate TeamService
+
+TeamService -> TeamDB : 팀 상세 정보
+activate TeamDB
+TeamDB --> TeamService : 팀 정보 반환
+deactivate TeamDB
+
+TeamService --> UI : 팀 현황 데이터
+deactivate TeamService
+
+UI --> CorpAdmin : 대시보드 표시\n(사용 중 라이선스, 잔여 라이선스, 팀원 목록)
+
+CorpAdmin -> UI : "팀원 초대" 버튼 클릭
+
+note right of CorpAdmin
+**Command**: 팀원초대
+**데이터**:
+- 초대 대상 이메일 목록
+- 초대 메시지 (선택)
+- 권한 설정 (일반/관리자)
+end note
+
+UI -> InviteSystem : 초대 처리 요청
+activate InviteSystem
+
+InviteSystem -> TeamDB : 초대 레코드 생성
+activate TeamDB
+
+note over TeamDB
+**Event**: 초대생성됨
+**데이터**:
+- 초대 ID
+- 팀 ID
+- 초대 이메일
+- 초대 토큰 (UUID)
+- 만료일 (7일 후)
+- 상태: pending
+end note
+
+note over InviteSystem
+**Policy**: 초대 규칙
+- 초대 링크 유효기간 7일
+- 이메일당 1개 초대만 유효
+- 라이선스 잔여분 확인
+- 중복 초대 방지
+end note
+
+TeamDB --> InviteSystem : 초대 생성 완료
+deactivate TeamDB
+
+InviteSystem -> Email : 초대 이메일 발송
+activate Email
+
+note over Email
+**Event**: 팀원초대이메일발송됨
+**데이터**:
+- 팀명
+- 초대 링크 (토큰 포함)
+- 초대자 정보
+- 팀 소개
+- 만료 안내
+end note
+
+Email -> Member : 초대 이메일 수신
+deactivate Email
+
+InviteSystem --> UI : 초대 발송 완료
+deactivate InviteSystem
+
+UI --> CorpAdmin : "N명에게 초대 이메일을 발송했습니다"
+
+deactivate UI
+
+== 팀원 가입 및 온보딩 ==
+
+Member -> UI : 초대 링크 클릭
+activate UI
+
+note right of Member
+**Command**: 초대수락
+**데이터**:
+- 초대 토큰
+end note
+
+UI -> InviteSystem : 초대 토큰 검증
+activate InviteSystem
+
+InviteSystem -> TeamDB : 초대 정보 조회
+activate TeamDB
+
+note over InviteSystem
+**Policy**: 초대 검증 규칙
+- 토큰 유효성 확인
+- 만료일 확인
+- 이미 사용된 토큰 거부
+- 라이선스 잔여 확인
+end note
+
+TeamDB --> InviteSystem : 초대 정보
+deactivate TeamDB
+
+alt 유효한 초대
+    InviteSystem --> UI : 초대 유효
+    deactivate InviteSystem
+    
+    UI --> Member : 회원 가입/로그인 페이지
+    
+    Member -> UI : 계정 생성 또는 기존 계정 로그인
+    
+    note right of Member
+    **데이터**:
+    - 이메일 (초대된 이메일)
+    - 비밀번호
+    - 이름
+    - 직무
+    end note
+    
+    UI -> TeamService : 팀원 등록
+    activate TeamService
+    
+    TeamService -> TeamDB : 팀원 추가
+    activate TeamDB
+    
+    note over TeamDB
+    **Event**: 팀원가입됨
+    **데이터**:
+    - 사용자 ID
+    - 팀 ID
+    - 가입 시각
+    - 초대 ID
+    - 역할: member
+    end note
+    
+    TeamDB --> TeamService : 팀원 추가 완료
+    deactivate TeamDB
+    
+    TeamService -> UserDB : 프리미엄 권한 부여
+    activate UserDB
+    
+    note over UserDB
+    **Event**: 팀원권한부여됨
+    **데이터**:
+    - 사용자 등급: team_premium
+    - 팀 ID
+    - 권한 시작일
+    - 권한 만료일 (팀 계약 종료일)
+    end note
+    
+    UserDB --> TeamService : 권한 부여 완료
+    deactivate UserDB
+    
+    TeamService -> AccessControl : 접근 권한 설정
+    activate AccessControl
+    
+    note over AccessControl
+    **Policy**: 팀 멤버 권한
+    - 전체 프리미엄 리소스 접근
+    - 팀 공유 리소스 접근
+    - 팀 대시보드 조회
+    - 개인 사용 통계 조회
+    end note
+    
+    AccessControl --> TeamService : 권한 설정 완료
+    deactivate AccessControl
+    
+    TeamService -> Email : 환영 이메일
+    activate Email
+    Email -> Member : 팀 가입 환영 이메일
+    deactivate Email
+    
+    TeamService -> CorpAdmin : 팀원 가입 알림
+    
+    TeamService --> UI : 가입 완료
+    deactivate TeamService
+    
+    UI --> Member : 온보딩 페이지\n(팀 소개, Quick Start 가이드, 팀 공유 리소스)
+    
+else 무효한 초대
+    InviteSystem --> UI : 초대 만료/무효
+    deactivate InviteSystem
+    UI --> Member : "초대 링크가 만료되었거나 유효하지 않습니다"
+end
+
+deactivate UI
+
+== 맞춤 프롬프트 제작 (30인 이상 팀) ==
+
+CorpAdmin -> UI : 맞춤 리소스 관리 메뉴 접속
+activate UI
+
+note right of CorpAdmin
+**Command**: 맞춤프롬프트제작요청
+**데이터**:
+- 직무/업종
+- 주요 업무 시나리오
+- 참고 자료
+- 요구사항
+end note
+
+UI -> ResourceMgmt : 맞춤 제작 요청
+activate ResourceMgmt
+
+note over ResourceMgmt
+**Policy**: 맞춤 제작 조건
+- 30인 이상 팀 무료 제공
+- 30인 미만은 별도 비용 (300만원~)
+- 제작 기간 2~4주
+- 최대 3회 수정 가능
+end note
+
+ResourceMgmt -> TeamDB : 제작 요청 기록
+activate TeamDB
+
+note over TeamDB
+**Event**: 맞춤프롬프트생성요청됨
+**데이터**:
+- 요청 ID
+- 팀 ID
+- 요청 내용
+- 요청 시각
+- 상태: requested
+end note
+
+TeamDB --> ResourceMgmt : 요청 등록 완료
+deactivate TeamDB
+
+ResourceMgmt -> Sales : 제작팀 배정
+activate Sales
+
+note over Sales
+서비스 제작팀이
+맞춤 프롬프트 초안을 작성합니다
+(2~4주 소요)
+end note
+
+Sales -> ResourceMgmt : 프롬프트 초안 제출
+deactivate Sales
+
+note over ResourceMgmt
+**Event**: 프롬프트초안제출됨
+**데이터**:
+- 초안 문서
+- 사용 가이드
+- 예시 결과물
+end note
+
+ResourceMgmt -> UI : 초안 검토 요청
+ResourceMgmt --> CorpAdmin : 검토 요청 알림
+deactivate ResourceMgmt
+
+UI --> CorpAdmin : 초안 검토 페이지
+
+deactivate UI
+
+CorpAdmin -> UI : 초안 검토 및 피드백
+activate UI
+
+note right of CorpAdmin
+**Command**: 프롬프트검토
+**데이터**:
+- 승인/수정 요청
+- 수정 의견
+end note
+
+alt 승인
+    UI -> ResourceMgmt : 승인 처리
+    activate ResourceMgmt
+    
+    note over ResourceMgmt
+    **Event**: 프롬프트승인됨
+    **데이터**:
+    - 승인 시각
+    - 최종 버전
+    - 상태: approved
+    end note
+    
+    ResourceMgmt -> TeamDB : 팀 리소스로 등록
+    activate TeamDB
+    
+    note over TeamDB
+    **Event**: 팀리소스배포됨
+    **데이터**:
+    - 리소스 ID
+    - 팀 ID
+    - 리소스 유형: custom_prompt
+    - 배포 시각
+    - 접근 권한: team_only
+    end note
+    
+    TeamDB --> ResourceMgmt : 등록 완료
+    deactivate TeamDB
+    
+    ResourceMgmt -> Email : 팀원 전체 공지
+    activate Email
+    Email -> Member : 새 맞춤 리소스 알림
+    deactivate Email
+    
+    ResourceMgmt --> UI : 배포 완료
+    deactivate ResourceMgmt
+    
+    UI --> CorpAdmin : "맞춤 프롬프트가 팀에 배포되었습니다"
+    
+else 수정 요청
+    UI -> ResourceMgmt : 수정 요청 전달
+    activate ResourceMgmt
+    ResourceMgmt -> Sales : 수정 작업 의뢰
+    ResourceMgmt --> UI : "수정 작업이 진행됩니다 (1~2주 소요)"
+    deactivate ResourceMgmt
+    
+    note over Sales
+    수정 후 재제출
+    (최대 3회)
+    end note
+end
+
+deactivate UI
+
+== 사용 현황 모니터링 ==
+
+CorpAdmin -> UI : 팀 대시보드 접속
+activate UI
+
+note right of CorpAdmin
+**Command**: 사용현황조회
+end note
+
+UI -> Dashboard : 사용 현황 요청
+activate Dashboard
+
+Dashboard -> TeamDB : 팀 데이터 조회
+activate TeamDB
+TeamDB --> Dashboard : 팀 사용 데이터
+deactivate TeamDB
+
+Dashboard -> UserDB : 팀원별 활동 집계
+activate UserDB
+
+note over UserDB
+**Policy**: 개인정보 보호
+- 개인 식별 정보 익명화
+- 팀 전체 통계만 제공
+- 개별 팀원 상세는 비공개
+- 활동 패턴만 집계
+end note
+
+UserDB --> Dashboard : 집계 데이터
+deactivate UserDB
+
+Dashboard -> Dashboard : 리포트 생성
+
+note over Dashboard
+**Event**: 사용현황대시보드조회됨
+**데이터**:
+- 활성 사용자 수/비율
+- 주간/월간 사용량
+- 인기 리소스 Top 10
+- 직무별 사용 패턴
+- ROI 예측 (시간 절약)
+- 라이선스 활용률
+end note
+
+Dashboard --> UI : 대시보드 데이터
+deactivate Dashboard
+
+UI --> CorpAdmin : 사용 현황 대시보드\n(차트, 그래프, 인사이트)
+
+deactivate UI
+
+== 라이선스 추가 ==
+
+CorpAdmin -> UI : "라이선스 추가" 버튼 클릭
+activate UI
+
+note right of CorpAdmin
+**Command**: 라이선스추가구매
+**데이터**:
+- 추가 인원 수
+end note
+
+UI -> TeamService : 라이선스 추가 요청
+activate TeamService
+
+TeamService -> SubDB : 현재 계약 조회
+activate SubDB
+SubDB --> TeamService : 계약 정보
+deactivate SubDB
+
+TeamService -> TeamService : 추가 비용 계산
+
+note over TeamService
+**Policy**: 추가 라이선스 계산
+- 현재 단가 적용
+- 잔여 계약 기간 비례 계산
+- 다음 갱신일부터 정상 단가
+end note
+
+TeamService --> UI : 추가 비용 견적
+deactivate TeamService
+
+UI --> CorpAdmin : 견적 확인 화면
+
+CorpAdmin -> UI : 결제 확인
+
+UI -> Payment : 추가 결제 처리
+activate Payment
+Payment --> UI : 결제 완료
+deactivate Payment
+
+UI -> TeamService : 라이선스 증량
+activate TeamService
+
+TeamService -> TeamDB : 라이선스 수 업데이트
+activate TeamDB
+
+note over TeamDB
+**Event**: 라이선스추가됨
+**데이터**:
+- 이전 수량
+- 추가 수량
+- 새 총 수량
+- 추가일
+end note
+
+TeamDB --> TeamService : 업데이트 완료
+deactivate TeamDB
+
+TeamService --> UI : 라이선스 증량 완료
+deactivate TeamService
+
+UI --> CorpAdmin : "N개의 라이선스가 추가되었습니다"
+
+deactivate UI
+
+== 팀원 제거 ==
+
+CorpAdmin -> UI : 팀원 목록에서 "제거" 클릭
+activate UI
+
+note right of CorpAdmin
+**Command**: 팀원삭제
+**데이터**:
+- 제거 대상 사용자 ID
+- 제거 사유 (선택)
+end note
+
+UI --> CorpAdmin : 제거 확인 팝업
+
+CorpAdmin -> UI : 제거 확인
+
+UI -> TeamService : 팀원 제거 요청
+activate TeamService
+
+TeamService -> TeamDB : 팀원 레코드 삭제
+activate TeamDB
+
+note over TeamDB
+**Event**: 팀원제거됨
+**데이터**:
+- 사용자 ID
+- 팀 ID
+- 제거 시각
+- 제거 사유
+end note
+
+TeamDB --> TeamService : 제거 완료
+deactivate TeamDB
+
+TeamService -> UserDB : 권한 회수
+activate UserDB
+
+note over UserDB
+**Policy**: 권한 회수
+- 팀 프리미엄 권한 즉시 종료
+- 개인 무료 계정으로 전환
+- 개인 생성 리소스는 유지
+- 팀 공유 리소스는 접근 불가
+end note
+
+UserDB --> TeamService : 권한 회수 완료
+deactivate UserDB
+
+TeamService -> AccessControl : 접근 권한 갱신
+activate AccessControl
+AccessControl --> TeamService : 권한 업데이트 완료
+deactivate AccessControl
+
+TeamService -> Email : 제거 안내 이메일
+activate Email
+Email -> Member : "팀에서 제거되었습니다" 안내
+deactivate Email
+
+TeamService --> UI : 제거 완료
+deactivate TeamService
+
+UI --> CorpAdmin : "팀원이 제거되었습니다\n라이선스를 다른 팀원에게 할당할 수 있습니다"
+
+deactivate UI
+
+== 자동 갱신 ==
+
+note over TeamService
+계약 만료일 30일 전
+자동 갱신 프로세스 시작
+end note
+
+TeamService -> TeamDB : 갱신 대상 팀 조회
+activate TeamService
+activate TeamDB
+TeamDB --> TeamService : 갱신 예정 팀 목록
+deactivate TeamDB
+
+TeamService -> Email : 갱신 안내 이메일
+activate Email
+Email -> CorpAdmin : 갱신 예정 안내 (30일 전)
+deactivate Email
+
+note over TeamService
+계약 만료일 도래
+end note
+
+TeamService -> Payment : 자동 갱신 결제
+activate Payment
+
+alt 자동 갱신 설정 ON & 결제 성공
+    Payment --> TeamService : 결제 완료
+    deactivate Payment
+    
+    TeamService -> SubDB : 계약 기간 연장
+    activate SubDB
+    
+    note over SubDB
+    **Event**: 라이선스갱신됨
+    **데이터**:
+    - 새 시작일
+    - 새 종료일 (1년 후)
+    - 갱신 차수
+    - 결제 금액
+    end note
+    
+    SubDB --> TeamService : 갱신 완료
+    deactivate SubDB
+    
+    TeamService -> Email : 갱신 완료 이메일
+    activate Email
+    Email -> CorpAdmin : 갱신 완료 및 영수증
+    deactivate Email
+    
+else 자동 갱신 OFF 또는 결제 실패
+    Payment --> TeamService : 결제 불가
+    deactivate Payment
+    
+    TeamService -> Email : 갱신 실패 알림
+    activate Email
+    Email -> CorpAdmin : 수동 갱신 요청
+    deactivate Email
+    
+    note over TeamService
+    만료일 이후 유예기간 7일
+    이후 팀 계정 일시 정지
+    end note
+end
+
+deactivate TeamService
+
+note over CorpAdmin
+**Next Steps**:
+- 팀 리소스 관리
+- ROI 분석
+- 팀 확장 계획
+end note
+
+@enduml

@@ -1,0 +1,190 @@
+@startuml 01-스타터킷탐색
+!theme mono
+
+title 01. 스타터킷 탐색 및 다운로드
+
+actor "일반 사용자" as User
+participant "웹 인터페이스" as UI
+participant "스타터킷 서비스" as StarterKit
+participant "추천 엔진" as RecommendEngine
+participant "분석 시스템" as Analytics
+database "스타터킷 DB" as SKDB
+database "사용자 DB" as UserDB
+
+== 온보딩: 직무 선택 ==
+
+User -> UI : 서비스 첫 방문
+activate UI
+
+note right of User
+**Actor**: 일반 사용자
+**Command 데이터**: 
+- 방문 경로 (UTM)
+- 디바이스 정보
+end note
+
+UI -> UI : 온보딩 화면 표시
+UI -> User : 직무 선택 요청\n(마케터, 개발자, 디자이너, 기획자)
+
+User -> UI : 직무 선택
+note right of User
+**Command**: 직무 선택
+**데이터**: 
+- 선택한 직무 (job_category)
+- 경력 수준 (experience_level)
+end note
+
+UI -> StarterKit : 직무별 스타터킷 요청\n[직무: job_category]
+activate StarterKit
+
+StarterKit -> SKDB : 직무별 스타터킷 조회
+activate SKDB
+SKDB --> StarterKit : 스타터킷 목록 반환
+deactivate SKDB
+
+note over StarterKit
+**Event**: 스타터킷 목록 조회됨
+**데이터**:
+- 스타터킷 ID
+- 직무 카테고리
+- 포함된 도구 목록
+- 프롬프트 템플릿 수
+- 치트시트 수
+- 다운로드 수
+- 평균 평점
+end note
+
+StarterKit -> RecommendEngine : 개인화 추천 요청
+activate RecommendEngine
+
+note over RecommendEngine
+**Policy**: 추천 규칙
+- 신규 사용자: 인기 순 정렬
+- 경력 3년 미만: 입문 레벨 우선
+- 경력 3년 이상: 심화 레벨 포함
+end note
+
+RecommendEngine -> UserDB : 유사 사용자 패턴 조회
+activate UserDB
+UserDB --> RecommendEngine : 유사 사용자 데이터
+deactivate UserDB
+
+RecommendEngine --> StarterKit : 추천 스타터킷 목록
+deactivate RecommendEngine
+
+StarterKit --> UI : 스타터킷 목록 + 추천 정보
+deactivate StarterKit
+
+UI --> User : 스타터킷 목록 표시\n(Quick Start 가이드 포함)
+
+== 스타터킷 상세 조회 ==
+
+User -> UI : 특정 스타터킷 선택
+note right of User
+**Command**: 스타터킷 상세 조회
+**데이터**: 
+- 스타터킷 ID
+end note
+
+UI -> StarterKit : 스타터킷 상세 정보 요청
+activate StarterKit
+
+StarterKit -> SKDB : 상세 정보 조회
+activate SKDB
+SKDB --> StarterKit : 상세 정보 + 포함 리소스
+deactivate SKDB
+
+note over StarterKit
+**Event**: 스타터킷 상세정보 조회됨
+**데이터**:
+- 스타터킷 설명
+- 포함된 AI 도구 목록 (Top 3)
+- 프롬프트 템플릿 30개
+- 치트시트 목록
+- Quick Start 가이드
+- 사용 후기 및 평점
+- 예상 학습 시간 (30분)
+end note
+
+StarterKit --> UI : 상세 정보 반환
+deactivate StarterKit
+
+UI --> User : 스타터킷 상세 페이지 표시
+
+== 스타터킷 다운로드 ==
+
+User -> UI : 다운로드 버튼 클릭
+note right of User
+**Command**: 스타터킷 다운로드
+**데이터**: 
+- 스타터킷 ID
+- 다운로드 형식 (PDF/ZIP)
+end note
+
+alt 로그인 필요
+    UI -> User : 로그인 요청
+    User -> UI : 이메일로 로그인
+    note right of User
+    **Command**: 사용자 로그인
+    **데이터**:
+    - 이메일 주소
+    end note
+    
+    UI -> UserDB : 사용자 인증
+    activate UserDB
+    UserDB --> UI : 인증 토큰
+    deactivate UserDB
+end
+
+UI -> StarterKit : 다운로드 요청
+activate StarterKit
+
+note over StarterKit
+**Policy**: 다운로드 규칙
+- 무료 사용자: 기본 스타터킷만
+- 프리미엄 사용자: 전체 접근
+- 다운로드 횟수 제한 없음
+end note
+
+StarterKit -> SKDB : 다운로드 카운트 증가
+activate SKDB
+SKDB --> StarterKit : 업데이트 완료
+deactivate SKDB
+
+StarterKit -> Analytics : 다운로드 이벤트 기록
+activate Analytics
+
+note over Analytics
+**Event**: 스타터킷 다운로드됨
+**데이터**:
+- 사용자 ID
+- 스타터킷 ID
+- 다운로드 시각
+- 파일 형식
+- 유입 경로
+end note
+
+Analytics --> StarterKit : 기록 완료
+deactivate Analytics
+
+StarterKit --> UI : 다운로드 파일 URL
+deactivate StarterKit
+
+UI --> User : 파일 다운로드 시작
+
+note over User
+**Event**: 사용자가 스타터킷 획득
+**Next Steps**:
+- Quick Start 가이드 학습
+- 프롬프트 템플릿 사용
+- 치트시트 참고
+end note
+
+UI -> Analytics : 사용자 행동 추적 시작
+activate Analytics
+Analytics -> Analytics : 온보딩 완료 여부 모니터링
+deactivate Analytics
+
+deactivate UI
+
+@enduml

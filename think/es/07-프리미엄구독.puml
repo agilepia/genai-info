@@ -1,0 +1,373 @@
+@startuml 07-프리미엄구독
+!theme mono
+
+title 07. 프리미엄 구독 및 패키지 구매
+
+actor "일반 사용자" as User
+participant "웹 인터페이스" as UI
+participant "구독 서비스" as Subscription
+participant "결제 게이트웨이" as Payment
+participant "접근 제어 시스템" as AccessControl
+participant "알림 서비스" as Notification
+participant "분석 시스템" as Analytics
+database "구독 DB" as SubDB
+database "사용자 DB" as UserDB
+database "리소스 DB" as ResourceDB
+
+== 프리미엄 기능 탐색 ==
+
+User -> UI : 서비스 이용 중 프리미엄 콘텐츠 발견
+activate UI
+
+note right of User
+프리미엄 전용 콘텐츠 접근 시도:
+- 심화 프롬프트 템플릿
+- 프리미엄 실무 사례
+- 고급 치트시트
+- 기업 맞춤 리소스
+end note
+
+UI -> AccessControl : 접근 권한 확인
+activate AccessControl
+
+AccessControl -> UserDB : 사용자 구독 상태 조회
+activate UserDB
+UserDB --> AccessControl : 구독 정보 (무료 사용자)
+deactivate UserDB
+
+note over AccessControl
+**Policy**: 접근 제어 규칙
+- 무료: 기본 리소스만
+- 프리미엄 개인: 전체 리소스 + 심화 패키지
+- 프리미엄 팀: 개인 + 팀 관리 기능
+- 워터마크 제거는 프리미엄만
+end note
+
+AccessControl --> UI : 권한 없음
+deactivate AccessControl
+
+UI --> User : 프리미엄 업그레이드 안내 팝업\n(혜택 소개, 요금제 비교)
+
+== 요금제 선택 ==
+
+User -> UI : "프리미엄 보기" 클릭
+note right of User
+**Command**: 요금제 페이지 접속
+end note
+
+UI -> Subscription : 요금제 정보 요청
+activate Subscription
+
+Subscription -> SubDB : 활성 요금제 조회
+activate SubDB
+
+note over SubDB
+**요금제 구조**:
+1. 개인 월간: 9,900원/월
+   - 전체 리소스 접근
+   - 워터마크 제거
+   - AI API 통합 (일 100회)
+   
+2. 개인 연간: 99,000원/년 (17% 할인)
+   - 월간 혜택 포함
+   - 연간 2개 심화 패키지 무료
+   
+3. 심화 패키지 (단품): 29,000원
+   - 직무별 심화 과정
+   - 업종별 특화 사례
+   - 프롬프트 엔지니어링 과정
+end note
+
+SubDB --> Subscription : 요금제 목록
+deactivate SubDB
+
+Subscription --> UI : 요금제 정보 반환
+deactivate Subscription
+
+UI --> User : 요금제 비교 페이지 표시\n(혜택, 가격, 사용자 후기)
+
+User -> UI : 요금제 선택
+note right of User
+**Command**: 요금제 선택
+**데이터**: 
+- 선택한 플랜 (monthly/yearly/package)
+- 패키지 ID (단품 구매 시)
+end note
+
+== 결제 정보 입력 ==
+
+UI --> User : 결제 정보 입력 화면
+
+User -> UI : 결제 정보 입력
+note right of User
+**Command**: 결제 시작
+**데이터**: 
+- 결제 수단 (card/transfer/mobile)
+- 카드 정보 (암호화)
+- 청구 주소
+- 프로모션 코드 (선택)
+end note
+
+alt 프로모션 코드 입력 시
+    UI -> Subscription : 프로모션 코드 검증
+    activate Subscription
+    
+    Subscription -> SubDB : 코드 유효성 확인
+    activate SubDB
+    
+    note over SubDB
+    **Policy**: 프로모션 코드 규칙
+    - 유효 기간 확인
+    - 사용 횟수 제한 확인
+    - 중복 사용 방지
+    - 할인율 또는 무료 기간 적용
+    end note
+    
+    SubDB --> Subscription : 코드 검증 결과
+    deactivate SubDB
+    
+    alt 유효한 코드
+        Subscription --> UI : 할인 적용
+        UI --> User : 할인된 금액 표시
+    else 무효한 코드
+        Subscription --> UI : 코드 오류
+        UI --> User : "유효하지 않은 코드입니다"
+    end
+    deactivate Subscription
+end
+
+UI -> Payment : 결제 요청
+activate Payment
+
+note right of Payment
+**External System**: 결제 게이트웨이
+- PG사: 토스페이먼츠, 나이스페이, KG이니시스 등
+- 결제 수단: 신용카드, 계좌이체, 간편결제
+end note
+
+Payment -> Payment : 결제 처리
+
+note over Payment
+**Policy**: 결제 처리 규칙
+- PCI-DSS 준수
+- 카드 정보 암호화 저장 안함
+- 결제 실패 시 자동 재시도 (3회)
+- 해외 결제 차단 (옵션)
+end note
+
+alt 결제 성공
+    Payment --> UI : 결제 승인
+    
+    note over Payment
+    **Event**: 결제 승인됨
+    **데이터**:
+    - 결제 ID
+    - 거래 번호
+    - 승인 번호
+    - 결제 금액
+    - 결제 수단
+    - 결제 시각
+    end note
+    
+    UI -> Subscription : 구독 활성화 요청
+    activate Subscription
+    
+    Subscription -> SubDB : 구독 레코드 생성
+    activate SubDB
+    
+    note over SubDB
+    **Event**: 구독 생성됨
+    **데이터**:
+    - 구독 ID
+    - 사용자 ID
+    - 플랜 유형
+    - 시작일
+    - 종료일 (갱신일)
+    - 결제 ID
+    - 자동 갱신 여부
+    - 상태 (active)
+    end note
+    
+    SubDB --> Subscription : 구독 생성 완료
+    deactivate SubDB
+    
+    Subscription -> UserDB : 사용자 권한 업그레이드
+    activate UserDB
+    
+    note over UserDB
+    **Event**: 사용자 권한 업데이트됨
+    **데이터**:
+    - 사용자 등급: premium
+    - 업그레이드 시각
+    - 만료 예정일
+    end note
+    
+    UserDB --> Subscription : 권한 업데이트 완료
+    deactivate UserDB
+    
+    Subscription -> AccessControl : 접근 권한 새로고침
+    activate AccessControl
+    AccessControl --> Subscription : 권한 캐시 업데이트 완료
+    deactivate AccessControl
+    
+    Subscription -> Notification : 구독 완료 알림
+    activate Notification
+    
+    note over Notification
+    **Event**: 구독 완료 알림 발송
+    **데이터**:
+    - 환영 메시지
+    - 구독 정보 요약
+    - 프리미엄 가이드 링크
+    - 영수증 링크
+    end note
+    
+    Notification -> User : 이메일 + 앱 알림
+    deactivate Notification
+    
+    Subscription -> Analytics : 전환 이벤트 기록
+    activate Analytics
+    
+    note over Analytics
+    **Event**: 프리미엄 전환됨
+    **데이터**:
+    - 사용자 ID
+    - 선택 플랜
+    - 전환 시각
+    - 유입 경로
+    - 가입 후 경과일
+    - 전환 금액
+    - 프로모션 코드 사용 여부
+    end note
+    
+    Analytics --> Subscription : 기록 완료
+    deactivate Analytics
+    
+    Subscription --> UI : 구독 활성화 완료
+    deactivate Subscription
+    
+    UI --> User : 구독 완료 페이지\n"환영합니다! 프리미엄 회원이 되셨습니다"
+    
+else 결제 실패
+    Payment --> UI : 결제 실패 (사유)
+    deactivate Payment
+    
+    UI --> User : 결제 실패 안내\n(카드 정보 확인, 한도 부족 등)
+    
+    User -> UI : 결제 정보 수정 또는 재시도
+end
+
+== 프리미엄 콘텐츠 접근 ==
+
+User -> UI : 프리미엄 전용 리소스 접근
+activate UI
+
+UI -> AccessControl : 접근 권한 재확인
+activate AccessControl
+
+AccessControl -> UserDB : 사용자 구독 상태 조회
+activate UserDB
+UserDB --> AccessControl : 프리미엄 회원
+deactivate UserDB
+
+AccessControl --> UI : 접근 허용
+deactivate AccessControl
+
+UI -> ResourceDB : 프리미엄 리소스 조회
+activate ResourceDB
+
+note over ResourceDB
+**Event**: 프리미엄 리소스 조회됨
+**Policy**: 
+- 워터마크 제거된 버전
+- 고급 프롬프트 템플릿
+- 심화 실무 사례
+- 기업 맞춤 리소스
+end note
+
+ResourceDB --> UI : 프리미엄 리소스 반환
+deactivate ResourceDB
+
+UI --> User : 프리미엄 콘텐츠 표시
+
+deactivate UI
+
+== 구독 관리 ==
+
+User -> UI : "구독 관리" 페이지 접속
+activate UI
+
+UI -> Subscription : 구독 정보 요청
+activate Subscription
+
+Subscription -> SubDB : 구독 상세 조회
+activate SubDB
+SubDB --> Subscription : 구독 정보
+deactivate SubDB
+
+note over Subscription
+**데이터**:
+- 현재 플랜
+- 시작일 / 갱신일
+- 결제 수단
+- 결제 내역
+- 다음 결제 예정일
+- 자동 갱신 상태
+end note
+
+Subscription --> UI : 구독 정보 반환
+deactivate Subscription
+
+UI --> User : 구독 관리 대시보드\n(플랜 변경, 결제 수단 변경, 해지 버튼)
+
+alt 구독 해지 요청
+    User -> UI : "구독 해지" 버튼 클릭
+    note right of User
+    **Command**: 구독 해지
+    **데이터**: 
+    - 해지 사유 (선택)
+    end note
+    
+    UI --> User : 해지 확인 팝업\n"정말 해지하시겠습니까?\n현재 기간 만료까지는 사용 가능합니다"
+    
+    User -> UI : 해지 확인
+    
+    UI -> Subscription : 구독 해지 처리
+    activate Subscription
+    
+    Subscription -> SubDB : 자동 갱신 비활성화
+    activate SubDB
+    
+    note over SubDB
+    **Event**: 구독 해지 예약됨
+    **데이터**:
+    - 해지 예정일 (현재 기간 만료일)
+    - 해지 사유
+    - 해지 요청 시각
+    - 상태: canceling
+    end note
+    
+    SubDB --> Subscription : 해지 예약 완료
+    deactivate SubDB
+    
+    Subscription -> Notification : 해지 확인 알림
+    activate Notification
+    Notification -> User : 해지 확인 이메일
+    deactivate Notification
+    
+    Subscription --> UI : 해지 처리 완료
+    deactivate Subscription
+    
+    UI --> User : "해지가 예약되었습니다.\nXXXX-XX-XX까지 사용 가능합니다."
+end
+
+deactivate UI
+
+note over User
+**Next Steps**:
+- 프리미엄 리소스 활용
+- 심화 학습 진행
+- ROI 추적 및 평가
+end note
+
+@enduml

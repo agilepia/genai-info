@@ -1,0 +1,262 @@
+@startuml 03-치트시트조회
+!theme mono
+
+title 03. 치트시트 조회 및 저장
+
+actor "일반 사용자" as User
+participant "웹 인터페이스" as UI
+participant "치트시트 서비스" as Cheatsheet
+participant "렌더링 엔진" as Renderer
+participant "다운로드 서비스" as Download
+participant "분석 시스템" as Analytics
+database "치트시트 DB" as CSDB
+database "사용자 DB" as UserDB
+
+== 치트시트 탐색 ==
+
+User -> UI : 치트시트 섹션 접속
+activate UI
+
+UI -> Cheatsheet : 치트시트 목록 요청
+activate Cheatsheet
+
+Cheatsheet -> CSDB : AI 도구별 치트시트 조회
+activate CSDB
+
+note over CSDB
+**Policy**: 치트시트 분류
+- AI 도구별 (ChatGPT, Claude, Midjourney 등)
+- 직무별 (마케터, 개발자, 디자이너 등)
+- 난이도별 (입문, 중급, 고급)
+end note
+
+CSDB --> Cheatsheet : 치트시트 목록
+deactivate CSDB
+
+note over Cheatsheet
+**Event**: 치트시트 목록 조회됨
+**데이터**:
+- 치트시트 ID
+- AI 도구명
+- 대상 직무
+- 썸네일 이미지
+- 다운로드 수
+- 평균 평점
+- 마지막 업데이트 날짜
+- 버전 정보
+end note
+
+Cheatsheet --> UI : 치트시트 목록 반환
+deactivate Cheatsheet
+
+UI --> User : 치트시트 그리드 표시\n(필터: AI 도구, 직무, 인기순)
+
+== 치트시트 미리보기 ==
+
+User -> UI : 특정 치트시트 선택
+note right of User
+**Command**: 치트시트 미리보기
+**데이터**: 
+- 치트시트 ID
+end note
+
+UI -> Cheatsheet : 치트시트 상세 요청
+activate Cheatsheet
+
+Cheatsheet -> CSDB : 치트시트 원본 조회
+activate CSDB
+CSDB --> Cheatsheet : 치트시트 데이터 (SVG/PDF)
+deactivate CSDB
+
+Cheatsheet -> Renderer : 웹 렌더링 요청
+activate Renderer
+
+note over Renderer
+**Policy**: 렌더링 규칙
+- 고해상도 유지
+- 반응형 레이아웃
+- 확대/축소 기능
+- 무료: 워터마크 포함
+- 프리미엄: 워터마크 제거
+end note
+
+Renderer --> Cheatsheet : 렌더링된 이미지/HTML
+deactivate Renderer
+
+note over Cheatsheet
+**Event**: 치트시트 렌더링 완료
+**데이터**:
+- 치트시트 제목
+- AI 도구 로고
+- 주요 기능 요약 (5-10개)
+- 단축키 목록
+- 프롬프트 예시
+- 활용 팁
+- 버전 및 작성자 정보
+end note
+
+Cheatsheet --> UI : 렌더링된 치트시트
+deactivate Cheatsheet
+
+UI --> User : 치트시트 미리보기 화면\n(확대/축소, 인쇄, 다운로드 버튼)
+
+== 치트시트 다운로드 ==
+
+User -> UI : 다운로드 버튼 클릭
+note right of User
+**Command**: 치트시트 다운로드
+**데이터**: 
+- 치트시트 ID
+- 파일 형식 (PDF/PNG/SVG)
+- 해상도 (인쇄용/화면용)
+end note
+
+alt 프리미엄 전용 치트시트인 경우
+    UI -> UserDB : 사용자 권한 확인
+    activate UserDB
+    
+    note over UserDB
+    **Policy**: 접근 권한 규칙
+    - 무료: 기본 치트시트만
+    - 프리미엄: 전체 접근
+    - 워터마크 제거는 프리미엄만
+    end note
+    
+    alt 권한 없음
+        UserDB --> UI : 권한 부족
+        deactivate UserDB
+        UI --> User : 프리미엄 업그레이드 안내
+        User -> UI : 프리미엄 구독 또는 취소
+    end
+end
+
+UI -> Download : 다운로드 파일 생성 요청
+activate Download
+
+Download -> CSDB : 원본 파일 조회
+activate CSDB
+CSDB --> Download : 치트시트 원본
+deactivate CSDB
+
+Download -> Download : 파일 형식 변환 및 최적화
+
+note over Download
+**Event**: 다운로드 파일 생성됨
+**데이터**:
+- 파일 형식
+- 파일 크기
+- 해상도
+- 워터마크 여부
+- 생성 시각
+end note
+
+Download -> Analytics : 다운로드 이벤트 기록
+activate Analytics
+
+note over Analytics
+**Event**: 치트시트 다운로드됨
+**데이터**:
+- 사용자 ID
+- 치트시트 ID
+- 파일 형식
+- 다운로드 시각
+- 디바이스 정보
+end note
+
+Analytics -> CSDB : 다운로드 카운트 증가
+activate CSDB
+CSDB --> Analytics : 업데이트 완료
+deactivate CSDB
+
+Analytics --> Download : 기록 완료
+deactivate Analytics
+
+Download --> UI : 다운로드 URL
+deactivate Download
+
+UI --> User : 파일 다운로드 시작
+
+note over User
+**치트시트 활용 방법**:
+- 데스크탑 배경화면 설정
+- 인쇄하여 책상에 비치
+- 태블릿/모바일에 저장
+- 팀원들과 공유
+end note
+
+== 치트시트 인쇄 ==
+
+alt 인쇄 버튼 클릭 시
+    User -> UI : 인쇄 버튼 클릭
+    note right of User
+    **Command**: 치트시트 인쇄
+    **데이터**: 
+    - 치트시트 ID
+    - 용지 크기 (A4/Letter)
+    - 방향 (세로/가로)
+    end note
+    
+    UI -> Renderer : 인쇄용 레이아웃 생성
+    activate Renderer
+    
+    note over Renderer
+    **Policy**: 인쇄 최적화 규칙
+    - 고해상도 출력 (300dpi)
+    - 여백 최소화
+    - 컬러/흑백 옵션
+    end note
+    
+    Renderer --> UI : 인쇄용 페이지
+    deactivate Renderer
+    
+    UI --> User : 브라우저 인쇄 대화상자 표시
+end
+
+== 치트시트 공유 ==
+
+User -> UI : 공유 버튼 클릭
+note right of User
+**Command**: 치트시트 공유
+**데이터**: 
+- 치트시트 ID
+- 공유 방식 (링크/이메일/SNS)
+end note
+
+UI -> Cheatsheet : 공유 링크 생성 요청
+activate Cheatsheet
+
+Cheatsheet -> Cheatsheet : 고유 공유 링크 생성
+
+note over Cheatsheet
+**Event**: 공유 링크 생성됨
+**데이터**:
+- 공유 링크 URL
+- 치트시트 ID
+- 생성 시각
+- 만료 기한 (없음)
+end note
+
+Cheatsheet -> Analytics : 공유 이벤트 기록
+activate Analytics
+
+Analytics --> Cheatsheet : 기록 완료
+deactivate Analytics
+
+Cheatsheet --> UI : 공유 링크 반환
+deactivate Cheatsheet
+
+UI --> User : 공유 옵션 표시\n(링크 복사, 이메일, 카카오톡, 슬랙 등)
+
+User -> UI : 공유 방식 선택
+UI --> User : 공유 완료 알림
+
+deactivate UI
+
+note over User
+**Next Steps**:
+- 치트시트 실무 활용
+- 활용 후기 작성
+- 다른 치트시트 탐색
+end note
+
+@enduml

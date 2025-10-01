@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>온보딩 - GenAI Info</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .onboarding {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary-50) 0%, var(--bg-secondary) 100%);
+      padding: var(--space-6);
+    }
+
+    .onboarding__container {
+      max-width: 600px;
+      width: 100%;
+      background: var(--bg-primary);
+      border-radius: 16px;
+      padding: var(--space-8);
+      box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .onboarding__logo {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-6);
+    }
+
+    .onboarding__title {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .onboarding__description {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-8);
+    }
+
+    .onboarding__section {
+      margin-bottom: var(--space-8);
+      text-align: left;
+    }
+
+    .onboarding__section-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+      text-align: center;
+    }
+
+    .job-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .job-card {
+      padding: var(--space-6);
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      background: var(--bg-primary);
+    }
+
+    .job-card:hover {
+      border-color: var(--primary-300);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .job-card.selected {
+      border-color: var(--primary-500);
+      background: var(--primary-50);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .job-card__icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-3);
+    }
+
+    .job-card__name {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      color: var(--text-primary);
+    }
+
+    .experience-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .experience-option {
+      display: flex;
+      align-items: center;
+      padding: var(--space-4);
+      border: 2px solid var(--gray-200);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .experience-option:hover {
+      border-color: var(--primary-300);
+      background: var(--gray-50);
+    }
+
+    .experience-option.selected {
+      border-color: var(--primary-500);
+      background: var(--primary-50);
+    }
+
+    .experience-option input[type="radio"] {
+      width: 24px;
+      height: 24px;
+      margin-right: var(--space-3);
+      cursor: pointer;
+    }
+
+    .experience-option__content {
+      flex: 1;
+    }
+
+    .experience-option__title {
+      font-size: var(--text-base);
+      font-weight: var(--font-medium);
+      color: var(--text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .experience-option__description {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+    }
+
+    .onboarding__actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-8);
+    }
+
+    .error-message {
+      color: var(--error-500);
+      font-size: var(--text-sm);
+      padding: var(--space-3);
+      background: var(--error-50);
+      border-radius: 8px;
+      display: none;
+      margin-bottom: var(--space-4);
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .job-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .onboarding__container {
+        padding: var(--space-6);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="onboarding">
+    <div class="onboarding__container">
+      <div class="onboarding__logo">🤖</div>
+      <h1 class="onboarding__title">환영합니다!</h1>
+      <p class="onboarding__description">
+        당신의 업무에 맞는 AI 리소스를 찾아보세요
+      </p>
+
+      <div id="errorMessage" class="error-message"></div>
+
+      <div class="onboarding__section">
+        <h2 class="onboarding__section-title">직무를 선택해주세요</h2>
+        <div class="job-cards" id="jobCards">
+          <div class="job-card" data-job="마케터">
+            <div class="job-card__icon">📊</div>
+            <div class="job-card__name">마케터</div>
+          </div>
+          <div class="job-card" data-job="개발자">
+            <div class="job-card__icon">💻</div>
+            <div class="job-card__name">개발자</div>
+          </div>
+          <div class="job-card" data-job="디자이너">
+            <div class="job-card__icon">🎨</div>
+            <div class="job-card__name">디자이너</div>
+          </div>
+          <div class="job-card" data-job="기획자">
+            <div class="job-card__icon">📋</div>
+            <div class="job-card__name">기획자</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="onboarding__section">
+        <h2 class="onboarding__section-title">경력 수준을 선택해주세요</h2>
+        <div class="experience-options">
+          <label class="experience-option">
+            <input type="radio" name="experience" value="입문">
+            <div class="experience-option__content">
+              <div class="experience-option__title">3년 미만 (입문)</div>
+              <div class="experience-option__description">AI 도구를 처음 사용하거나 기본 활용을 배우고 싶어요</div>
+            </div>
+          </label>
+          <label class="experience-option">
+            <input type="radio" name="experience" value="심화">
+            <div class="experience-option__content">
+              <div class="experience-option__title">3년 이상 (심화)</div>
+              <div class="experience-option__description">AI 도구를 이미 사용 중이며 고급 활용법을 배우고 싶어요</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="onboarding__actions">
+        <button class="btn btn-primary btn-full btn-lg" onclick="handleStart()">
+          시작하기 →
+        </button>
+        <button class="btn btn-tertiary btn-full" onclick="handleSkip()">
+          건너뛰기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="common.js"></script>
+  <script>
+    let selectedJob = null;
+    let selectedExperience = null;
+
+    // 직무 카드 클릭 처리
+    document.querySelectorAll('.job-card').forEach(card => {
+      card.addEventListener('click', function() {
+        document.querySelectorAll('.job-card').forEach(c => c.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedJob = this.dataset.job;
+      });
+    });
+
+    // 경력 라디오 버튼 처리
+    document.querySelectorAll('input[name="experience"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        document.querySelectorAll('.experience-option').forEach(opt => opt.classList.remove('selected'));
+        this.closest('.experience-option').classList.add('selected');
+        selectedExperience = this.value;
+      });
+    });
+
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+      setTimeout(() => errorEl.classList.remove('show'), 3000);
+    }
+
+    function handleStart() {
+      if (!selectedJob) {
+        showError('⚠️ 직무를 선택해주세요');
+        return;
+      }
+      if (!selectedExperience) {
+        showError('⚠️ 경력 수준을 선택해주세요');
+        return;
+      }
+
+      // 로컬스토리지에 저장
+      localStorage.setItem('onboarding', JSON.stringify({
+        job: selectedJob,
+        experience: selectedExperience,
+        completedAt: new Date().toISOString()
+      }));
+
+      // 대시보드로 이동
+      setTimeout(() => {
+        navigateTo('03-대시보드.html');
+      }, 500);
+    }
+
+    function handleSkip() {
+      navigateTo('03-대시보드.html');
+    }
+  </script>
+</body>
+</html>

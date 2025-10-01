@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <!-- 배경 -->
+  <rect width="1200" height="900" fill="#f8f9fa"/>
+  
+  <!-- 그리드 영역 -->
+  <rect x="150" y="50" width="900" height="700" fill="white" stroke="#dee2e6" stroke-width="2"/>
+  
+  <!-- 4개 영역 배경 -->
+  <!-- Unwise (좌하) -->
+  <rect x="150" y="400" width="450" height="350" fill="#fff3cd" opacity="0.3"/>
+  <!-- Utilities (우하) -->
+  <rect x="600" y="400" width="450" height="350" fill="#d1ecf1" opacity="0.3"/>
+  <!-- Big Bets (좌상) -->
+  <rect x="150" y="50" width="450" height="350" fill="#f8d7da" opacity="0.3"/>
+  <!-- No Brainers (우상) -->
+  <rect x="600" y="50" width="450" height="350" fill="#d4edda" opacity="0.3"/>
+  
+  <!-- 중앙 구분선 -->
+  <line x1="600" y1="50" x2="600" y2="750" stroke="#6c757d" stroke-width="2" stroke-dasharray="5,5"/>
+  <line x1="150" y1="400" x2="1050" y2="400" stroke="#6c757d" stroke-width="2" stroke-dasharray="5,5"/>
+  
+  <!-- 영역 라벨 -->
+  <text x="375" y="100" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#721c24" text-anchor="middle">Big Bets</text>
+  <text x="825" y="100" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#155724" text-anchor="middle">No Brainers</text>
+  <text x="375" y="700" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#856404" text-anchor="middle">Unwise</text>
+  <text x="825" y="700" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#0c5460" text-anchor="middle">Utilities</text>
+  
+  <!-- X축 (실현가능성) -->
+  <line x1="150" y1="750" x2="1050" y2="750" stroke="#495057" stroke-width="2"/>
+  <text x="600" y="800" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#495057" text-anchor="middle">실현가능성 (Feasibility)</text>
+  <text x="150" y="780" font-family="Arial, sans-serif" font-size="14" fill="#6c757d" text-anchor="middle">낮음</text>
+  <text x="1050" y="780" font-family="Arial, sans-serif" font-size="14" fill="#6c757d" text-anchor="end">높음</text>
+  
+  <!-- Y축 (비즈니스 영향도) -->
+  <line x1="150" y1="50" x2="150" y2="750" stroke="#495057" stroke-width="2"/>
+  <text x="100" y="400" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#495057" text-anchor="middle" transform="rotate(-90 100 400)">비즈니스 영향도 (Impact)</text>
+  <text x="130" y="750" font-family="Arial, sans-serif" font-size="14" fill="#6c757d" text-anchor="end">낮음</text>
+  <text x="130" y="60" font-family="Arial, sans-serif" font-size="14" fill="#6c757d" text-anchor="end">높음</text>
+  
+  <!-- 솔루션 포인트 (좌표 계산: X = 150 + (실현가능성/5)*900, Y = 750 - (비즈니스영향도/3)*700) -->
+  
+  <!-- 솔루션 1: (5, 2) - No Brainers -->
+  <circle cx="1050" cy="283" r="25" fill="#28a745" opacity="0.8"/>
+  <text x="1050" y="293" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S1</text>
+  
+  <!-- 솔루션 2: (0, 3) - Big Bets -->
+  <circle cx="150" cy="50" r="25" fill="#dc3545" opacity="0.8"/>
+  <text x="150" y="60" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S2</text>
+  
+  <!-- 솔루션 3: (0, 1) -->
+  <circle cx="150" cy="517" r="20" fill="#6c757d" opacity="0.6"/>
+  <text x="150" y="525" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">S3</text>
+  
+  <!-- 솔루션 4: (0, 2) - Big Bets -->
+  <circle cx="150" cy="283" r="25" fill="#dc3545" opacity="0.8"/>
+  <text x="150" y="293" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S4</text>
+  
+  <!-- 솔루션 5: (0, 2) - Big Bets -->
+  <circle cx="190" cy="283" r="25" fill="#dc3545" opacity="0.8"/>
+  <text x="190" y="293" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S5</text>
+  
+  <!-- 솔루션 6: (3, 0) - Utilities -->
+  <circle cx="690" cy="750" r="25" fill="#17a2b8" opacity="0.8"/>
+  <text x="690" y="760" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S6</text>
+  
+  <!-- 솔루션 7: (0, 2) - Big Bets -->
+  <circle cx="230" cy="283" r="25" fill="#dc3545" opacity="0.8"/>
+  <text x="230" y="293" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S7</text>
+  
+  <!-- 솔루션 8: (3, 0) - Utilities -->
+  <circle cx="730" cy="750" r="25" fill="#17a2b8" opacity="0.8"/>
+  <text x="730" y="760" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S8</text>
+  
+  <!-- 솔루션 9: (3, 0) - Utilities -->
+  <circle cx="770" cy="750" r="25" fill="#17a2b8" opacity="0.8"/>
+  <text x="770" y="760" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S9</text>
+  
+  <!-- 솔루션 10: (0, 1) -->
+  <circle cx="150" cy="550" r="20" fill="#6c757d" opacity="0.6"/>
+  <text x="150" y="558" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">S10</text>
+  
+  <!-- 솔루션 11: (1, 0) -->
+  <circle cx="330" cy="750" r="20" fill="#6c757d" opacity="0.6"/>
+  <text x="330" y="758" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">S11</text>
+  
+  <!-- 솔루션 12: (0, 1) -->
+  <circle cx="190" cy="517" r="20" fill="#6c757d" opacity="0.6"/>
+  <text x="190" y="525" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">S12</text>
+  
+  <!-- 솔루션 13: (0, 1) -->
+  <circle cx="230" cy="517" r="20" fill="#6c757d" opacity="0.6"/>
+  <text x="230" y="525" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">S13</text>
+  
+  <!-- 솔루션 14-16: (0, 0) - Unwise -->
+  <circle cx="150" cy="720" r="15" fill="#6c757d" opacity="0.4"/>
+  <text x="150" y="727" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">S14</text>
+  
+  <circle cx="180" cy="720" r="15" fill="#6c757d" opacity="0.4"/>
+  <text x="180" y="727" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">S15</text>
+  
+  <circle cx="210" cy="720" r="15" fill="#6c757d" opacity="0.4"/>
+  <text x="210" y="727" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">S16</text>
+  
+  <!-- 범례 -->
+  <text x="50" y="850" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#495057">범례:</text>
+  
+  <text x="50" y="875" font-family="Arial, sans-serif" font-size="12" fill="#495057">S1: 빠른 AI 진단 서비스</text>
+  <text x="250" y="875" font-family="Arial, sans-serif" font-size="12" fill="#495057">S2: 지능형 AI 큐레이션 플랫폼</text>
+  <text x="480" y="875" font-family="Arial, sans-serif" font-size="12" fill="#495057">S3: 종합 AI 학습 플랫폼</text>
+  <text x="680" y="875" font-family="Arial, sans-serif" font-size="12" fill="#495057">S4: AI 활용 성과 공유 커뮤니티</text>
+  <text x="920" y="875" font-family="Arial, sans-serif" font-size="12" fill="#495057">S5: AI 통합 워크플로우 플랫폼</text>
+  
+  <text x="50" y="895" font-family="Arial, sans-serif" font-size="12" fill="#495057">S6: AI 도구 비교/분석 대시보드</text>
+  <text x="280" y="895" font-family="Arial, sans-serif" font-size="12" fill="#495057">S7: AI 성능 벤치마킹 플랫폼</text>
+  <text x="500" y="895" font-family="Arial, sans-serif" font-size="12" fill="#495057">S8: AI 활용 리소스 라이브러리</text>
+  <text x="720" y="895" font-family="Arial, sans-serif" font-size="12" fill="#495057">S9: 주간 AI 활용 팁 뉴스레터</text>
+</svg>

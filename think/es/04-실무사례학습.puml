@@ -1,0 +1,291 @@
+@startuml 04-실무사례학습
+!theme mono
+
+title 04. 실무사례 학습
+
+actor "일반 사용자" as User
+participant "웹 인터페이스" as UI
+participant "사례 서비스" as CaseStudy
+participant "추천 엔진" as Recommend
+participant "분석 시스템" as Analytics
+database "사례 DB" as CaseDB
+database "사용자 DB" as UserDB
+
+== 실무사례 탐색 ==
+
+User -> UI : 실무사례 섹션 접속
+activate UI
+
+UI --> User : 사례 탐색 화면 표시\n(업종별, 직무별, AI 도구별 필터)
+
+User -> UI : 필터 선택 또는 검색어 입력
+note right of User
+**Command**: 실무사례 검색
+**데이터**: 
+- 업종 (industry)
+- 직무 (job_category)
+- AI 도구 (ai_tool)
+- 업무 유형 (task_type)
+- 성과 지표 (효율 개선율 등)
+- 정렬 기준
+end note
+
+UI -> CaseStudy : 사례 검색 요청
+activate CaseStudy
+
+CaseStudy -> CaseDB : 사례 검색 쿼리 실행
+activate CaseDB
+
+note over CaseDB
+**Policy**: 사례 검색 규칙
+- 검증된 사례만 노출
+- Before/After 데이터 필수
+- ROI 정보 포함 우선
+- 최근 6개월 이내 우선
+end note
+
+CaseDB --> CaseStudy : 검색 결과 목록
+deactivate CaseDB
+
+note over CaseStudy
+**Event**: 실무사례 검색 완료
+**데이터**:
+- 사례 ID
+- 기업/개인명 (익명 가능)
+- 업종 및 직무
+- 사용한 AI 도구
+- 해결한 업무 과제
+- 주요 성과 지표
+- Before/After 비교
+- 작성 날짜
+end note
+
+CaseStudy -> Recommend : 개인화 추천 요청
+activate Recommend
+
+Recommend -> UserDB : 사용자 관심사 조회
+activate UserDB
+UserDB --> Recommend : 사용자 프로필 데이터
+deactivate UserDB
+
+note over Recommend
+**Policy**: 추천 규칙
+- 사용자와 동일 직무 사례 우선
+- 과거 조회/저장한 사례와 유사한 것
+- 높은 평가를 받은 사례
+end note
+
+Recommend --> CaseStudy : 추천 사례 목록
+deactivate Recommend
+
+CaseStudy --> UI : 검색 결과 + 추천 사례
+deactivate CaseStudy
+
+UI --> User : 사례 카드 목록 표시\n(썸네일, 핵심 지표, 태그)
+
+== 사례 상세 조회 ==
+
+User -> UI : 특정 사례 선택
+note right of User
+**Command**: 사례 상세 조회
+**데이터**: 
+- 사례 ID
+end note
+
+UI -> CaseStudy : 사례 상세 정보 요청
+activate CaseStudy
+
+CaseStudy -> CaseDB : 상세 정보 조회
+activate CaseDB
+CaseDB --> CaseStudy : 사례 전체 내용
+deactivate CaseDB
+
+note over CaseStudy
+**Event**: 사례 상세정보 조회됨
+**데이터**:
+- 배경 및 도전 과제
+- 선택한 AI 도구 및 이유
+- 구체적인 활용 방법
+- 사용한 프롬프트 (링크)
+- 단계별 실행 과정
+- Before/After 상세 비교
+  * 소요 시간 감소율
+  * 비용 절감 효과
+  * 품질 개선 지표
+- 예상치 못한 부작용 및 해결
+- 팁 및 주의사항
+- 관련 리소스 링크
+end note
+
+CaseStudy -> Analytics : 조회 이벤트 기록
+activate Analytics
+
+note over Analytics
+**Event**: 사례 조회됨
+**데이터**:
+- 사용자 ID
+- 사례 ID
+- 조회 시각
+- 체류 시간 (추적 시작)
+end note
+
+Analytics --> CaseStudy : 기록 완료
+deactivate Analytics
+
+CaseStudy --> UI : 사례 상세 정보 반환
+deactivate CaseStudy
+
+UI --> User : 사례 상세 페이지 표시\n(저장, 공유, 프롬프트 보기 버튼)
+
+== 프롬프트 및 리소스 연결 ==
+
+User -> UI : "사용된 프롬프트 보기" 버튼 클릭
+note right of User
+**Command**: 연관 프롬프트 조회
+**데이터**: 
+- 사례 ID
+end note
+
+UI -> CaseStudy : 연관 프롬프트 요청
+activate CaseStudy
+
+CaseStudy -> CaseDB : 사례에서 사용된 프롬프트 ID 조회
+activate CaseDB
+CaseDB --> CaseStudy : 프롬프트 ID 목록
+deactivate CaseDB
+
+note over CaseStudy
+**Event**: 연관 프롬프트 로드됨
+**Policy**: 
+- 사례에서 실제 사용된 프롬프트만
+- 프롬프트 템플릿 페이지로 바로 이동 가능
+end note
+
+CaseStudy --> UI : 프롬프트 목록 반환
+deactivate CaseStudy
+
+UI --> User : 프롬프트 목록 표시 (팝업/사이드바)
+
+User -> UI : 프롬프트 선택하여 상세보기
+note over User, UI
+→ 02-프롬프트활용 플로우로 이동
+end note
+
+== 사례 저장 ==
+
+User -> UI : "저장" 버튼 클릭
+note right of User
+**Command**: 사례 저장
+**데이터**: 
+- 사례 ID
+- 저장 폴더명 (선택)
+- 메모 (선택)
+end note
+
+UI -> UserDB : 저장된 사례 추가
+activate UserDB
+
+note over UserDB
+**Event**: 사례 저장됨
+**데이터**:
+- 사용자 ID
+- 사례 ID
+- 저장 시각
+- 폴더명
+- 개인 메모
+end note
+
+UserDB --> UI : 저장 완료
+deactivate UserDB
+
+UI --> User : 저장 완료 알림
+
+== ROI 계산기 ==
+
+User -> UI : "ROI 계산해보기" 버튼 클릭
+note right of User
+**Command**: ROI 계산
+**데이터**: 
+- 사례 ID
+- 사용자 입력:
+  * 현재 소요 시간 (시간/주)
+  * 시간당 비용 (원)
+  * 예상 적용 기간 (개월)
+end note
+
+UI -> CaseStudy : ROI 계산 요청
+activate CaseStudy
+
+CaseStudy -> CaseStudy : ROI 계산 로직 실행
+
+note over CaseStudy
+**Policy**: ROI 계산 규칙
+- 사례의 효율 개선율 적용
+- 시간 절감 → 금액 환산
+- 도구 비용 차감
+- 학습 기간 고려 (첫 달 50% 효율)
+
+**계산 공식**:
+예상 절감액 = (현재 소요시간 × 효율개선율 
+× 시간당비용 × 주당근무일 × 4.3주 × 개월)
+- 도구 구독비용
+end note
+
+note over CaseStudy
+**Event**: ROI 계산 완료
+**데이터**:
+- 예상 시간 절감 (시간/월)
+- 예상 비용 절감 (원/월)
+- 총 절감 효과 (원/기간)
+- 투자 회수 기간 (개월)
+- 손익분기점
+end note
+
+CaseStudy --> UI : ROI 계산 결과
+deactivate CaseStudy
+
+UI --> User : ROI 계산 결과 표시\n(시각화된 그래프 포함)
+
+== 사례 공유 ==
+
+User -> UI : "공유" 버튼 클릭
+note right of User
+**Command**: 사례 공유
+**데이터**: 
+- 사례 ID
+- 공유 채널 (링크/이메일/SNS)
+end note
+
+UI -> CaseStudy : 공유 링크 생성
+activate CaseStudy
+
+CaseStudy -> Analytics : 공유 이벤트 기록
+activate Analytics
+
+note over Analytics
+**Event**: 사례 공유됨
+**데이터**:
+- 사용자 ID
+- 사례 ID
+- 공유 채널
+- 공유 시각
+end note
+
+Analytics --> CaseStudy : 기록 완료
+deactivate Analytics
+
+CaseStudy --> UI : 공유 링크
+deactivate CaseStudy
+
+UI --> User : 공유 옵션 표시
+
+deactivate UI
+
+note over User
+**Next Steps**:
+- 유사 사례 추가 탐색
+- 프롬프트 실제 활용
+- 자신의 성공 사례 기여
+end note
+
+@enduml

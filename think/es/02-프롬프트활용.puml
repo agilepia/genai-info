@@ -1,0 +1,237 @@
+@startuml 02-프롬프트활용
+!theme mono
+
+title 02. 프롬프트 템플릿 검색 및 활용
+
+actor "일반 사용자" as User
+participant "웹 인터페이스" as UI
+participant "검색 서비스" as Search
+participant "프롬프트 서비스" as Prompt
+participant "AI 도구 API" as AITool
+participant "사용 추적 시스템" as Tracking
+database "프롬프트 DB" as PromptDB
+database "사용자 DB" as UserDB
+
+== 프롬프트 검색 ==
+
+User -> UI : 프롬프트 검색 페이지 접속
+activate UI
+
+UI --> User : 검색 인터페이스 표시\n(직무별 필터, 업무 유형별 카테고리)
+
+User -> UI : 검색어 입력 또는 필터 선택
+note right of User
+**Command**: 프롬프트 검색
+**데이터**: 
+- 검색 키워드
+- 직무 필터 (job_category)
+- 업무 유형 (task_type)
+- AI 도구 필터 (ai_tool)
+- 정렬 기준 (인기순/최신순/평점순)
+end note
+
+UI -> Search : 검색 요청
+activate Search
+
+Search -> PromptDB : 프롬프트 검색 쿼리 실행
+activate PromptDB
+
+note over PromptDB
+**Policy**: 검색 규칙
+- 키워드 매칭 (제목, 설명, 태그)
+- 직무별 가중치 적용
+- 사용 빈도 기반 랭킹
+- 평점 4.0 이상 우선 노출
+end note
+
+PromptDB --> Search : 검색 결과 목록
+deactivate PromptDB
+
+note over Search
+**Event**: 프롬프트 검색 완료
+**데이터**:
+- 프롬프트 ID 목록
+- 각 프롬프트 제목
+- 간단한 설명
+- 대상 AI 도구
+- 평균 평점
+- 사용 횟수
+- 적용 업무 유형
+end note
+
+Search --> UI : 검색 결과 반환
+deactivate Search
+
+UI --> User : 검색 결과 표시 (그리드 형태)
+
+== 프롬프트 상세 조회 ==
+
+User -> UI : 특정 프롬프트 선택
+note right of User
+**Command**: 프롬프트 상세 조회
+**데이터**: 
+- 프롬프트 ID
+end note
+
+UI -> Prompt : 프롬프트 상세 정보 요청
+activate Prompt
+
+Prompt -> PromptDB : 상세 정보 조회
+activate PromptDB
+PromptDB --> Prompt : 프롬프트 전체 정보
+deactivate PromptDB
+
+note over Prompt
+**Event**: 프롬프트 상세정보 조회됨
+**데이터**:
+- 프롬프트 전문
+- 사용 가이드
+- 입력 변수 설명
+- 예상 출력 예시
+- 활용 팁
+- 버전 정보
+- 작성자 정보
+- 사용 후기 목록
+end note
+
+Prompt -> UserDB : 사용자 맞춤 정보 조회
+activate UserDB
+UserDB --> Prompt : 사용자의 과거 사용 이력
+deactivate UserDB
+
+Prompt --> UI : 프롬프트 상세 + 개인화 정보
+deactivate Prompt
+
+UI --> User : 프롬프트 상세 페이지 표시\n(복사 버튼, 즐겨찾기 버튼 포함)
+
+== 프롬프트 복사 및 사용 ==
+
+User -> UI : 프롬프트 복사 버튼 클릭
+note right of User
+**Command**: 프롬프트 복사
+**데이터**: 
+- 프롬프트 ID
+- 사용자 입력 변수 값
+end note
+
+UI -> Prompt : 복사 이벤트 기록 요청
+activate Prompt
+
+Prompt -> Tracking : 사용 이벤트 기록
+activate Tracking
+
+note over Tracking
+**Event**: 프롬프트 복사됨
+**데이터**:
+- 사용자 ID
+- 프롬프트 ID
+- 복사 시각
+- 디바이스 정보
+end note
+
+Tracking -> PromptDB : 사용 횟수 증가
+activate PromptDB
+PromptDB --> Tracking : 업데이트 완료
+deactivate PromptDB
+
+Tracking --> Prompt : 기록 완료
+deactivate Tracking
+deactivate Prompt
+
+UI --> User : 클립보드에 복사 완료 알림
+
+note over User
+사용자가 AI 도구에 
+프롬프트를 붙여넣기하여 사용
+end note
+
+== 프롬프트 실행 결과 피드백 (선택사항) ==
+
+alt AI 도구 연동 사용 시
+    User -> UI : "이 프롬프트로 바로 실행" 버튼 클릭
+    note right of User
+    **Command**: AI 도구 연동 실행
+    **데이터**: 
+    - 프롬프트 ID
+    - 선택한 AI 도구
+    - 입력 변수 값
+    - API 키 (암호화)
+    end note
+    
+    UI -> AITool : API 호출 요청
+    activate AITool
+    
+    note over AITool
+    **External System**: 
+    - OpenAI API
+    - Anthropic API
+    - Google Gemini API
+    - 기타 AI 도구 API
+    
+    **Policy**: API 사용 규칙
+    - 무료 사용자: 일 5회 제한
+    - 프리미엄 사용자: 일 100회 제한
+    - API 키는 사용자 제공 또는 서비스 제공
+    end note
+    
+    AITool -> AITool : AI 모델 실행
+    AITool --> UI : 실행 결과
+    deactivate AITool
+    
+    UI --> User : 결과 화면 표시
+    
+    UI -> Tracking : 실행 결과 기록
+    activate Tracking
+    
+    note over Tracking
+    **Event**: AI 프롬프트 실행 완료
+    **데이터**:
+    - 사용자 ID
+    - 프롬프트 ID
+    - AI 도구 종류
+    - 실행 시각
+    - 성공/실패 여부
+    - 응답 시간
+    end note
+    
+    Tracking --> UI : 기록 완료
+    deactivate Tracking
+end
+
+== 프롬프트 즐겨찾기 ==
+
+User -> UI : 즐겨찾기 버튼 클릭
+note right of User
+**Command**: 프롬프트 즐겨찾기 추가
+**데이터**: 
+- 프롬프트 ID
+- 폴더명 (선택)
+end note
+
+UI -> UserDB : 즐겨찾기 저장
+activate UserDB
+
+note over UserDB
+**Event**: 즐겨찾기 추가됨
+**데이터**:
+- 사용자 ID
+- 프롬프트 ID
+- 즐겨찾기 폴더
+- 추가 시각
+end note
+
+UserDB --> UI : 저장 완료
+deactivate UserDB
+
+UI --> User : 즐겨찾기 완료 알림
+
+deactivate UI
+
+note over User
+**Next Steps**:
+- 실무에 프롬프트 적용
+- 결과에 대한 평가 작성
+- 유사 프롬프트 추가 검색
+end note
+
+@enduml
