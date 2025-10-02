@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .profile-section {
+      background-color: white;
+      padding: 24px 16px;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+    
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-main), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: white;
+    }
+    
+    .profile-info {
+      flex: 1;
+    }
+    
+    .profile-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .profile-job {
+      font-size: 14px;
+      color: var(--neutral-500);
+    }
+    
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-main);
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--neutral-500);
+    }
+    
+    .menu-section {
+      background-color: white;
+      margin-top: 16px;
+    }
+    
+    .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-100);
+      cursor: pointer;
+    }
+    
+    .menu-item:hover {
+      background-color: var(--neutral-50);
+    }
+    
+    .menu-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .menu-icon {
+      font-size: 20px;
+    }
+    
+    .menu-text {
+      font-size: 15px;
+    }
+    
+    .menu-arrow {
+      color: var(--neutral-500);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back"></div>
+    <div class="header-title">MY</div>
+    <div class="header-action" onclick="alert('설정 페이지 준비중')">⚙️</div>
+  </div>
+  
+  <div class="profile-section">
+    <div class="profile-header">
+      <div class="profile-avatar">👤</div>
+      <div class="profile-info">
+        <div class="profile-name">김철수</div>
+        <div class="profile-job">마케터 · 3년 이상</div>
+      </div>
+    </div>
+    
+    <div class="profile-stats">
+      <div class="stat-item">
+        <div class="stat-value">12</div>
+        <div class="stat-label">저장한 프롬프트</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">5</div>
+        <div class="stat-label">다운로드한 킷</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">3</div>
+        <div class="stat-label">기여 콘텐츠</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="menu-section">
+    <div class="menu-item" onclick="alert('즐겨찾기 페이지 준비중')">
+      <div class="menu-left">
+        <div class="menu-icon">⭐</div>
+        <div class="menu-text">즐겨찾기</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </div>
+    
+    <div class="menu-item" onclick="AppUtils.navigateTo('20-ROI계산기.html')">
+      <div class="menu-left">
+        <div class="menu-icon">📊</div>
+        <div class="menu-text">ROI 계산 이력</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </div>
+    
+    <div class="menu-item" onclick="AppUtils.navigateTo('26-기여-이력.html')">
+      <div class="menu-left">
+        <div class="menu-icon">📝</div>
+        <div class="menu-text">나의 기여</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </div>
+    
+    <div class="menu-item" onclick="alert('학습 이력 페이지 준비중')">
+      <div class="menu-left">
+        <div class="menu-icon">📚</div>
+        <div class="menu-text">학습 이력</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </div>
+  </div>
+  
+  <div class="menu-section" style="margin-top: 16px;">
+    <div class="menu-item" onclick="alert('계정 설정 페이지 준비중')">
+      <div class="menu-left">
+        <div class="menu-icon">⚙️</div>
+        <div class="menu-text">계정 설정</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </div>
+    
+    <div class="menu-item" onclick="alert('알림 설정 페이지 준비중')">
+      <div class="menu-left">
+        <div class="menu-icon">🔔</div>
+        <div class="menu-text">알림 설정</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </div>
+    
+    <div class="menu-item" onclick="alert('고객지원 페이지 준비중')">
+      <div class="menu-left">
+        <div class="menu-icon">💬</div>
+        <div class="menu-text">고객지원</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </div>
+    
+    <div class="menu-item" onclick="if(confirm('로그아웃 하시겠습니까?')) AppUtils.navigateTo('03-로그인.html')">
+      <div class="menu-left">
+        <div class="menu-icon">🚪</div>
+        <div class="menu-text">로그아웃</div>
+      </div>
+      <div class="menu-arrow">›</div>
+    </div>
+  </div>
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+</body>
+</html>

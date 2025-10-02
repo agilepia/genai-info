@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프롬프트 제안 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+      background-color: var(--neutral-50);
+    }
+    
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: white;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .back-btn {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      color: var(--neutral-700);
+    }
+    
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .save-btn {
+      font-size: 14px;
+      color: var(--primary-main);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .progress-indicator {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px;
+      background-color: white;
+    }
+    
+    .progress-step {
+      width: 80px;
+      height: 4px;
+      background-color: var(--neutral-300);
+      border-radius: 2px;
+      transition: background-color 0.3s;
+    }
+    
+    .progress-step.active {
+      background-color: var(--primary-main);
+    }
+    
+    .page-content {
+      padding: 24px 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .step-container {
+      display: none;
+    }
+    
+    .step-container.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .step-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .step-subtitle {
+      font-size: 14px;
+      color: var(--neutral-500);
+      margin-bottom: 24px;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--neutral-900);
+    }
+    
+    .form-label .required {
+      color: var(--error);
+    }
+    
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      min-height: 48px;
+      line-height: 1.5;
+    }
+    
+    .form-select {
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%236B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 40px;
+    }
+    
+    .form-select option {
+      font-size: 16px;
+      padding: 12px;
+      min-height: 44px;
+    }
+    
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary-main);
+    }
+    
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .char-counter {
+      text-align: right;
+      font-size: 12px;
+      color: var(--neutral-500);
+      margin-top: 4px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .checkbox-item {
+      flex: 1 1 calc(50% - 6px);
+      min-width: 140px;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .checkbox-label:hover {
+      border-color: var(--primary-main);
+    }
+    
+    .checkbox-label input {
+      margin-right: 8px;
+    }
+    
+    .tag-input-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      min-height: 48px;
+    }
+    
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background-color: var(--primary-light);
+      color: white;
+      border-radius: 16px;
+      font-size: 13px;
+    }
+    
+    .tag-remove {
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .tag-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      min-width: 120px;
+    }
+    
+    .form-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      padding: 16px;
+      border-top: 1px solid var(--neutral-300);
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn-secondary {
+      flex: 1;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--neutral-300);
+      background-color: white;
+      color: var(--neutral-700);
+      transition: all 0.2s;
+    }
+    
+    .btn-primary {
+      flex: 2;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background-color: var(--primary-main);
+      color: white;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary:disabled {
+      background-color: var(--neutral-300);
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <div class="header-left">
+      <div class="back-btn" onclick="confirmExit()">←</div>
+      <div class="page-title">프롬프트 제안</div>
+    </div>
+    <div class="save-btn" onclick="saveDraft()">임시저장</div>
+  </div>
+  
+  <div class="progress-indicator">
+    <div class="progress-step active" data-step="1"></div>
+    <div class="progress-step" data-step="2"></div>
+    <div class="progress-step" data-step="3"></div>
+  </div>
+  
+  <div class="page-content">
+    <!-- Step 1: 기본 정보 -->
+    <div class="step-container active" data-step="1">
+      <h2 class="step-title">기본 정보</h2>
+      <p class="step-subtitle">프롬프트의 기본 정보를 입력해주세요</p>
+      
+      <div class="form-group">
+        <label class="form-label">
+          프롬프트 제목 <span class="required">*</span>
+        </label>
+        <input type="text" class="form-input" id="promptTitle" placeholder="예: 블로그 포스트 아이디어 생성" maxlength="100">
+        <div class="char-counter"><span id="titleCount">0</span>/100</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          대상 AI 도구 <span class="required">*</span>
+        </label>
+        <select class="form-select" id="aiTool">
+          <option value="">선택해주세요</option>
+          <option value="ChatGPT">ChatGPT</option>
+          <option value="Claude">Claude</option>
+          <option value="Gemini">Gemini</option>
+          <option value="Copilot">Microsoft Copilot</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          직무 카테고리 <span class="required">*</span>
+        </label>
+        <div class="checkbox-group">
+          <div class="checkbox-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="job" value="마케터">
+              <span>마케터</span>
+            </label>
+          </div>
+          <div class="checkbox-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="job" value="개발자">
+              <span>개발자</span>
+            </label>
+          </div>
+          <div class="checkbox-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="job" value="디자이너">
+              <span>디자이너</span>
+            </label>
+          </div>
+          <div class="checkbox-item">
+            <label class="checkbox-label">
+              <input type="checkbox" name="job" value="기획자">
+              <span>기획자</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          업무 유형 <span class="required">*</span>
+        </label>
+        <select class="form-select" id="taskType">
+          <option value="">선택해주세요</option>
+          <option value="콘텐츠 제작">콘텐츠 제작</option>
+          <option value="데이터 분석">데이터 분석</option>
+          <option value="코딩">코딩</option>
+          <option value="디자인">디자인</option>
+          <option value="기획">기획</option>
+          <option value="번역">번역</option>
+          <option value="요약">요약</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Step 2: 프롬프트 내용 -->
+    <div class="step-container" data-step="2">
+      <h2 class="step-title">프롬프트 내용</h2>
+      <p class="step-subtitle">실제 사용할 프롬프트를 작성해주세요</p>
+      
+      <div class="form-group">
+        <label class="form-label">
+          프롬프트 전문 <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="promptContent" placeholder="예: 당신은 콘텐츠 전략가입니다. [주제]에 대해 [타겟 독자]를 위한 블로그 포스트 아이디어 10가지를 생성해주세요..." style="min-height: 200px;"></textarea>
+        <div class="char-counter"><span id="contentCount">0</span>자 (최소 50자)</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          간단한 설명
+        </label>
+        <textarea class="form-textarea" id="promptDescription" placeholder="이 프롬프트가 무엇을 하는지 간단히 설명해주세요"></textarea>
+      </div>
+    </div>
+    
+    <!-- Step 3: 예시 및 팁 -->
+    <div class="step-container" data-step="3">
+      <h2 class="step-title">예시 및 팁</h2>
+      <p class="step-subtitle">사용 방법과 팁을 공유해주세요</p>
+      
+      <div class="form-group">
+        <label class="form-label">
+          사용 예시 <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="promptExample" placeholder="예: [주제]에 '친환경 라이프스타일', [타겟 독자]에 '20-30대 직장인'을 넣으면..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          예상 결과물 <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="promptOutput" placeholder="이 프롬프트를 사용하면 어떤 결과가 나오는지 설명해주세요"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          활용 팁 (선택)
+        </label>
+        <textarea class="form-textarea" id="promptTip" placeholder="더 좋은 결과를 얻기 위한 팁이 있다면 공유해주세요"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          태그 (최대 5개, 선택)
+        </label>
+        <div class="tag-input-container" id="tagContainer">
+          <input type="text" class="tag-input" id="tagInput" placeholder="태그 입력 후 Enter" maxlength="20">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="form-actions">
+    <button class="btn-secondary" id="prevBtn" onclick="prevStep()" style="display: none;">이전</button>
+    <button class="btn-primary" id="nextBtn" onclick="nextStep()">다음</button>
+    <button class="btn-primary" id="submitBtn" onclick="submitPrompt()" style="display: none;">제출하기</button>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    let currentStep = 1;
+    const totalSteps = 3;
+    const tags = [];
+    
+    // 단계 전환
+    function updateStep() {
+      document.querySelectorAll('.step-container').forEach(el => {
+        el.classList.remove('active');
+      });
+      document.querySelector(`[data-step="${currentStep}"]`).classList.add('active');
+      
+      document.querySelectorAll('.progress-step').forEach((el, idx) => {
+        if (idx < currentStep) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+      
+      document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'block';
+      document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'block';
+      document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'block' : 'none';
+      
+      window.scrollTo(0, 0);
+    }
+    
+    function nextStep() {
+      if (validateStep(currentStep)) {
+        currentStep++;
+        updateStep();
+      }
+    }
+    
+    function prevStep() {
+      currentStep--;
+      updateStep();
+    }
+    
+    // 유효성 검사
+    function validateStep(step) {
+      if (step === 1) {
+        const title = document.getElementById('promptTitle').value.trim();
+        const aiTool = document.getElementById('aiTool').value;
+        const jobs = document.querySelectorAll('input[name="job"]:checked');
+        const taskType = document.getElementById('taskType').value;
+        
+        if (!title) {
+          alert('프롬프트 제목을 입력해주세요');
+          return false;
+        }
+        if (!aiTool) {
+          alert('대상 AI 도구를 선택해주세요');
+          return false;
+        }
+        if (jobs.length === 0) {
+          alert('직무 카테고리를 하나 이상 선택해주세요');
+          return false;
+        }
+        if (!taskType) {
+          alert('업무 유형을 선택해주세요');
+          return false;
+        }
+      }
+      
+      if (step === 2) {
+        const content = document.getElementById('promptContent').value.trim();
+        if (!content || content.length < 50) {
+          alert('프롬프트 내용을 최소 50자 이상 입력해주세요');
+          return false;
+        }
+      }
+      
+      if (step === 3) {
+        const example = document.getElementById('promptExample').value.trim();
+        const output = document.getElementById('promptOutput').value.trim();
+        
+        if (!example) {
+          alert('사용 예시를 입력해주세요');
+          return false;
+        }
+        if (!output) {
+          alert('예상 결과물을 입력해주세요');
+          return false;
+        }
+      }
+      
+      return true;
+    }
+    
+    // 제출
+    function submitPrompt() {
+      if (!validateStep(3)) return;
+      
+      AppUtils.showLoadingToast('제출 중...');
+      
+      setTimeout(() => {
+        AppUtils.hideLoadingToast();
+        AppUtils.showToast('프롬프트 제안이 완료되었습니다! 🎉');
+        
+        setTimeout(() => {
+          AppUtils.navigateTo('25-기여-상태추적.html?pr=PR-2025-001');
+        }, 1500);
+      }, 1500);
+    }
+    
+    // 임시저장
+    function saveDraft() {
+      localStorage.setItem('promptDraft', JSON.stringify({
+        title: document.getElementById('promptTitle').value,
+        aiTool: document.getElementById('aiTool').value,
+        content: document.getElementById('promptContent').value,
+        step: currentStep
+      }));
+      AppUtils.showToast('임시저장되었습니다');
+    }
+    
+    // 나가기 확인
+    function confirmExit() {
+      if (confirm('작성 중인 내용이 있습니다. 나가시겠습니까?')) {
+        AppUtils.goBack();
+      }
+    }
+    
+    // 문자 수 카운터
+    document.getElementById('promptTitle').addEventListener('input', (e) => {
+      document.getElementById('titleCount').textContent = e.target.value.length;
+    });
+    
+    document.getElementById('promptContent').addEventListener('input', (e) => {
+      document.getElementById('contentCount').textContent = e.target.value.length;
+    });
+    
+    // 태그 입력
+    document.getElementById('tagInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const value = e.target.value.trim();
+        
+        if (value && tags.length < 5 && !tags.includes(value)) {
+          tags.push(value);
+          renderTags();
+          e.target.value = '';
+        } else if (tags.length >= 5) {
+          alert('태그는 최대 5개까지 추가할 수 있습니다');
+        }
+      }
+    });
+    
+    function renderTags() {
+      const container = document.getElementById('tagContainer');
+      const input = document.getElementById('tagInput');
+      
+      const tagElements = tags.map((tag, idx) => `
+        <div class="tag">
+          <span>${tag}</span>
+          <span class="tag-remove" onclick="removeTag(${idx})">×</span>
+        </div>
+      `).join('');
+      
+      container.innerHTML = tagElements;
+      container.appendChild(input);
+    }
+    
+    function removeTag(idx) {
+      tags.splice(idx, 1);
+      renderTags();
+    }
+  </script>
+</body>
+</html>

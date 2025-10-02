@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기여하기 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .contribution-hero {
+      background: linear-gradient(135deg, var(--primary-main), var(--primary-light));
+      padding: 32px 16px;
+      color: white;
+      text-align: center;
+    }
+    
+    .hero-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    
+    .hero-desc {
+      font-size: 15px;
+      opacity: 0.9;
+    }
+    
+    .contribution-content {
+      padding: 24px 16px;
+    }
+    
+    .contribution-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .contribution-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .card-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .card-desc {
+      font-size: 14px;
+      color: var(--neutral-500);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">기여하기</div>
+    <div class="header-action"></div>
+  </div>
+  
+  <div class="contribution-hero">
+    <div class="hero-title">함께 만드는 AI 지식 허브</div>
+    <div class="hero-desc">여러분의 경험과 지식을 공유해주세요</div>
+  </div>
+  
+  <div class="contribution-content">
+    <div class="contribution-card" onclick="AppUtils.navigateTo('22-프롬프트-제안.html')">
+      <div class="card-icon">💡</div>
+      <div class="card-title">프롬프트 제안하기</div>
+      <div class="card-desc">효과적인 프롬프트를 공유하고 다른 사람들을 도와주세요</div>
+    </div>
+    
+    <div class="contribution-card" onclick="AppUtils.navigateTo('23-실무사례-공유.html')">
+      <div class="card-icon">📊</div>
+      <div class="card-title">실무 사례 공유하기</div>
+      <div class="card-desc">생성형 AI로 업무 효율을 높인 경험을 공유해주세요</div>
+    </div>
+    
+    <div class="contribution-card" onclick="AppUtils.navigateTo('24-리소스-개선제안.html')">
+      <div class="card-icon">🔧</div>
+      <div class="card-title">리소스 개선 제안</div>
+      <div class="card-desc">기존 리소스에 대한 개선 아이디어를 제안해주세요</div>
+    </div>
+    
+    <div class="contribution-card" onclick="AppUtils.navigateTo('26-기여-이력.html')">
+      <div class="card-icon">📝</div>
+      <div class="card-title">나의 기여 이력</div>
+      <div class="card-desc">내가 제안한 콘텐츠의 승인 상태를 확인하세요</div>
+    </div>
+  </div>
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+</body>
+</html>

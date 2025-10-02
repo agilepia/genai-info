@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>실무사례 상세 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 100px;
+    }
+    
+    .hero-section {
+      background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+      padding: 24px 16px;
+    }
+    
+    .hero-badges {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .hero-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    
+    .hero-company {
+      font-size: 14px;
+      color: var(--neutral-700);
+      margin-bottom: 16px;
+    }
+    
+    .hero-tools {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .tool-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background-color: white;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .content-section {
+      background-color: white;
+      padding: 24px 16px;
+      border-bottom: 8px solid var(--neutral-100);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .section-icon {
+      font-size: 20px;
+    }
+    
+    .section-content {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--neutral-700);
+    }
+    
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .metric-card {
+      background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .metric-card.time {
+      background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+    }
+    
+    .metric-card.cost {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    }
+    
+    .metric-label {
+      font-size: 13px;
+      color: var(--neutral-700);
+      margin-bottom: 8px;
+    }
+    
+    .metric-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--success);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    
+    .metric-card.time .metric-value {
+      color: #2563EB;
+    }
+    
+    .metric-card.cost .metric-value {
+      color: #D97706;
+    }
+    
+    .metric-comparison {
+      font-size: 13px;
+      color: var(--neutral-600);
+      margin-top: 4px;
+    }
+    
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-bottom: 24px;
+    }
+    
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+    
+    .timeline-dot {
+      position: absolute;
+      left: -32px;
+      width: 12px;
+      height: 12px;
+      background-color: var(--primary-main);
+      border-radius: 50%;
+      top: 4px;
+    }
+    
+    .timeline-line {
+      position: absolute;
+      left: -26px;
+      top: 16px;
+      bottom: -8px;
+      width: 2px;
+      background-color: var(--neutral-300);
+    }
+    
+    .timeline-item:last-child .timeline-line {
+      display: none;
+    }
+    
+    .timeline-step {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-main);
+      margin-bottom: 4px;
+    }
+    
+    .timeline-content {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--neutral-700);
+    }
+    
+    .prompt-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .prompt-item {
+      background-color: var(--neutral-50);
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--neutral-300);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .prompt-item:hover {
+      border-color: var(--primary-main);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .prompt-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .prompt-desc {
+      font-size: 13px;
+      color: var(--neutral-600);
+    }
+    
+    .tips-box {
+      background-color: #FEF3C7;
+      border-left: 4px solid var(--warning);
+      padding: 16px;
+      border-radius: 8px;
+    }
+    
+    .tips-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .tips-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .tips-list li {
+      font-size: 14px;
+      color: var(--neutral-700);
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+    
+    .tips-list li:before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--warning);
+      font-weight: bold;
+    }
+    
+    .cta-section {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      padding: 16px;
+      border-top: 1px solid var(--neutral-300);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+      display: flex;
+      gap: 8px;
+      z-index: 100;
+    }
+    
+    .related-resources {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    
+    .resource-card {
+      min-width: 200px;
+      background-color: white;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .resource-card:hover {
+      border-color: var(--primary-main);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .resource-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .resource-card-type {
+      font-size: 12px;
+      color: var(--neutral-600);
+    }
+  </style>
+</head>
+<body>
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">실무사례</div>
+    <div class="header-action" onclick="shareCase()">⤴</div>
+  </div>
+  
+  <!-- 히어로 섹션 -->
+  <div class="hero-section">
+    <div class="hero-badges">
+      <span class="badge badge-neutral">IT/테크</span>
+      <span class="badge badge-neutral">마케터</span>
+    </div>
+    <h1 class="hero-title">콘텐츠 작성 시간 70% 단축</h1>
+    <div class="hero-company">스타트업 A (익명)</div>
+    <div class="hero-tools">
+      <span class="tool-badge">
+        <span>🤖</span>
+        <span>ChatGPT</span>
+      </span>
+      <div class="flex items-center gap-xs">
+        <span>⭐⭐⭐⭐⭐</span>
+        <span class="text-caption">4.9 (23)</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 배경 및 도전 과제 -->
+  <div class="content-section">
+    <h2 class="section-title">
+      <span class="section-icon">💡</span>
+      <span>배경</span>
+    </h2>
+    <div class="section-content">
+      <p style="margin-bottom: 12px;">
+        SaaS 스타트업으로 주 2회 블로그 포스트를 작성해야 했지만, 
+        한 편당 4시간이 소요되어 마케팅팀의 큰 부담이었습니다.
+      </p>
+      <p>
+        <strong style="color: var(--neutral-900);">도전 과제:</strong><br>
+        • 제한된 리소스로 콘텐츠 생산량 늘리기<br>
+        • SEO 최적화된 고품질 콘텐츠 유지<br>
+        • 일관된 브랜드 톤앤매너 유지
+      </p>
+    </div>
+  </div>
+  
+  <!-- 성과 -->
+  <div class="content-section">
+    <h2 class="section-title">
+      <span class="section-icon">📊</span>
+      <span>성과</span>
+    </h2>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">효율 개선</div>
+        <div class="metric-value">70%</div>
+        <div class="metric-comparison">4시간 → 1.2시간</div>
+      </div>
+      <div class="metric-card time">
+        <div class="metric-label">월간 절감</div>
+        <div class="metric-value">22h</div>
+        <div class="metric-comparison">8편 기준</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 활용 방법 -->
+  <div class="content-section">
+    <h2 class="section-title">
+      <span class="section-icon">🎯</span>
+      <span>어떻게 활용했나요?</span>
+    </h2>
+    <div class="section-content" style="margin-bottom: 16px;">
+      <p>ChatGPT를 활용해 다음과 같이 콘텐츠 제작 프로세스를 개선했습니다:</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-line"></div>
+        <div class="timeline-step">1단계: 주제 발굴 (15분)</div>
+        <div class="timeline-content">
+          타겟 독자 분석 프롬프트로 블로그 주제 10개 생성. 
+          팀 미팅에서 최종 주제 선정.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-line"></div>
+        <div class="timeline-step">2단계: 아웃라인 작성 (20분)</div>
+        <div class="timeline-content">
+          선정된 주제에 대한 아웃라인을 ChatGPT로 생성. 
+          SEO 키워드를 포함한 구조 설계.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-line"></div>
+        <div class="timeline-step">3단계: 초안 작성 (30분)</div>
+        <div class="timeline-content">
+          각 섹션별로 프롬프트를 입력해 초안 생성. 
+          브랜드 가이드라인에 맞게 톤앤매너 조정.
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-step">4단계: 검토 및 편집 (15분)</div>
+        <div class="timeline-content">
+          팩트 체크, 문맥 개선, CTA 추가 등 최종 검토 및 발행.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 사용된 프롬프트 -->
+  <div class="content-section">
+    <h2 class="section-title">
+      <span class="section-icon">📝</span>
+      <span>사용된 프롬프트</span>
+    </h2>
+    <div class="prompt-list">
+      <div class="prompt-item" onclick="AppUtils.navigateTo('12-프롬프트-상세.html?id=1')">
+        <div class="prompt-title">
+          <span>블로그 포스트 아이디어 생성</span>
+          <span style="margin-left: auto; color: var(--primary-main);">→</span>
+        </div>
+        <div class="prompt-desc">타겟 독자를 고려한 블로그 주제 10가지 추천</div>
+      </div>
+      <div class="prompt-item" onclick="AppUtils.navigateTo('12-프롬프트-상세.html?id=2')">
+        <div class="prompt-title">
+          <span>SEO 최적화 메타 디스크립션</span>
+          <span style="margin-left: auto; color: var(--primary-main);">→</span>
+        </div>
+        <div class="prompt-desc">검색 엔진 최적화를 고려한 메타 설명 작성</div>
+      </div>
+      <div class="prompt-item" onclick="AppUtils.navigateTo('12-프롬프트-상세.html?id=3')">
+        <div class="prompt-title">
+          <span>브랜드 톤앤매너 적용</span>
+          <span style="margin-left: auto; color: var(--primary-main);">→</span>
+        </div>
+        <div class="prompt-desc">일관된 브랜드 보이스로 콘텐츠 재작성</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 팁 및 주의사항 -->
+  <div class="content-section">
+    <h2 class="section-title">
+      <span class="section-icon">⚡</span>
+      <span>팁 및 주의사항</span>
+    </h2>
+    <div class="tips-box">
+      <div class="tips-title">
+        <span>💡</span>
+        <span>성공 팁</span>
+      </div>
+      <ul class="tips-list">
+        <li>브랜드 가이드라인을 명확히 프롬프트에 포함하세요</li>
+        <li>생성된 콘텐츠는 반드시 팩트 체크를 거쳐야 합니다</li>
+        <li>첫 시도에서 완벽한 결과를 기대하지 마세요</li>
+        <li>반복적으로 프롬프트를 개선하면서 품질을 높이세요</li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- 관련 리소스 -->
+  <div class="content-section">
+    <h2 class="section-title">
+      <span class="section-icon">🔗</span>
+      <span>관련 리소스</span>
+    </h2>
+    <div class="related-resources">
+      <div class="resource-card" onclick="AppUtils.navigateTo('12-프롬프트-상세.html?id=1')">
+        <div class="resource-card-title">콘텐츠 마케팅 프롬프트 모음</div>
+        <div class="resource-card-type">프롬프트 • 15개</div>
+      </div>
+      <div class="resource-card" onclick="AppUtils.navigateTo('15-치트시트-미리보기.html?id=1')">
+        <div class="resource-card-title">ChatGPT 단축키 가이드</div>
+        <div class="resource-card-type">치트시트</div>
+      </div>
+      <div class="resource-card" onclick="AppUtils.navigateTo('09-스타터킷-상세.html?id=1')">
+        <div class="resource-card-title">마케터 스타터킷</div>
+        <div class="resource-card-type">스타터킷 • 30개</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- CTA 섹션 -->
+  <div class="cta-section">
+    <button class="btn btn-secondary" onclick="saveCase()" style="flex: 1;">
+      💾 저장
+    </button>
+    <button class="btn btn-primary" onclick="openROICalculator()" style="flex: 2;">
+      📊 ROI 계산하기
+    </button>
+  </div>
+  
+  <!-- 하단 네비게이션 -->
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+
+  <script src="common.js"></script>
+  <script>
+    function shareCase() {
+      AppUtils.showBottomSheet(`
+        <h3 class="text-h3 mb-lg">공유하기</h3>
+        <div style="display: grid; gap: 12px;">
+          <button class="btn btn-secondary btn-full" onclick="AppUtils.showToast('링크가 복사되었어요'); document.querySelector('.modal-backdrop').click();">
+            🔗 링크 복사
+          </button>
+          <button class="btn btn-secondary btn-full">
+            ✉️ 이메일로 보내기
+          </button>
+          <button class="btn btn-secondary btn-full">
+            💬 카카오톡 공유
+          </button>
+        </div>
+      `);
+    }
+
+    function saveCase() {
+      AppUtils.showToast('즐겨찾기에 저장되었어요');
+      // 실제 구현시 로컬 스토리지나 API 호출
+    }
+
+    function openROICalculator() {
+      // ROI 계산기 모달 열기
+      window.location.href = '20-ROI계산기.html';
+    }
+  </script>
+</body>
+</html>

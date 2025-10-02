@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>실무사례 공유 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+      background-color: var(--neutral-50);
+    }
+    
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: white;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .back-btn {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      color: var(--neutral-700);
+    }
+    
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .save-btn {
+      font-size: 14px;
+      color: var(--primary-main);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .page-content {
+      padding: 24px 16px 100px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .intro-box {
+      background-color: var(--primary-light);
+      color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    
+    .intro-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .intro-text {
+      font-size: 13px;
+      line-height: 1.5;
+      opacity: 0.95;
+    }
+    
+    .form-section {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--neutral-900);
+    }
+    
+    .form-label .required {
+      color: var(--error);
+    }
+    
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      min-height: 48px;
+      line-height: 1.5;
+    }
+    
+    .form-select {
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%236B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 40px;
+    }
+    
+    .form-select option {
+      font-size: 16px;
+      padding: 12px;
+      min-height: 44px;
+    }
+    
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary-main);
+    }
+    
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .form-hint {
+      font-size: 12px;
+      color: var(--neutral-500);
+      margin-top: 4px;
+    }
+    
+    .metric-group {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .metric-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .metric-inputs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .metric-input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 6px;
+      font-size: 14px;
+      text-align: center;
+    }
+    
+    .metric-arrow {
+      color: var(--neutral-500);
+    }
+    
+    .form-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      padding: 16px;
+      border-top: 1px solid var(--neutral-300);
+    }
+    
+    .btn-primary {
+      width: 100%;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background-color: var(--primary-main);
+      color: white;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary:disabled {
+      background-color: var(--neutral-300);
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <div class="header-left">
+      <div class="back-btn" onclick="confirmExit()">←</div>
+      <div class="page-title">실무사례 공유</div>
+    </div>
+    <div class="save-btn" onclick="saveDraft()">임시저장</div>
+  </div>
+  
+  <div class="page-content">
+    <div class="intro-box">
+      <div class="intro-title">💡 좋은 사례의 조건</div>
+      <div class="intro-text">
+        • 구체적인 수치와 Before/After 비교<br>
+        • 단계별 실행 과정 상세 설명<br>
+        • 실제 사용한 프롬프트 공유
+      </div>
+    </div>
+    
+    <!-- 기본 정보 -->
+    <div class="form-section">
+      <div class="section-title">📋 기본 정보</div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          사례 제목 <span class="required">*</span>
+        </label>
+        <input type="text" class="form-input" id="caseTitle" placeholder="예: ChatGPT로 고객 응대 시간 70% 단축">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          회사명/개인 <span class="required">*</span>
+        </label>
+        <input type="text" class="form-input" id="company" placeholder="예: ㅇㅇ 스타트업 (익명 가능)">
+        <div class="form-hint">익명 처리를 원하시면 '익명'으로 입력해주세요</div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          업종 <span class="required">*</span>
+        </label>
+        <select class="form-select" id="industry">
+          <option value="">선택해주세요</option>
+          <option value="IT">IT/소프트웨어</option>
+          <option value="제조">제조</option>
+          <option value="금융">금융</option>
+          <option value="유통">유통/이커머스</option>
+          <option value="교육">교육</option>
+          <option value="의료">의료/헬스케어</option>
+          <option value="미디어">미디어/콘텐츠</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          직무 <span class="required">*</span>
+        </label>
+        <select class="form-select" id="jobCategory">
+          <option value="">선택해주세요</option>
+          <option value="마케터">마케터</option>
+          <option value="개발자">개발자</option>
+          <option value="디자이너">디자이너</option>
+          <option value="기획자">기획자</option>
+          <option value="영업">영업</option>
+          <option value="고객지원">고객지원</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          사용한 AI 도구 <span class="required">*</span>
+        </label>
+        <select class="form-select" id="aiTool">
+          <option value="">선택해주세요</option>
+          <option value="ChatGPT">ChatGPT</option>
+          <option value="Claude">Claude</option>
+          <option value="Gemini">Gemini</option>
+          <option value="Midjourney">Midjourney</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- 배경 및 도전 과제 -->
+    <div class="form-section">
+      <div class="section-title">📝 배경 및 도전 과제</div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          어떤 문제를 해결하고 싶었나요? <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="challenge" placeholder="예: 고객 문의가 급증하여 응대 시간이 부족했습니다..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          왜 이 AI 도구를 선택했나요? <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="whyAI" placeholder="예: ChatGPT의 빠른 응답 속도와 자연스러운 문장 생성 능력 때문에..."></textarea>
+      </div>
+    </div>
+    
+    <!-- 실행 과정 -->
+    <div class="form-section">
+      <div class="section-title">🔄 실행 과정</div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          어떻게 활용했나요? <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="howToUse" placeholder="단계별로 상세히 작성해주세요&#10;&#10;1단계: 고객 문의 패턴 분석&#10;2단계: 자주 묻는 질문 템플릿 생성&#10;3단계: ..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          사용한 프롬프트 (선택)
+        </label>
+        <textarea class="form-textarea" id="promptUsed" placeholder="실제 사용한 프롬프트를 공유해주세요"></textarea>
+      </div>
+    </div>
+    
+    <!-- 성과 -->
+    <div class="form-section">
+      <div class="section-title">📊 성과 (Before/After)</div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          주요 개선 지표 <span class="required">*</span>
+        </label>
+        
+        <div class="metric-group">
+          <div class="metric-item">
+            <div class="metric-label">소요 시간</div>
+            <div class="metric-inputs">
+              <input type="text" class="metric-input" id="timeBefore" placeholder="Before">
+              <span class="metric-arrow">→</span>
+              <input type="text" class="metric-input" id="timeAfter" placeholder="After">
+            </div>
+          </div>
+          
+          <div class="metric-item">
+            <div class="metric-label">비용</div>
+            <div class="metric-inputs">
+              <input type="text" class="metric-input" id="costBefore" placeholder="Before">
+              <span class="metric-arrow">→</span>
+              <input type="text" class="metric-input" id="costAfter" placeholder="After">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          개선 효과 요약 <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="improvement" placeholder="예: 평균 응대 시간 4시간 → 1시간 (75% 단축)&#10;월 운영 비용 100만원 → 30만원 (70% 절감)"></textarea>
+      </div>
+    </div>
+    
+    <!-- 팁 및 주의사항 -->
+    <div class="form-section">
+      <div class="section-title">💡 팁 및 주의사항</div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          성공 팁 (선택)
+        </label>
+        <textarea class="form-textarea" id="tips" placeholder="같은 문제를 가진 사람들에게 도움이 될 팁을 공유해주세요"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          주의사항 (선택)
+        </label>
+        <textarea class="form-textarea" id="warnings" placeholder="주의해야 할 점이나 실패 경험이 있다면 공유해주세요"></textarea>
+      </div>
+    </div>
+  </div>
+  
+  <div class="form-actions">
+    <button class="btn-primary" onclick="submitCase()">공유하기</button>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    function submitCase() {
+      // 필수 항목 검증
+      const required = {
+        'caseTitle': '사례 제목',
+        'company': '회사명/개인',
+        'industry': '업종',
+        'jobCategory': '직무',
+        'aiTool': 'AI 도구',
+        'challenge': '도전 과제',
+        'whyAI': 'AI 도구 선택 이유',
+        'howToUse': '활용 방법',
+        'improvement': '개선 효과'
+      };
+      
+      for (const [id, label] of Object.entries(required)) {
+        const value = document.getElementById(id).value.trim();
+        if (!value) {
+          alert(`${label}을(를) 입력해주세요`);
+          document.getElementById(id).focus();
+          return;
+        }
+      }
+      
+      AppUtils.showLoadingToast('제출 중...');
+      
+      setTimeout(() => {
+        AppUtils.hideLoadingToast();
+        AppUtils.showToast('실무사례가 공유되었습니다! 🎉');
+        
+        setTimeout(() => {
+          AppUtils.navigateTo('25-기여-상태추적.html?pr=PR-2025-002');
+        }, 1500);
+      }, 1500);
+    }
+    
+    function saveDraft() {
+      const draft = {
+        title: document.getElementById('caseTitle').value,
+        company: document.getElementById('company').value,
+        industry: document.getElementById('industry').value
+      };
+      localStorage.setItem('caseDraft', JSON.stringify(draft));
+      AppUtils.showToast('임시저장되었습니다');
+    }
+    
+    function confirmExit() {
+      if (confirm('작성 중인 내용이 있습니다. 나가시겠습니까?')) {
+        AppUtils.goBack();
+      }
+    }
+  </script>
+</body>
+</html>

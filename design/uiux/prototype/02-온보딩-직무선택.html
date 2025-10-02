@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>직무 선택 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .onboarding-header {
+      padding: 20px 16px;
+      background-color: white;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+    
+    .progress-bar {
+      height: 4px;
+      background-color: var(--neutral-200);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background-color: var(--primary-main);
+      transition: width 0.3s ease-out;
+    }
+    
+    .skip-btn {
+      color: var(--neutral-500);
+      font-size: 14px;
+      cursor: pointer;
+      text-align: right;
+    }
+    
+    .onboarding-content {
+      padding: 32px 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .onboarding-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .onboarding-subtitle {
+      font-size: 16px;
+      color: var(--neutral-500);
+      margin-bottom: 32px;
+    }
+    
+    .job-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    
+    .job-card {
+      background-color: white;
+      border: 2px solid var(--neutral-300);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+    
+    .job-card:hover {
+      border-color: var(--primary-light);
+      transform: scale(1.02);
+    }
+    
+    .job-card.selected {
+      border-color: var(--primary-main);
+      background-color: #EEF2FF;
+    }
+    
+    .job-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    .job-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+    
+    .experience-section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease-out;
+      pointer-events: none;
+    }
+    
+    .experience-section.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    
+    .experience-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    
+    .experience-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .experience-btn {
+      flex: 1;
+      height: 56px;
+      background-color: white;
+      border: 2px solid var(--neutral-300);
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+    
+    .experience-btn:hover {
+      border-color: var(--primary-light);
+    }
+    
+    .experience-btn.selected {
+      border-color: var(--primary-main);
+      background-color: #EEF2FF;
+      color: var(--primary-main);
+    }
+    
+    .footer-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      background-color: white;
+      border-top: 1px solid var(--neutral-300);
+    }
+  </style>
+</head>
+<body>
+  <div class="onboarding-header">
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: 50%"></div>
+    </div>
+    <div class="skip-btn" onclick="skip()">건너뛰기</div>
+  </div>
+  
+  <div class="onboarding-content">
+    <h1 class="onboarding-title">어떤 직무로 AI를 활용하시나요?</h1>
+    <p class="onboarding-subtitle">맞춤형 리소스를 추천해드릴게요</p>
+    
+    <div class="job-grid">
+      <div class="job-card" data-job="마케터" onclick="selectJob(this)">
+        <div class="job-icon">📊</div>
+        <div class="job-name">마케터</div>
+      </div>
+      <div class="job-card" data-job="개발자" onclick="selectJob(this)">
+        <div class="job-icon">💻</div>
+        <div class="job-name">개발자</div>
+      </div>
+      <div class="job-card" data-job="디자이너" onclick="selectJob(this)">
+        <div class="job-icon">🎨</div>
+        <div class="job-name">디자이너</div>
+      </div>
+      <div class="job-card" data-job="기획자" onclick="selectJob(this)">
+        <div class="job-icon">📝</div>
+        <div class="job-name">기획자</div>
+      </div>
+    </div>
+    
+    <div class="experience-section" id="experienceSection">
+      <h2 class="experience-title">경력은 어떻게 되시나요?</h2>
+      <div class="experience-buttons">
+        <button class="experience-btn" data-experience="3년 미만" onclick="selectExperience(this)">
+          3년 미만<br><span style="font-size: 13px; font-weight: 400; color: var(--neutral-500);">(입문)</span>
+        </button>
+        <button class="experience-btn" data-experience="3년 이상" onclick="selectExperience(this)">
+          3년 이상<br><span style="font-size: 13px; font-weight: 400; color: var(--neutral-500);">(심화)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer-cta">
+    <button class="btn btn-primary btn-full" id="nextBtn" onclick="next()" disabled>다음</button>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    let selectedJob = null;
+    let selectedExperience = null;
+    
+    function selectJob(element) {
+      // 이전 선택 해제
+      document.querySelectorAll('.job-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // 현재 선택
+      element.classList.add('selected');
+      selectedJob = element.dataset.job;
+      
+      // 경력 선택 섹션 표시
+      document.getElementById('experienceSection').classList.add('show');
+      
+      // 프로그레스 바 업데이트
+      document.querySelector('.progress-fill').style.width = '75%';
+      
+      updateNextButton();
+    }
+    
+    function selectExperience(element) {
+      // 이전 선택 해제
+      document.querySelectorAll('.experience-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      // 현재 선택
+      element.classList.add('selected');
+      selectedExperience = element.dataset.experience;
+      
+      // 프로그레스 바 완료
+      document.querySelector('.progress-fill').style.width = '100%';
+      
+      updateNextButton();
+    }
+    
+    function updateNextButton() {
+      const nextBtn = document.getElementById('nextBtn');
+      if (selectedJob && selectedExperience) {
+        nextBtn.disabled = false;
+      } else {
+        nextBtn.disabled = true;
+      }
+    }
+    
+    function next() {
+      // 사용자 정보 저장
+      AppUtils.Storage.set('user', {
+        job: selectedJob,
+        experience: selectedExperience
+      });
+      AppUtils.Storage.set('hasVisited', true);
+      
+      // 홈 화면으로 이동
+      window.location.href = '05-홈.html';
+    }
+    
+    function skip() {
+      // 기본값으로 저장
+      AppUtils.Storage.set('user', {
+        job: '전체',
+        experience: '3년 미만'
+      });
+      AppUtils.Storage.set('hasVisited', true);
+      
+      // 홈 화면으로 이동
+      window.location.href = '05-홈.html';
+    }
+  </script>
+</body>
+</html>

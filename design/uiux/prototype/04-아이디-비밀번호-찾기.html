@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>계정 찾기 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .recovery-container {
+      min-height: 100vh;
+      padding: 16px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .recovery-content {
+      padding: 32px 0;
+    }
+    
+    .recovery-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .recovery-subtitle {
+      font-size: 14px;
+      color: var(--neutral-500);
+      margin-bottom: 32px;
+    }
+    
+    .info-box {
+      background-color: var(--neutral-100);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    
+    .info-box-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--neutral-700);
+    }
+    
+    .info-box-text {
+      font-size: 13px;
+      color: var(--neutral-500);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">계정 찾기</div>
+    <div class="header-action"></div>
+  </div>
+  
+  <div class="recovery-container">
+    <div class="recovery-content">
+      <h1 class="recovery-title">이메일로 계정 복구하기</h1>
+      <p class="recovery-subtitle">가입하신 이메일 주소를 입력해주세요</p>
+      
+      <form id="recoveryForm" onsubmit="handleRecovery(event)">
+        <div class="form-group">
+          <label class="form-label" for="email">이메일</label>
+          <input 
+            type="email" 
+            id="email" 
+            class="input-field" 
+            placeholder="이메일을 입력해주세요"
+            required
+          >
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-full">
+          복구 링크 받기
+        </button>
+      </form>
+      
+      <div class="info-box">
+        <div class="info-box-title">📧 이메일이 오지 않나요?</div>
+        <div class="info-box-text">
+          • 스팸 메일함을 확인해주세요<br>
+          • 이메일 주소가 정확한지 확인해주세요<br>
+          • 최대 5분까지 지연될 수 있어요
+        </div>
+      </div>
+      
+      <div class="info-box mt-md">
+        <div class="info-box-title">💬 도움이 필요하신가요?</div>
+        <div class="info-box-text">
+          고객 지원팀에 문의하시면 빠르게 도와드릴게요<br>
+          <a href="mailto:support@aihub.com" style="color: var(--primary-main);">support@aihub.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    function handleRecovery(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      
+      if (!AppUtils.validateEmail(email)) {
+        AppUtils.showToast('올바른 이메일 형식이 아니에요');
+        return;
+      }
+      
+      AppUtils.showToast('복구 링크가 이메일로 발송되었어요');
+      
+      setTimeout(() => {
+        window.location.href = '03-로그인.html';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

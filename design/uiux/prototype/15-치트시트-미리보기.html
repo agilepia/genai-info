@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>치트시트 미리보기 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .preview-container { padding: 16px; padding-bottom: 80px; }
+    .preview-image { width: 100%; border-radius: 12px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+    .watermark { position: relative; }
+    .watermark::after { content: 'PREVIEW'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 48px; font-weight: 700; color: rgba(255,255,255,0.3); pointer-events: none; }
+    .info-box { background-color: var(--neutral-100); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .cta-fixed { position: fixed; bottom: 0; left: 0; right: 0; padding: 16px; background-color: white; border-top: 1px solid var(--neutral-300); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">치트시트 미리보기</div>
+    <div class="header-action">❤️</div>
+  </div>
+  
+  <div class="preview-container">
+    <h1 class="text-h3 mb-sm">ChatGPT 단축키 가이드</h1>
+    <div class="flex gap-sm mb-md">
+      <span class="badge badge-primary">ChatGPT</span>
+      <span class="badge badge-neutral">전체</span>
+    </div>
+    
+    <div class="watermark">
+      <img src="https://via.placeholder.com/800x1000/4F46E5/FFFFFF?text=ChatGPT+Cheatsheet" alt="치트시트" class="preview-image">
+    </div>
+    
+    <div class="info-box">
+      <div class="text-body-small" style="font-weight: 600; margin-bottom: 8px;">💡 무료 vs 프리미엄</div>
+      <div class="text-body-small text-neutral">
+        무료: 워터마크 포함 다운로드<br>
+        프리미엄: 워터마크 제거 + 고해상도
+      </div>
+    </div>
+    
+    <div class="flex justify-between items-center">
+      <span class="text-caption text-neutral">2,341 다운로드</span>
+      <div class="flex items-center gap-xs">
+        <span>⭐⭐⭐⭐⭐</span>
+        <span class="text-caption">4.8</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="cta-fixed">
+    <button class="btn btn-primary btn-full" onclick="showDownloadOptions()">
+      다운로드
+    </button>
+  </div>
+  
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    function showDownloadOptions() {
+      AppUtils.navigateTo('16-치트시트-다운로드-옵션.html');
+    }
+  </script>
+</body>
+</html>

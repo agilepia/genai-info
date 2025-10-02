@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프롬프트 복사 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .demo-container {
+      padding: 24px 16px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .demo-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .prompt-text {
+      background-color: var(--neutral-100);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--neutral-900);
+      margin-bottom: 16px;
+      word-wrap: break-word;
+    }
+    
+    .copy-success-animation {
+      display: inline-block;
+      animation: scaleIn 0.3s ease-out;
+    }
+    
+    @keyframes scaleIn {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    .demo-section {
+      margin-bottom: 32px;
+    }
+    
+    .demo-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--neutral-900);
+    }
+    
+    .demo-description {
+      font-size: 14px;
+      color: var(--neutral-500);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">프롬프트 복사</div>
+    <div style="width: 24px;"></div>
+  </div>
+  
+  <div class="demo-container">
+    <div class="demo-section">
+      <h2 class="demo-title">📋 토스트 알림 데모</h2>
+      <p class="demo-description">
+        프롬프트 복사 시 토스트 메시지가 화면 하단에 나타나며, 3초 후 자동으로 사라집니다.
+      </p>
+    </div>
+    
+    <div class="demo-card">
+      <div class="flex justify-between items-center mb-md">
+        <span class="badge badge-primary">ChatGPT</span>
+        <span class="text-caption">523회 사용</span>
+      </div>
+      
+      <h3 class="text-h3 mb-sm">블로그 포스트 아이디어 생성</h3>
+      <p class="text-body-small text-neutral mb-md">
+        타겟 독자를 고려한 블로그 주제 10가지 추천
+      </p>
+      
+      <div class="prompt-text">
+당신은 콘텐츠 전략가입니다. [주제]에 대해 [타겟 독자]를 위한 블로그 포스트 아이디어 10가지를 생성해주세요.
+
+각 아이디어는 다음을 포함해야 합니다:
+- 독자의 흥미를 끄는 제목
+- 주요 내용 개요 (2-3문장)
+- 예상 검색 키워드
+
+형식: 번호. 제목 | 내용 개요 | 키워드
+      </div>
+      
+      <div class="flex gap-sm">
+        <button class="btn btn-primary btn-full" onclick="handleCopy()">
+          <span id="copyBtnIcon">📋</span>
+          <span id="copyBtnText" style="margin-left: 8px;">프롬프트 복사</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="demo-section">
+      <h3 class="demo-title">🎨 토스트 변형</h3>
+      <p class="demo-description">다양한 상황에서 사용되는 토스트 메시지들입니다.</p>
+      
+      <div class="flex flex-col gap-sm">
+        <button class="btn btn-secondary btn-full" onclick="showSuccessToast()">
+          성공 토스트 보기
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="showErrorToast()">
+          오류 토스트 보기
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="showInfoToast()">
+          정보 토스트 보기
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="showLongToast()">
+          긴 메시지 토스트 보기
+        </button>
+      </div>
+    </div>
+    
+    <div class="demo-section">
+      <h3 class="demo-title">💡 사용 가이드</h3>
+      <div class="card">
+        <p class="text-body-small mb-sm"><strong>복사 완료 시:</strong></p>
+        <ul class="text-body-small text-neutral" style="margin-left: 20px; line-height: 1.8;">
+          <li>토스트 메시지 표시: "클립보드에 복사되었습니다"</li>
+          <li>버튼 아이콘 변경: 📋 → ✅ (0.3초 후 원래대로)</li>
+          <li>사용 횟수 자동 증가</li>
+          <li>AI 도구 바로가기 옵션 표시 (선택사항)</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="demo-section">
+      <h3 class="demo-title">🔗 화면 흐름</h3>
+      <div class="card">
+        <div class="text-body-small" style="line-height: 2;">
+          <div class="flex items-center gap-sm mb-xs">
+            <span>1️⃣</span>
+            <span>프롬프트 상세 화면</span>
+          </div>
+          <div class="flex items-center gap-sm mb-xs" style="margin-left: 16px;">
+            <span>↓</span>
+            <span class="text-neutral">"복사" 버튼 클릭</span>
+          </div>
+          <div class="flex items-center gap-sm mb-xs">
+            <span>2️⃣</span>
+            <span>클립보드에 복사</span>
+          </div>
+          <div class="flex items-center gap-sm mb-xs" style="margin-left: 16px;">
+            <span>↓</span>
+            <span class="text-neutral">토스트 알림 표시 (이 화면)</span>
+          </div>
+          <div class="flex items-center gap-sm mb-xs">
+            <span>3️⃣</span>
+            <span>3초 후 자동 사라짐</span>
+          </div>
+          <div class="flex items-center gap-sm" style="margin-left: 16px;">
+            <span>↓</span>
+            <span class="text-neutral">사용자는 AI 도구에서 활용</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    const promptText = `당신은 콘텐츠 전략가입니다. [주제]에 대해 [타겟 독자]를 위한 블로그 포스트 아이디어 10가지를 생성해주세요.
+
+각 아이디어는 다음을 포함해야 합니다:
+- 독자의 흥미를 끄는 제목
+- 주요 내용 개요 (2-3문장)
+- 예상 검색 키워드
+
+형식: 번호. 제목 | 내용 개요 | 키워드`;
+
+    async function handleCopy() {
+      const success = await AppUtils.copyToClipboard(promptText);
+      
+      if (success) {
+        // 버튼 아이콘 변경
+        const icon = document.getElementById('copyBtnIcon');
+        const text = document.getElementById('copyBtnText');
+        const originalIcon = icon.textContent;
+        
+        icon.textContent = '✅';
+        icon.className = 'copy-success-animation';
+        
+        // 0.3초 후 원래대로
+        setTimeout(() => {
+          icon.textContent = originalIcon;
+          icon.className = '';
+        }, 300);
+        
+        // 토스트 표시
+        AppUtils.showToast('클립보드에 복사되었습니다');
+        
+        // 실제 구현에서는 사용 횟수 증가 API 호출
+        console.log('사용 횟수 증가 기록');
+      } else {
+        AppUtils.showToast('복사에 실패했습니다');
+      }
+    }
+    
+    function showSuccessToast() {
+      AppUtils.showToast('저장되었습니다 ✅');
+    }
+    
+    function showErrorToast() {
+      AppUtils.showToast('오류가 발생했습니다 ❌');
+    }
+    
+    function showInfoToast() {
+      AppUtils.showToast('로그인이 필요합니다 ℹ️');
+    }
+    
+    function showLongToast() {
+      AppUtils.showToast('프리미엄 회원만 사용할 수 있는 기능입니다. 프리미엄으로 업그레이드해주세요.', 5000);
+    }
+  </script>
+</body>
+</html>

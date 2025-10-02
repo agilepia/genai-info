@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스타터킷 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .filters {
+      background-color: white;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+    
+    .filter-chip {
+      padding: 8px 16px;
+      background-color: var(--neutral-100);
+      border-radius: 16px;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    
+    .filter-chip.active {
+      background-color: var(--primary-main);
+      color: white;
+    }
+    
+    .list-container {
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">스타터킷</div>
+    <div class="header-action">🔍</div>
+  </div>
+  
+  <div class="filters">
+    <div class="filter-chip active" onclick="filter('전체')">전체</div>
+    <div class="filter-chip" onclick="filter('마케터')">마케터</div>
+    <div class="filter-chip" onclick="filter('개발자')">개발자</div>
+    <div class="filter-chip" onclick="filter('디자이너')">디자이너</div>
+    <div class="filter-chip" onclick="filter('기획자')">기획자</div>
+  </div>
+  
+  <div class="list-container" id="listContainer"></div>
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    function filter(job) {
+      document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      renderList(job);
+    }
+    
+    function renderList(job = '전체') {
+      const container = document.getElementById('listContainer');
+      const kits = AppUtils.SAMPLE_DATA.starterkits;
+      
+      container.innerHTML = kits.map(kit => `
+        <div class="card card-clickable" onclick="AppUtils.navigateTo('09-스타터킷-상세.html?id=${kit.id}')">
+          <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary-main), var(--primary-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+            <span style="font-size: 24px;">${kit.job === '마케터' ? '📊' : '💻'}</span>
+          </div>
+          <h3 class="text-h4 mb-xs">${kit.title}</h3>
+          <p class="text-body-small text-neutral mb-md">${kit.description}</p>
+          <div class="flex justify-between items-center mb-md">
+            <span class="badge badge-neutral">${kit.resourceCount}개 리소스</span>
+            <div class="flex items-center gap-xs">
+              <span>${AppUtils.renderStars(kit.rating)}</span>
+              <span class="text-caption">${kit.rating}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-xs" style="margin-bottom: 8px;">
+            ${kit.tools.map(tool => `<span class="badge badge-primary">${tool}</span>`).join('')}
+          </div>
+          <div class="text-caption text-neutral">${AppUtils.formatNumber(kit.downloads)} 다운로드</div>
+        </div>
+      `).join('');
+    }
+    
+    renderList();
+  </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>다운로드 옵션 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .options-container { padding: 24px 16px; }
+    .option-title { font-size: 20px; font-weight: 700; margin-bottom: 24px; text-align: center; }
+    .option-card { background-color: white; border: 2px solid var(--neutral-300); border-radius: 12px; padding: 20px; margin-bottom: 16px; cursor: pointer; transition: all 0.2s; }
+    .option-card:hover { border-color: var(--primary-main); }
+    .option-card.selected { border-color: var(--primary-main); background-color: #EEF2FF; }
+    .option-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .option-name { font-size: 16px; font-weight: 600; }
+    .option-badge { background-color: var(--primary-main); color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; }
+    .option-desc { font-size: 13px; color: var(--neutral-500); margin-bottom: 8px; }
+    .option-price { font-size: 14px; font-weight: 600; color: var(--primary-main); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">다운로드 옵션</div>
+    <div class="header-action"></div>
+  </div>
+  
+  <div class="options-container">
+    <h1 class="option-title">파일 형식을 선택하세요</h1>
+    
+    <div class="option-card" onclick="selectOption('pdf')">
+      <div class="option-header">
+        <div class="option-name">📄 PDF</div>
+        <div class="option-badge">추천</div>
+      </div>
+      <div class="option-desc">인쇄 및 보관에 최적</div>
+      <div class="option-price">무료</div>
+    </div>
+    
+    <div class="option-card" onclick="selectOption('png')">
+      <div class="option-header">
+        <div class="option-name">🖼️ PNG</div>
+      </div>
+      <div class="option-desc">화면 캡처 및 공유용</div>
+      <div class="option-price">무료</div>
+    </div>
+    
+    <div class="option-card" onclick="selectOption('svg')">
+      <div class="option-header">
+        <div class="option-name">⚡ SVG</div>
+        <div class="option-badge" style="background-color: var(--warning);">프리미엄</div>
+      </div>
+      <div class="option-desc">무한 확대 가능한 벡터</div>
+      <div class="option-price">프리미엄 전용</div>
+    </div>
+    
+    <div style="margin-top: 32px;">
+      <button class="btn btn-primary btn-full" onclick="download()">
+        다운로드 시작
+      </button>
+    </div>
+    
+    <div style="margin-top: 16px; text-align: center;">
+      <div class="text-caption text-neutral">
+        💡 프리미엄 회원은 워터마크가 제거되고<br>고해상도 파일을 다운로드할 수 있어요
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    let selectedFormat = 'pdf';
+    
+    function selectOption(format) {
+      document.querySelectorAll('.option-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      event.currentTarget.classList.add('selected');
+      selectedFormat = format;
+    }
+    
+    function download() {
+      if (selectedFormat === 'svg') {
+        if (confirm('프리미엄 전용 기능입니다.\n프리미엄으로 업그레이드하시겠습니까?')) {
+          alert('프리미엄 안내 페이지로 이동합니다.');
+        }
+        return;
+      }
+      
+      AppUtils.showToast(`${selectedFormat.toUpperCase()} 다운로드가 시작되었어요`);
+      setTimeout(() => {
+        alert('다운로드 완료!\n\nChatGPT_치트시트.' + selectedFormat);
+        AppUtils.goBack();
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

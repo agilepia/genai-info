@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스타터킷 상세 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .detail-hero {
+      background: linear-gradient(135deg, var(--primary-main), var(--primary-light));
+      padding: 32px 16px;
+      color: white;
+    }
+    
+    .hero-icon {
+      width: 80px;
+      height: 80px;
+      background-color: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 36px;
+    }
+    
+    .hero-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .hero-description {
+      font-size: 15px;
+      opacity: 0.9;
+      margin-bottom: 16px;
+    }
+    
+    .hero-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 14px;
+    }
+    
+    .detail-content {
+      padding: 24px 16px 80px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    
+    .tool-card {
+      text-align: center;
+      padding: 16px;
+      background-color: var(--neutral-100);
+      border-radius: 8px;
+    }
+    
+    .tool-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    
+    .tool-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .cta-fixed {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      background-color: white;
+      border-top: 1px solid var(--neutral-300);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">스타터킷 상세</div>
+    <div class="header-action" onclick="toggleHeaderFavorite()">❤️</div>
+  </div>
+  
+  <div class="detail-hero">
+    <div class="hero-icon">📊</div>
+    <h1 class="hero-title">마케터를 위한 ChatGPT 스타터킷</h1>
+    <p class="hero-description">ChatGPT로 마케팅 업무 효율 3배 높이기</p>
+    <div class="hero-stats">
+      <span>⭐ 4.8</span>
+      <span>•</span>
+      <span>1,234 다운로드</span>
+      <span>•</span>
+      <span>30분 학습</span>
+    </div>
+  </div>
+  
+  <div class="detail-content">
+    <div class="section-title">포함된 AI 도구</div>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-icon">🤖</div>
+        <div class="tool-name">ChatGPT</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">🎨</div>
+        <div class="tool-name">Midjourney</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon">💎</div>
+        <div class="tool-name">Claude</div>
+      </div>
+    </div>
+    
+    <div class="section-title">포함 내용</div>
+    <div class="card mb-md">
+      <div class="flex justify-between items-center mb-sm">
+        <span class="text-h4">30개</span>
+        <span class="text-body-small text-neutral">프롬프트 템플릿</span>
+      </div>
+      <p class="text-body-small text-neutral">
+        블로그 작성, SEO 최적화, 소셜 미디어 콘텐츠 등
+      </p>
+    </div>
+    
+    <div class="card mb-md">
+      <div class="flex justify-between items-center mb-sm">
+        <span class="text-h4">5개</span>
+        <span class="text-body-small text-neutral">치트시트</span>
+      </div>
+      <p class="text-body-small text-neutral">
+        주요 기능 요약, 단축키, 프롬프트 패턴
+      </p>
+    </div>
+    
+    <div class="card">
+      <div class="flex justify-between items-center mb-sm">
+        <span class="text-h4">10개</span>
+        <span class="text-body-small text-neutral">실무 사례</span>
+      </div>
+      <p class="text-body-small text-neutral">
+        실제 마케터들의 성공 사례와 ROI 데이터
+      </p>
+    </div>
+  </div>
+  
+  <div class="cta-fixed">
+    <button class="btn btn-primary btn-full" onclick="download()">
+      다운로드 (무료)
+    </button>
+  </div>
+  
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    function toggleHeaderFavorite() {
+      const icon = document.querySelector('.header-action');
+      const isFavorited = icon.textContent.includes('❤️');
+      
+      if (isFavorited) {
+        icon.textContent = '♡️';
+        AppUtils.showToast('즐겨찾기에서 제거했어요');
+      } else {
+        icon.textContent = '❤️';
+        AppUtils.showToast('즐겨찾기에 추가했어요');
+      }
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+      const favorites = AppUtils.Storage.get('favorites') || { starterkits: [] };
+      
+      if (isFavorited) {
+        favorites.starterkits = favorites.starterkits.filter(s => s !== id);
+      } else {
+        if (!favorites.starterkits.includes(id)) {
+          favorites.starterkits.push(id);
+        }
+      }
+      
+      AppUtils.Storage.set('favorites', favorites);
+    }
+    
+    function download() {
+      const user = AppUtils.Storage.get('user');
+      if (!user || !user.isLoggedIn) {
+        if (confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
+          window.location.href = '03-로그인.html';
+        }
+        return;
+      }
+      
+      AppUtils.showToast('스타터킷 다운로드가 시작되었어요');
+      setTimeout(() => {
+        alert('다운로드 완료!\n\n파일이 저장되었습니다:\n마케터_스타터킷.pdf');
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

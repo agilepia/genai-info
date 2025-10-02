@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기여하기 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+      background-color: var(--neutral-50);
+    }
+    
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: white;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .back-btn {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      color: var(--neutral-700);
+    }
+    
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .page-content {
+      padding: 24px 16px;
+    }
+    
+    .intro-section {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .intro-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .intro-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .intro-text {
+      font-size: 14px;
+      color: var(--neutral-500);
+      line-height: 1.6;
+    }
+    
+    .contribution-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .contribution-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid var(--neutral-300);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .contribution-card:hover {
+      border-color: var(--primary-main);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .contribution-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .contribution-icon {
+      font-size: 32px;
+    }
+    
+    .contribution-info {
+      flex: 1;
+    }
+    
+    .contribution-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .contribution-subtitle {
+      font-size: 13px;
+      color: var(--neutral-500);
+    }
+    
+    .contribution-description {
+      font-size: 14px;
+      color: var(--neutral-700);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    
+    .contribution-reward {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background-color: var(--neutral-100);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--primary-main);
+      font-weight: 600;
+    }
+    
+    .stats-section {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+    
+    .stats-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-main);
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--neutral-500);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <div class="back-btn" onclick="AppUtils.goBack()">←</div>
+    <div class="page-title">기여하기</div>
+  </div>
+  
+  <div class="page-content">
+    <div class="intro-section">
+      <div class="intro-icon">🎯</div>
+      <h1 class="intro-title">커뮤니티에 기여하세요</h1>
+      <p class="intro-text">
+        여러분의 지식과 경험을 나누면<br>
+        평판 점수와 배지를 획득할 수 있어요
+      </p>
+    </div>
+    
+    <div class="contribution-options">
+      <div class="contribution-card" onclick="AppUtils.navigateTo('22-프롬프트-제안.html')">
+        <div class="contribution-card-header">
+          <div class="contribution-icon">✨</div>
+          <div class="contribution-info">
+            <div class="contribution-title">프롬프트 제안</div>
+            <div class="contribution-subtitle">새로운 프롬프트 공유</div>
+          </div>
+        </div>
+        <div class="contribution-description">
+          실무에서 유용하게 사용한 프롬프트를 커뮤니티와 공유하세요
+        </div>
+        <div class="contribution-reward">
+          <span>⭐</span>
+          <span>+50 평판 점수</span>
+        </div>
+      </div>
+      
+      <div class="contribution-card" onclick="AppUtils.navigateTo('23-실무사례-공유.html')">
+        <div class="contribution-card-header">
+          <div class="contribution-icon">📊</div>
+          <div class="contribution-info">
+            <div class="contribution-title">실무사례 공유</div>
+            <div class="contribution-subtitle">성공 사례 작성</div>
+          </div>
+        </div>
+        <div class="contribution-description">
+          AI 도구를 활용한 실무 경험과 성과를 자세히 공유하세요
+        </div>
+        <div class="contribution-reward">
+          <span>⭐</span>
+          <span>+100 평판 점수</span>
+        </div>
+      </div>
+      
+      <div class="contribution-card" onclick="AppUtils.navigateTo('24-리소스-개선제안.html')">
+        <div class="contribution-card-header">
+          <div class="contribution-icon">💡</div>
+          <div class="contribution-info">
+            <div class="contribution-title">리소스 개선 제안</div>
+            <div class="contribution-subtitle">더 나은 품질을 위해</div>
+          </div>
+        </div>
+        <div class="contribution-description">
+          기존 리소스의 오류 수정이나 개선 아이디어를 제안하세요
+        </div>
+        <div class="contribution-reward">
+          <span>⭐</span>
+          <span>+30 평판 점수</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stats-section">
+      <div class="stats-title">이번 달 커뮤니티 활동</div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value">234</div>
+          <div class="stat-label">기여 완료</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">89</div>
+          <div class="stat-label">진행 중</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">1,245</div>
+          <div class="stat-label">평판 획득</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('21-기여하기.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+</body>
+</html>

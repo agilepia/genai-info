@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>실무사례 검색결과 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body { 
+      padding-bottom: 80px; 
+    }
+    
+    .search-header {
+      background-color: white;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+    
+    .search-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .search-input {
+      flex: 1;
+      height: 44px;
+      padding: 0 16px;
+      background-color: var(--neutral-100);
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      background-color: white;
+      border: 1px solid var(--primary-main);
+    }
+    
+    .cancel-btn {
+      color: var(--primary-main);
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .filters-section {
+      background-color: white;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      flex: 1;
+      padding-right: 8px;
+    }
+    
+    .filter-chip {
+      padding: 6px 12px;
+      background-color: var(--neutral-100);
+      border-radius: 16px;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all var(--transition-fast);
+    }
+    
+    .filter-chip.active {
+      background-color: var(--primary-main);
+      color: white;
+    }
+    
+    .filter-btn {
+      padding: 6px 12px;
+      background-color: white;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .results-header {
+      padding: 16px;
+      background-color: white;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+    
+    .results-count {
+      font-size: 14px;
+      color: var(--neutral-700);
+    }
+    
+    .results-count strong {
+      color: var(--primary-main);
+      font-weight: 600;
+    }
+    
+    .list-container {
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+    }
+    
+    .case-card {
+      background-color: white;
+      border: 1px solid var(--neutral-300);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+    }
+    
+    .case-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    
+    .case-card-header {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .case-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--neutral-900);
+    }
+    
+    .case-card-company {
+      font-size: 13px;
+      color: var(--neutral-500);
+      margin-bottom: 16px;
+    }
+    
+    .case-card-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 12px;
+      background-color: var(--neutral-50);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .metric-item {
+      text-align: center;
+    }
+    
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--success);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    
+    .metric-label {
+      font-size: 11px;
+      color: var(--neutral-500);
+    }
+    
+    .case-card-footer {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    
+    .tool-icon {
+      width: 24px;
+      height: 24px;
+      background-color: var(--neutral-100);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 64px 16px;
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+    }
+    
+    .empty-subtitle {
+      font-size: 14px;
+      color: var(--neutral-500);
+    }
+  </style>
+</head>
+<body>
+  <!-- 검색 헤더 -->
+  <div class="search-header">
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="실무사례 검색..." 
+        value="마케팅 효율"
+        autofocus
+      >
+      <div class="cancel-btn" onclick="AppUtils.goBack()">취소</div>
+    </div>
+  </div>
+  
+  <!-- 필터 섹션 -->
+  <div class="filters-section">
+    <div class="filter-chips">
+      <div class="filter-chip active">전체</div>
+      <div class="filter-chip">IT/테크</div>
+      <div class="filter-chip">이커머스</div>
+      <div class="filter-chip">금융</div>
+      <div class="filter-chip">교육</div>
+    </div>
+    <div class="filter-btn">
+      <span>⚙️</span>
+      <span>필터</span>
+    </div>
+  </div>
+  
+  <!-- 검색 결과 개수 -->
+  <div class="results-header">
+    <div class="results-count">
+      <strong>12개</strong>의 실무사례를 찾았어요
+    </div>
+  </div>
+  
+  <!-- 검색 결과 목록 -->
+  <div class="list-container" id="listContainer">
+    <!-- 카드 1 -->
+    <div class="case-card" onclick="AppUtils.navigateTo('19-실무사례-상세.html?id=1')">
+      <div class="case-card-header">
+        <span class="badge badge-neutral">IT/테크</span>
+        <span class="badge badge-neutral">마케터</span>
+      </div>
+      <h3 class="case-card-title">콘텐츠 작성 시간 70% 단축</h3>
+      <p class="case-card-company">스타트업 A (익명)</p>
+      
+      <div class="case-card-metrics">
+        <div class="metric-item">
+          <div class="metric-value">70%</div>
+          <div class="metric-label">효율 개선</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-value">3.8h</div>
+          <div class="metric-label">시간 절감</div>
+        </div>
+      </div>
+      
+      <div class="case-card-footer">
+        <div class="tool-icon" title="ChatGPT">🤖</div>
+        <span class="badge badge-secondary">콘텐츠 마케팅</span>
+        <span class="badge badge-secondary">블로그</span>
+      </div>
+    </div>
+    
+    <!-- 카드 2 -->
+    <div class="case-card" onclick="AppUtils.navigateTo('19-실무사례-상세.html?id=2')">
+      <div class="case-card-header">
+        <span class="badge badge-neutral">이커머스</span>
+        <span class="badge badge-neutral">CS</span>
+      </div>
+      <h3 class="case-card-title">고객 문의 응답 시간 50% 감소</h3>
+      <p class="case-card-company">이커머스 B</p>
+      
+      <div class="case-card-metrics">
+        <div class="metric-item">
+          <div class="metric-value">50%</div>
+          <div class="metric-label">효율 개선</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-value">15분</div>
+          <div class="metric-label">평균 응답시간</div>
+        </div>
+      </div>
+      
+      <div class="case-card-footer">
+        <div class="tool-icon" title="Claude">🧠</div>
+        <span class="badge badge-secondary">고객지원</span>
+        <span class="badge badge-secondary">챗봇</span>
+      </div>
+    </div>
+    
+    <!-- 카드 3 -->
+    <div class="case-card" onclick="AppUtils.navigateTo('19-실무사례-상세.html?id=3')">
+      <div class="case-card-header">
+        <span class="badge badge-neutral">금융</span>
+        <span class="badge badge-neutral">마케터</span>
+      </div>
+      <h3 class="case-card-title">이메일 마케팅 전환율 2배 향상</h3>
+      <p class="case-card-company">핀테크 C</p>
+      
+      <div class="case-card-metrics">
+        <div class="metric-item">
+          <div class="metric-value">100%</div>
+          <div class="metric-label">전환율 증가</div>
+        </div>
+        <div class="metric-item">
+          <div class="metric-value">4.2%</div>
+          <div class="metric-label">최종 CTR</div>
+        </div>
+      </div>
+      
+      <div class="case-card-footer">
+        <div class="tool-icon" title="ChatGPT">🤖</div>
+        <span class="badge badge-secondary">이메일 마케팅</span>
+        <span class="badge badge-secondary">A/B 테스트</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 하단 네비게이션 -->
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    // 필터 칩 토글
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', function() {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+    
+    // 필터 버튼 클릭
+    document.querySelector('.filter-btn').addEventListener('click', function() {
+      const filterContent = `
+        <h3 class="text-h3 mb-md">상세 필터</h3>
+        
+        <div class="mb-lg">
+          <div class="text-body-small mb-sm" style="font-weight: 600;">업종</div>
+          <div class="flex gap-sm" style="flex-wrap: wrap;">
+            <div class="filter-chip">IT/테크</div>
+            <div class="filter-chip">이커머스</div>
+            <div class="filter-chip">금융</div>
+            <div class="filter-chip">교육</div>
+            <div class="filter-chip">제조</div>
+          </div>
+        </div>
+        
+        <div class="mb-lg">
+          <div class="text-body-small mb-sm" style="font-weight: 600;">직무</div>
+          <div class="flex gap-sm" style="flex-wrap: wrap;">
+            <div class="filter-chip">마케터</div>
+            <div class="filter-chip">개발자</div>
+            <div class="filter-chip">디자이너</div>
+            <div class="filter-chip">기획자</div>
+            <div class="filter-chip">CS</div>
+          </div>
+        </div>
+        
+        <div class="mb-lg">
+          <div class="text-body-small mb-sm" style="font-weight: 600;">AI 도구</div>
+          <div class="flex gap-sm" style="flex-wrap: wrap;">
+            <div class="filter-chip">ChatGPT</div>
+            <div class="filter-chip">Claude</div>
+            <div class="filter-chip">Gemini</div>
+            <div class="filter-chip">Midjourney</div>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary btn-full" onclick="AppUtils.showToast('필터가 적용되었어요'); document.querySelector('.modal-backdrop').click();">
+          적용하기
+        </button>
+      `;
+      
+      AppUtils.showBottomSheet(filterContent);
+    });
+  </script>
+</body>
+</html>

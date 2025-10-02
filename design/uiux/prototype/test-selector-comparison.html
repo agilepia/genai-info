@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>셀렉터 박스 개선 - Before/After</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding: 20px;
+      background-color: var(--neutral-50);
+    }
+    
+    .comparison-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .section {
+      background-color: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .badge {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .badge-before {
+      background-color: #FEE2E2;
+      color: #DC2626;
+    }
+    
+    .badge-after {
+      background-color: #D1FAE5;
+      color: #059669;
+    }
+    
+    .section-description {
+      font-size: 14px;
+      color: var(--neutral-500);
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--neutral-900);
+    }
+    
+    .required {
+      color: var(--error);
+    }
+    
+    /* Before 스타일 (기존) */
+    .select-before {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    
+    .select-before:focus {
+      outline: none;
+      border-color: var(--primary-main);
+    }
+    
+    /* After 스타일 (개선) */
+    .select-after {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      min-height: 48px;
+      line-height: 1.5;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%236B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+    
+    .select-after option {
+      font-size: 16px;
+      padding: 12px;
+      min-height: 44px;
+    }
+    
+    .select-after:focus {
+      outline: none;
+      border-color: var(--primary-main);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .specs-table {
+      margin-top: 16px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .specs-row {
+      display: flex;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+    
+    .specs-row:last-child {
+      border-bottom: none;
+    }
+    
+    .specs-label {
+      flex: 0 0 120px;
+      padding: 12px;
+      background-color: var(--neutral-100);
+      font-weight: 600;
+      font-size: 13px;
+    }
+    
+    .specs-value {
+      flex: 1;
+      padding: 12px;
+      font-size: 13px;
+    }
+    
+    .highlight {
+      background-color: #FEF3C7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .page-header p {
+      font-size: 14px;
+      color: var(--neutral-500);
+    }
+  </style>
+</head>
+<body>
+  <div class="comparison-container">
+    <div class="page-header">
+      <h1>🎨 셀렉터 박스 개선</h1>
+      <p>모바일 사용성 개선을 위한 Before/After 비교</p>
+    </div>
+    
+    <!-- Before Section -->
+    <div class="section">
+      <div class="section-title">
+        <span>수정 전</span>
+        <span class="badge badge-before">Before</span>
+      </div>
+      <p class="section-description">기존 14px 폰트 크기로 모바일에서 가독성 저하</p>
+      
+      <div class="form-group">
+        <label class="form-label">
+          대상 AI 도구 <span class="required">*</span>
+        </label>
+        <select class="select-before">
+          <option value="">선택해주세요</option>
+          <option value="ChatGPT">ChatGPT</option>
+          <option value="Claude" selected>Claude</option>
+          <option value="Gemini">Gemini</option>
+          <option value="Copilot">Microsoft Copilot</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+      
+      <div class="specs-table">
+        <div class="specs-row">
+          <div class="specs-label">폰트 크기</div>
+          <div class="specs-value"><span class="highlight">14px</span> (너무 작음)</div>
+        </div>
+        <div class="specs-row">
+          <div class="specs-label">최소 높이</div>
+          <div class="specs-value"><span class="highlight">~38px</span> (터치 영역 부족)</div>
+        </div>
+        <div class="specs-row">
+          <div class="specs-label">패딩</div>
+          <div class="specs-value">12px (좌우 동일)</div>
+        </div>
+        <div class="specs-row">
+          <div class="specs-label">드롭다운</div>
+          <div class="specs-value">네이티브 (브라우저별 상이)</div>
+        </div>
+        <div class="specs-row">
+          <div class="specs-label">iOS 자동 줌</div>
+          <div class="specs-value"><span class="highlight">발생함</span> ❌</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- After Section -->
+    <div class="section">
+      <div class="section-title">
+        <span>수정 후</span>
+        <span class="badge badge-after">After</span>
+      </div>
+      <p class="section-description">16px 폰트 크기와 48px 터치 영역으로 모바일 최적화</p>
+      
+      <div class="form-group">
+        <label class="form-label">
+          대상 AI 도구 <span class="required">*</span>
+        </label>
+        <select class="select-after">
+          <option value="">선택해주세요</option>
+          <option value="ChatGPT">ChatGPT</option>
+          <option value="Claude" selected>Claude</option>
+          <option value="Gemini">Gemini</option>
+          <option value="Copilot">Microsoft Copilot</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+      
+      <div class="specs-table">
+        <div class="specs-row">
+          <div class="specs-label">폰트 크기</div>
+          <div class="specs-value"><span class="highlight">16px</span> (가독성 향상) ✅</div>
+        </div>
+        <div class="specs-row">
+          <div class="specs-label">최소 높이</div>
+          <div class="specs-value"><span class="highlight">48px</span> (터치 영역 확보) ✅</div>
+        </div>
+        <div class="specs-row">
+          <div class="specs-label">패딩</div>
+          <div class="specs-value">12px 16px (우측 40px)</div>
+        </div>
+        <div class="specs-row">
+          <div class="specs-label">드롭다운</div>
+          <div class="specs-value">커스텀 SVG 아이콘 (일관성) ✅</div>
+        </div>
+        <div class="specs-row">
+          <div class="specs-label">iOS 자동 줌</div>
+          <div class="specs-value"><span class="highlight">방지됨</span> ✅</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Summary Section -->
+    <div class="section" style="background: linear-gradient(135deg, var(--primary-main), var(--primary-light)); color: white;">
+      <div class="section-title" style="color: white;">
+        <span>📊 개선 효과</span>
+      </div>
+      <ul style="font-size: 14px; line-height: 2; margin-left: 20px; opacity: 0.95;">
+        <li><strong>가독성</strong>: 14px → 16px (14% 향상)</li>
+        <li><strong>터치 영역</strong>: ~38px → 48px (26% 확대)</li>
+        <li><strong>iOS 자동 줌</strong>: 발생 → 방지</li>
+        <li><strong>크로스 브라우저</strong>: 네이티브 → 커스텀 (일관성 확보)</li>
+        <li><strong>접근성</strong>: WCAG 2.1 터치 타겟 기준 준수</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    // 모바일 디바이스 체크
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      console.log('✅ 모바일 디바이스에서 테스트 중');
+    } else {
+      console.log('💡 모바일 디바이스에서 테스트해보세요');
+    }
+    
+    // 디바이스 정보 출력
+    console.log('화면 너비:', window.innerWidth + 'px');
+    console.log('User Agent:', navigator.userAgent);
+  </script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 32px 16px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary-main), var(--primary-light));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .login-logo-text {
+      font-size: 36px;
+      font-weight: 700;
+      color: white;
+    }
+    
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    
+    .login-subtitle {
+      font-size: 16px;
+      color: var(--neutral-500);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--neutral-700);
+    }
+    
+    .error-message {
+      font-size: 13px;
+      color: var(--error);
+      margin-top: 4px;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      color: var(--neutral-500);
+      font-size: 14px;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: var(--neutral-300);
+    }
+    
+    .divider::before {
+      margin-right: 16px;
+    }
+    
+    .divider::after {
+      margin-left: 16px;
+    }
+    
+    .social-login {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .social-btn {
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      border: 1px solid var(--neutral-300);
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+    
+    .social-btn:hover {
+      background-color: var(--neutral-50);
+      border-color: var(--neutral-500);
+    }
+    
+    .footer-links {
+      text-align: center;
+      margin-top: 24px;
+    }
+    
+    .footer-link {
+      font-size: 14px;
+      color: var(--neutral-500);
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    
+    .footer-link:hover {
+      color: var(--primary-main);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-logo">
+      <div class="login-logo-text">AI</div>
+    </div>
+    
+    <h1 class="login-title">이메일로 간편하게 시작하세요</h1>
+    <p class="login-subtitle">비밀번호 없이 이메일만으로 로그인할 수 있어요</p>
+    
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label" for="email">이메일</label>
+        <input 
+          type="email" 
+          id="email" 
+          class="input-field" 
+          placeholder="이메일을 입력해주세요"
+          required
+        >
+        <div class="error-message" id="emailError">올바른 이메일 형식이 아니에요</div>
+      </div>
+      
+      <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+        <span id="btnText">로그인 링크 받기</span>
+        <div class="spinner" id="btnSpinner" style="display: none; width: 20px; height: 20px; border-width: 2px; border-color: white; border-top-color: transparent;"></div>
+      </button>
+    </form>
+    
+    <div class="divider">또는 다른 방법으로 로그인</div>
+    
+    <div class="social-login">
+      <button class="social-btn" onclick="socialLogin('google')">
+        <span>🔍</span>
+        <span>Google로 계속하기</span>
+      </button>
+      <button class="social-btn" onclick="socialLogin('kakao')">
+        <span>💬</span>
+        <span>Kakao로 계속하기</span>
+      </button>
+    </div>
+    
+    <div class="footer-links">
+      <a href="04-아이디-비밀번호-찾기.html" class="footer-link">계정 찾기</a>
+      <span class="footer-link">|</span>
+      <a href="#" class="footer-link">도움말</a>
+    </div>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const loginBtn = document.getElementById('loginBtn');
+    const btnText = document.getElementById('btnText');
+    const btnSpinner = document.getElementById('btnSpinner');
+    
+    // 이메일 유효성 검사
+    emailInput.addEventListener('input', () => {
+      const email = emailInput.value;
+      if (email && !AppUtils.validateEmail(email)) {
+        emailInput.classList.add('error');
+        emailError.classList.add('show');
+      } else {
+        emailInput.classList.remove('error');
+        emailError.classList.remove('show');
+      }
+    });
+    
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const email = emailInput.value;
+      if (!AppUtils.validateEmail(email)) {
+        emailInput.classList.add('error');
+        emailError.classList.add('show');
+        return;
+      }
+      
+      // 로딩 상태
+      loginBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'block';
+      
+      // 시뮬레이션: 2초 후 로그인 성공
+      setTimeout(() => {
+        // 사용자 정보 저장
+        const userData = AppUtils.Storage.get('user') || {};
+        userData.email = email;
+        userData.isLoggedIn = true;
+        AppUtils.Storage.set('user', userData);
+        
+        // 토스트 표시
+        AppUtils.showToast('로그인 링크가 이메일로 발송되었어요');
+        
+        // 홈으로 이동 (실제로는 이메일 확인 대기 화면으로)
+        setTimeout(() => {
+          window.location.href = '05-홈.html';
+        }, 1500);
+      }, 2000);
+    }
+    
+    function socialLogin(provider) {
+      AppUtils.showToast(`${provider} 로그인 준비중입니다`);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>검색 결과 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .search-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: white;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-300);
+    }
+    
+    .search-input-container {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 24px;
+      padding: 16px;
+      background-color: white;
+      border-bottom: 1px solid var(--neutral-300);
+      overflow-x: auto;
+    }
+    
+    .tab {
+      font-size: 15px;
+      color: var(--neutral-500);
+      cursor: pointer;
+      white-space: nowrap;
+      padding-bottom: 4px;
+      border-bottom: 2px solid transparent;
+    }
+    
+    .tab.active {
+      color: var(--primary-main);
+      font-weight: 600;
+      border-bottom-color: var(--primary-main);
+    }
+    
+    .result-info {
+      padding: 16px;
+      font-size: 14px;
+      color: var(--neutral-500);
+    }
+    
+    .results-grid {
+      padding: 0 16px 24px;
+      display: grid;
+      gap: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-header">
+    <div class="search-input-container">
+      <div class="header-back" onclick="AppUtils.goBack()">←</div>
+      <input 
+        type="text" 
+        class="search-input" 
+        id="searchInput"
+        style="flex: 1;"
+      >
+    </div>
+  </div>
+  
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('all')">전체</div>
+    <div class="tab" onclick="switchTab('prompts')">프롬프트</div>
+    <div class="tab" onclick="switchTab('cheatsheets')">치트시트</div>
+    <div class="tab" onclick="switchTab('cases')">실무사례</div>
+    <div class="tab" onclick="switchTab('starterkits')">스타터킷</div>
+  </div>
+  
+  <div class="result-info" id="resultInfo">
+    검색 결과 <strong id="resultCount">0</strong>개
+  </div>
+  
+  <div class="results-grid" id="resultsGrid"></div>
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q') || '';
+    
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = query;
+    
+    // 재검색 기능 추가
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const newQuery = searchInput.value.trim();
+        if (newQuery) {
+          window.location.href = `07-통합검색-결과.html?q=${encodeURIComponent(newQuery)}`;
+        }
+      }
+    });
+    
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      renderResults(tab);
+    }
+    
+    function renderResults(tab = 'all') {
+      const grid = document.getElementById('resultsGrid');
+      const data = AppUtils.SAMPLE_DATA;
+      
+      let items = [];
+      
+      if (tab === 'all' || tab === 'prompts') {
+        items = items.concat(data.prompts.map(p => ({
+          type: 'prompt',
+          data: p
+        })));
+      }
+      
+      if (tab === 'all' || tab === 'cheatsheets') {
+        items = items.concat(data.cheatsheets.map(c => ({
+          type: 'cheatsheet',
+          data: c
+        })));
+      }
+      
+      if (tab === 'all' || tab === 'cases') {
+        items = items.concat(data.cases.map(c => ({
+          type: 'case',
+          data: c
+        })));
+      }
+      
+      document.getElementById('resultCount').textContent = items.length;
+      
+      grid.innerHTML = items.map(item => {
+        if (item.type === 'prompt') {
+          return AppUtils.renderPromptCard(item.data);
+        } else if (item.type === 'cheatsheet') {
+          return AppUtils.renderCheatsheetCard(item.data);
+        } else {
+          return AppUtils.renderCaseCard(item.data);
+        }
+      }).join('');
+    }
+    
+    // 초기 렌더링
+    renderResults();
+  </script>
+</body>
+</html>

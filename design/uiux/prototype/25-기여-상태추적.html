@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>기여 상태 추적 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+      background-color: var(--neutral-50);
+    }
+    
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: white;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .back-btn {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      color: var(--neutral-700);
+    }
+    
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .filter-btn {
+      font-size: 14px;
+      color: var(--primary-main);
+      cursor: pointer;
+    }
+    
+    .page-content {
+      padding: 16px;
+    }
+    
+    .status-card {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-left: 4px solid var(--neutral-300);
+    }
+    
+    .status-card.pending {
+      border-left-color: var(--warning);
+    }
+    
+    .status-card.approved {
+      border-left-color: var(--success);
+    }
+    
+    .status-card.rejected {
+      border-left-color: var(--error);
+    }
+    
+    .status-card.revision {
+      border-left-color: var(--info);
+    }
+    
+    .status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+    
+    .pr-number {
+      font-size: 13px;
+      color: var(--neutral-500);
+      font-weight: 600;
+    }
+    
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .status-badge.pending {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+    }
+    
+    .status-badge.approved {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    
+    .status-badge.rejected {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+    }
+    
+    .status-badge.revision {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--info);
+    }
+    
+    .pr-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--neutral-900);
+    }
+    
+    .pr-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--neutral-500);
+      margin-bottom: 8px;
+    }
+    
+    .pr-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--neutral-500);
+      margin-bottom: 12px;
+    }
+    
+    .timeline {
+      position: relative;
+      padding-left: 24px;
+      margin-top: 16px;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background-color: var(--neutral-300);
+    }
+    
+    .timeline-item {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .timeline-dot {
+      position: absolute;
+      left: -18px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--neutral-300);
+    }
+    
+    .timeline-dot.active {
+      background-color: var(--primary-main);
+    }
+    
+    .timeline-content {
+      font-size: 13px;
+      color: var(--neutral-700);
+      line-height: 1.5;
+    }
+    
+    .timeline-time {
+      font-size: 12px;
+      color: var(--neutral-500);
+      margin-top: 4px;
+    }
+    
+    .reviewer-comment {
+      background-color: var(--neutral-100);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    
+    .comment-author {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    
+    .btn-outline {
+      border: 1px solid var(--neutral-300);
+      background: white;
+      color: var(--neutral-700);
+    }
+    
+    .btn-primary {
+      border: none;
+      background-color: var(--primary-main);
+      color: white;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    .empty-text {
+      font-size: 16px;
+      color: var(--neutral-500);
+      margin-bottom: 24px;
+    }
+    
+    .stats-summary {
+      background-color: white;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-around;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .stat-value.pending {
+      color: var(--warning);
+    }
+    
+    .stat-value.approved {
+      color: var(--success);
+    }
+    
+    .stat-value.rejected {
+      color: var(--error);
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--neutral-500);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <div class="header-left">
+      <div class="back-btn" onclick="AppUtils.goBack()">←</div>
+      <div class="page-title">기여 상태 추적</div>
+    </div>
+    <div class="filter-btn" onclick="showFilterModal()">필터 🔽</div>
+  </div>
+  
+  <div class="page-content">
+    <!-- 통계 요약 -->
+    <div class="stats-summary">
+      <div class="stat-item">
+        <div class="stat-value pending">2</div>
+        <div class="stat-label">검토 대기</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value approved">8</div>
+        <div class="stat-label">승인됨</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value rejected">1</div>
+        <div class="stat-label">거부됨</div>
+      </div>
+    </div>
+    
+    <!-- PR 목록 -->
+    <div id="prList">
+      <!-- PR #1 - 승인됨 -->
+      <div class="status-card approved">
+        <div class="status-header">
+          <span class="pr-number">PR-2025-001</span>
+          <span class="status-badge approved">✓ 승인됨</span>
+        </div>
+        <div class="pr-title">블로그 포스트 아이디어 생성 프롬프트</div>
+        <div class="pr-type">
+          <span>✨</span>
+          <span>프롬프트 제안</span>
+        </div>
+        <div class="pr-meta">
+          <span>제출: 2025-10-01</span>
+          <span>⭐ +50 획득</span>
+        </div>
+        
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot active"></div>
+            <div class="timeline-content">제안 제출</div>
+            <div class="timeline-time">2025-10-01 14:30</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot active"></div>
+            <div class="timeline-content">리뷰 시작</div>
+            <div class="timeline-time">2025-10-01 15:00</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot active"></div>
+            <div class="timeline-content">승인 완료</div>
+            <div class="timeline-time">2025-10-01 18:20</div>
+          </div>
+        </div>
+        
+        <div class="reviewer-comment">
+          <div class="comment-author">리뷰어 김지민</div>
+          훌륭한 프롬프트입니다! 타겟 독자를 고려한 접근이 매우 실용적이네요. 🎉
+        </div>
+      </div>
+      
+      <!-- PR #2 - 검토 대기 -->
+      <div class="status-card pending">
+        <div class="status-header">
+          <span class="pr-number">PR-2025-002</span>
+          <span class="status-badge pending">⏱ 검토 대기</span>
+        </div>
+        <div class="pr-title">ChatGPT 고객 응대 자동화 사례</div>
+        <div class="pr-type">
+          <span>📊</span>
+          <span>실무사례 공유</span>
+        </div>
+        <div class="pr-meta">
+          <span>제출: 2025-10-02 10:15</span>
+          <span>예상: ⭐ +100</span>
+        </div>
+        
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot active"></div>
+            <div class="timeline-content">제안 제출</div>
+            <div class="timeline-time">2025-10-02 10:15</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">리뷰 진행 중...</div>
+            <div class="timeline-time">예상 1-2일 소요</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- PR #3 - 수정 요청 -->
+      <div class="status-card revision">
+        <div class="status-header">
+          <span class="pr-number">PR-2025-003</span>
+          <span class="status-badge revision">✏️ 수정 요청</span>
+        </div>
+        <div class="pr-title">프롬프트 오류 수정 제안</div>
+        <div class="pr-type">
+          <span>💡</span>
+          <span>리소스 개선 제안</span>
+        </div>
+        <div class="pr-meta">
+          <span>제출: 2025-09-30</span>
+          <span>예상: ⭐ +30</span>
+        </div>
+        
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot active"></div>
+            <div class="timeline-content">제안 제출</div>
+            <div class="timeline-time">2025-09-30 16:45</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot active"></div>
+            <div class="timeline-content">수정 요청됨</div>
+            <div class="timeline-time">2025-10-01 11:30</div>
+          </div>
+        </div>
+        
+        <div class="reviewer-comment">
+          <div class="comment-author">리뷰어 박현우</div>
+          제안 감사합니다. 문제 재현 방법을 좀 더 구체적으로 작성해주시면 검토에 도움이 될 것 같습니다.
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn btn-outline" onclick="alert('취소 준비중')">취소</button>
+          <button class="btn btn-primary" onclick="alert('수정 준비중')">수정하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('21-기여하기.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    function showFilterModal() {
+      alert('필터 기능 준비중\n\n• 상태별 필터\n• 유형별 필터\n• 날짜별 정렬');
+    }
+    
+    // URL 파라미터에서 PR 번호 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    const prNumber = urlParams.get('pr');
+    
+    if (prNumber) {
+      // 새로 생성된 PR 강조
+      setTimeout(() => {
+        AppUtils.showToast(`${prNumber}가 생성되었습니다`);
+      }, 500);
+    }
+  </script>
+</body>
+</html>

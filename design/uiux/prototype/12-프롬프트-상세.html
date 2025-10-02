@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프롬프트 상세 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+    
+    .detail-content { padding: 16px 16px 80px; }
+    .prompt-meta { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+    .prompt-title { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+    .prompt-box { background-color: var(--neutral-100); border-radius: 8px; padding: 16px; margin-bottom: 24px; font-family: monospace; font-size: 13px; line-height: 1.6; }
+    .usage-section { margin-bottom: 24px; }
+    .usage-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+    .example-box { background-color: #EEF2FF; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .cta-fixed { position: fixed; bottom: 0; left: 0; right: 0; padding: 16px; background-color: white; border-top: 1px solid var(--neutral-300); display: flex; gap: 12px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">프롬프트 상세</div>
+    <div class="header-action" onclick="toggleHeaderFavorite()">❤️</div>
+  </div>
+  
+  <div class="detail-content">
+    <div class="prompt-meta">
+      <span class="badge badge-primary">ChatGPT</span>
+      <span class="badge badge-neutral">마케터</span>
+      <span class="text-caption">⭐ 4.7 (523회 사용)</span>
+    </div>
+    
+    <h1 class="prompt-title">블로그 포스트 아이디어 생성</h1>
+    <p class="text-body mb-md">타겟 독자를 고려한 블로그 주제 10가지를 추천받을 수 있는 프롬프트입니다.</p>
+    
+    <div class="usage-title">프롬프트 전문</div>
+    <div class="prompt-box" id="promptContent">당신은 콘텐츠 전략가입니다. [주제]에 대해 [타겟 독자]를 위한 블로그 포스트 아이디어 10가지를 생성해주세요.
+
+각 아이디어는 다음을 포함해야 합니다:
+1. 제목 (30자 이내)
+2. 간단한 설명 (50자 이내)
+3. 예상 독자 반응
+4. SEO 키워드 3개
+
+주제: [여기에 주제 입력]
+타겟 독자: [여기에 타겟 독자 입력]</div>
+    
+    <div class="usage-section">
+      <div class="usage-title">사용 방법</div>
+      <div class="example-box">
+        <strong>1단계:</strong> [주제]와 [타겟 독자] 부분을 실제 내용으로 교체하세요.<br><br>
+        <strong>2단계:</strong> ChatGPT에 붙여넣기하세요.<br><br>
+        <strong>3단계:</strong> 생성된 아이디어 중 마음에 드는 것을 선택하세요.
+      </div>
+    </div>
+    
+    <div class="usage-section">
+      <div class="usage-title">활용 팁</div>
+      <p class="text-body-small text-neutral">
+        • 구체적인 독자 페르소나를 입력할수록 더 맞춤화된 결과를 얻을 수 있어요<br>
+        • 여러 번 실행해서 다양한 아이디어를 모아보세요<br>
+        • 생성된 아이디어를 조합하여 새로운 주제를 만들 수 있어요
+      </p>
+    </div>
+  </div>
+  
+  <div class="cta-fixed">
+    <button class="btn btn-secondary" style="flex: 1;" onclick="favorite()">즐겨찾기</button>
+    <button class="btn btn-primary" style="flex: 2;" onclick="copyPrompt()">프롬프트 복사</button>
+  </div>
+  
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    function toggleHeaderFavorite() {
+      const icon = document.querySelector('.header-action');
+      const isFavorited = icon.textContent.includes('❤️');
+      
+      if (isFavorited) {
+        icon.textContent = '♡️'; // 빈 하트
+        AppUtils.showToast('즐겨찾기에서 제거했어요');
+      } else {
+        icon.textContent = '❤️'; // 찬 하트
+        AppUtils.showToast('즐겨찾기에 추가했어요');
+      }
+      
+      // localStorage에 저장 (실제 구현)
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+      const favorites = AppUtils.Storage.get('favorites') || { prompts: [] };
+      
+      if (isFavorited) {
+        favorites.prompts = favorites.prompts.filter(p => p !== id);
+      } else {
+        if (!favorites.prompts.includes(id)) {
+          favorites.prompts.push(id);
+        }
+      }
+      
+      AppUtils.Storage.set('favorites', favorites);
+    }
+    
+    async function copyPrompt() {
+      const content = document.getElementById('promptContent').textContent;
+      const success = await AppUtils.copyToClipboard(content);
+      
+      if (success) {
+        AppUtils.showToast('✓ 클립보드에 복사되었습니다');
+      } else {
+        AppUtils.showToast('복사에 실패했습니다');
+      }
+    }
+    
+    function favorite() {
+      AppUtils.showToast('즐겨찾기에 추가되었어요');
+    }
+  </script>
+</body>
+</html>

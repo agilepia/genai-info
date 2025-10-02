@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>리소스 개선 제안 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body {
+      padding-bottom: 80px;
+      background-color: var(--neutral-50);
+    }
+    
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: white;
+      padding: 16px;
+      border-bottom: 1px solid var(--neutral-300);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .back-btn {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      color: var(--neutral-700);
+    }
+    
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .page-content {
+      padding: 24px 16px 100px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .intro-card {
+      background: linear-gradient(135deg, var(--secondary-main), var(--secondary-light));
+      color: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    
+    .intro-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    
+    .intro-list {
+      font-size: 13px;
+      line-height: 1.8;
+      opacity: 0.95;
+    }
+    
+    .form-section {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--neutral-900);
+    }
+    
+    .form-label .required {
+      color: var(--error);
+    }
+    
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+      min-height: 48px;
+      line-height: 1.5;
+    }
+    
+    .form-select {
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%236B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3e%3cpolyline points="6 9 12 15 18 9"%3e%3c/polyline%3e%3c/svg%3e');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 20px;
+      padding-right: 40px;
+    }
+    
+    .form-select option {
+      font-size: 16px;
+      padding: 12px;
+      min-height: 44px;
+    }
+    
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary-main);
+    }
+    
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .form-hint {
+      font-size: 12px;
+      color: var(--neutral-500);
+      margin-top: 4px;
+    }
+    
+    .suggestion-type-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    
+    .suggestion-type-card {
+      border: 2px solid var(--neutral-300);
+      border-radius: 8px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    
+    .suggestion-type-card.selected {
+      border-color: var(--primary-main);
+      background-color: var(--primary-main);
+      color: white;
+    }
+    
+    .suggestion-type-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    
+    .suggestion-type-label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .severity-options {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .severity-btn {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid var(--neutral-300);
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .severity-btn.critical {
+      border-color: var(--error);
+      color: var(--error);
+    }
+    
+    .severity-btn.normal {
+      border-color: var(--warning);
+      color: var(--warning);
+    }
+    
+    .severity-btn.minor {
+      border-color: var(--info);
+      color: var(--info);
+    }
+    
+    .severity-btn.selected {
+      background-color: var(--primary-main);
+      border-color: var(--primary-main);
+      color: white;
+    }
+    
+    .form-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      padding: 16px;
+      border-top: 1px solid var(--neutral-300);
+    }
+    
+    .btn-primary {
+      width: 100%;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background-color: var(--primary-main);
+      color: white;
+      transition: all 0.2s;
+    }
+    
+    .btn-primary:disabled {
+      background-color: var(--neutral-300);
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <div class="back-btn" onclick="AppUtils.goBack()">←</div>
+    <div class="page-title">리소스 개선 제안</div>
+  </div>
+  
+  <div class="page-content">
+    <div class="intro-card">
+      <div class="intro-title">💡 개선 제안이 필요한 경우</div>
+      <div class="intro-list">
+        • 프롬프트에 오류가 있거나 결과가 부정확할 때<br>
+        • 치트시트의 정보가 오래되었을 때<br>
+        • 실무사례에 잘못된 정보가 있을 때<br>
+        • 더 나은 방법을 알고 있을 때
+      </div>
+    </div>
+    
+    <!-- 제안 유형 -->
+    <div class="form-section">
+      <div class="section-title">🎯 제안 유형</div>
+      
+      <div class="suggestion-type-grid">
+        <div class="suggestion-type-card" onclick="selectType('error')" data-type="error">
+          <div class="suggestion-type-icon">🐛</div>
+          <div class="suggestion-type-label">오류 수정</div>
+        </div>
+        <div class="suggestion-type-card" onclick="selectType('update')" data-type="update">
+          <div class="suggestion-type-icon">🔄</div>
+          <div class="suggestion-type-label">정보 업데이트</div>
+        </div>
+        <div class="suggestion-type-card" onclick="selectType('improve')" data-type="improve">
+          <div class="suggestion-type-icon">⬆️</div>
+          <div class="suggestion-type-label">품질 개선</div>
+        </div>
+        <div class="suggestion-type-card" onclick="selectType('content')" data-type="content">
+          <div class="suggestion-type-icon">➕</div>
+          <div class="suggestion-type-label">내용 추가</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 대상 리소스 -->
+    <div class="form-section">
+      <div class="section-title">📌 대상 리소스</div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          리소스 유형 <span class="required">*</span>
+        </label>
+        <select class="form-select" id="resourceType">
+          <option value="">선택해주세요</option>
+          <option value="프롬프트">프롬프트</option>
+          <option value="치트시트">치트시트</option>
+          <option value="실무사례">실무사례</option>
+          <option value="스타터킷">스타터킷</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          리소스 제목 또는 ID <span class="required">*</span>
+        </label>
+        <input type="text" class="form-input" id="resourceId" placeholder="예: 블로그 포스트 아이디어 생성">
+        <div class="form-hint">개선하고자 하는 리소스의 제목이나 ID를 입력해주세요</div>
+      </div>
+    </div>
+    
+    <!-- 개선 제안 내용 -->
+    <div class="form-section">
+      <div class="section-title">📝 제안 내용</div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          문제점 또는 개선사항 <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="problem" placeholder="무엇이 문제이거나 개선이 필요한지 구체적으로 설명해주세요"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          개선 제안 <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" id="suggestion" placeholder="어떻게 개선하면 좋을지 구체적으로 제안해주세요"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          중요도 <span class="required">*</span>
+        </label>
+        <div class="severity-options">
+          <button class="severity-btn critical" onclick="selectSeverity('critical')" data-severity="critical">
+            심각
+          </button>
+          <button class="severity-btn normal" onclick="selectSeverity('normal')" data-severity="normal">
+            보통
+          </button>
+          <button class="severity-btn minor" onclick="selectSeverity('minor')" data-severity="minor">
+            경미
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 추가 정보 -->
+    <div class="form-section">
+      <div class="section-title">➕ 추가 정보 (선택)</div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          재현 방법
+        </label>
+        <textarea class="form-textarea" id="reproduction" placeholder="오류의 경우, 문제를 재현하는 방법을 설명해주세요"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">
+          참고 자료
+        </label>
+        <textarea class="form-textarea" id="reference" placeholder="관련 링크, 문서 등 참고할 자료가 있으면 공유해주세요"></textarea>
+      </div>
+    </div>
+  </div>
+  
+  <div class="form-actions">
+    <button class="btn-primary" onclick="submitSuggestion()">제안하기</button>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    let selectedType = '';
+    let selectedSeverity = '';
+    
+    function selectType(type) {
+      selectedType = type;
+      document.querySelectorAll('.suggestion-type-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      document.querySelector(`[data-type="${type}"]`).classList.add('selected');
+    }
+    
+    function selectSeverity(severity) {
+      selectedSeverity = severity;
+      document.querySelectorAll('.severity-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      document.querySelector(`[data-severity="${severity}"]`).classList.add('selected');
+    }
+    
+    function submitSuggestion() {
+      // 필수 항목 검증
+      if (!selectedType) {
+        alert('제안 유형을 선택해주세요');
+        return;
+      }
+      
+      const resourceType = document.getElementById('resourceType').value;
+      const resourceId = document.getElementById('resourceId').value.trim();
+      const problem = document.getElementById('problem').value.trim();
+      const suggestion = document.getElementById('suggestion').value.trim();
+      
+      if (!resourceType) {
+        alert('리소스 유형을 선택해주세요');
+        return;
+      }
+      
+      if (!resourceId) {
+        alert('리소스 제목 또는 ID를 입력해주세요');
+        return;
+      }
+      
+      if (!problem) {
+        alert('문제점 또는 개선사항을 입력해주세요');
+        return;
+      }
+      
+      if (!suggestion) {
+        alert('개선 제안을 입력해주세요');
+        return;
+      }
+      
+      if (!selectedSeverity) {
+        alert('중요도를 선택해주세요');
+        return;
+      }
+      
+      AppUtils.showLoadingToast('제출 중...');
+      
+      setTimeout(() => {
+        AppUtils.hideLoadingToast();
+        AppUtils.showToast('개선 제안이 완료되었습니다! 🎉');
+        
+        setTimeout(() => {
+          AppUtils.navigateTo('25-기여-상태추적.html?pr=PR-2025-003');
+        }, 1500);
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

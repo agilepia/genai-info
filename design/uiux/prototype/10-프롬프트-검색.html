@@ -1,0 +1,58 @@
+<!-- 10-프롬프트-검색.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프롬프트 검색 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .filters { background-color: white; padding: 16px; border-bottom: 1px solid var(--neutral-300); display: flex; gap: 8px; overflow-x: auto; }
+    .filter-chip { padding: 8px 16px; background-color: var(--neutral-100); border-radius: 16px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+    .filter-chip.active { background-color: var(--primary-main); color: white; }
+    .list-container { padding: 16px; display: grid; gap: 16px; padding-bottom: 80px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">프롬프트</div>
+    <div class="header-action" onclick="AppUtils.navigateTo('06-통합검색.html')">🔍</div>
+  </div>
+  
+  <div class="filters">
+    <div class="filter-chip active">전체</div>
+    <div class="filter-chip">콘텐츠 작성</div>
+    <div class="filter-chip">SEO</div>
+    <div class="filter-chip">이미지 생성</div>
+    <div class="filter-chip">데이터 분석</div>
+  </div>
+  
+  <div class="list-container" id="listContainer"></div>
+  
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  
+  <script src="common.js"></script>
+  <script>
+    const prompts = AppUtils.SAMPLE_DATA.prompts;
+    document.getElementById('listContainer').innerHTML = prompts.map(p => AppUtils.renderPromptCard(p)).join('');
+  </script>
+</body>
+</html>

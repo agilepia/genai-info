@@ -1,0 +1,43 @@
+<!-- 11: 프롬프트 검색결과 = 10과 동일 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프롬프트 검색결과 - AI Hub</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    .grid-container { padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 80px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-back" onclick="AppUtils.goBack()">←</div>
+    <div class="header-title">프롬프트 검색결과</div>
+    <div class="header-action" onclick="AppUtils.navigateTo('06-통합검색.html')">🔍</div>
+  </div>
+  <div class="grid-container" id="gridContainer"></div>
+  <div class="nav-bar">
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
+      <div class="nav-item-icon">🏠</div>
+      <div class="nav-item-label">홈</div>
+    </a>
+    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
+      <div class="nav-item-icon">🔍</div>
+      <div class="nav-item-label">검색</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
+      <div class="nav-item-icon">✏️</div>
+      <div class="nav-item-label">기여</div>
+    </a>
+    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
+      <div class="nav-item-icon">👤</div>
+      <div class="nav-item-label">MY</div>
+    </a>
+  </div>
+  <script src="common.js"></script>
+  <script>
+    document.getElementById('gridContainer').innerHTML = AppUtils.SAMPLE_DATA.prompts.map(p => AppUtils.renderPromptCard(p)).join('');
+  </script>
+</body>
+</html>
