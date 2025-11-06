@@ -219,7 +219,8 @@ body {
 }
 
 /* ========== 입력 필드 ========== */
-.input-field, select {
+.input-field,
+select {
   width: 100%;
   min-height: 48px;
   padding: 12px var(--space-md);
@@ -244,7 +245,7 @@ select {
 
 select option {
   font-size: 16px;
-  padding: 12px;
+  padding: var(--space-sm) var(--space-md);
   min-height: 44px;
 }
 
@@ -449,12 +450,21 @@ select option {
   width: 24px;
   height: 24px;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 20px;
+  color: var(--neutral-900);
 }
 
 .header-action {
   width: 24px;
   height: 24px;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 20px;
 }
 
 /* ========== 네비게이션 바 (하단 탭) ========== */
@@ -480,6 +490,9 @@ select option {
   text-decoration: none;
   transition: color var(--transition-fast);
   cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
 }
 
 .nav-item.active {

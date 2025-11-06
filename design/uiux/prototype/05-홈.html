@@ -31,18 +31,31 @@
       font-weight: 700;
       color: var(--primary-main);
       cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
     }
-    
+
     .header-icons {
       display: flex;
       gap: 16px;
     }
-    
+
     .icon-btn {
       width: 24px;
       height: 24px;
       cursor: pointer;
       color: var(--neutral-700);
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 20px;
+    }
+
+    .search-bar {
+      border: none;
+      width: 100%;
+      text-align: left;
     }
     
     .home-content {
@@ -70,6 +83,13 @@
       font-size: 14px;
       color: var(--primary-main);
       cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .banner-btn {
+      border: none;
     }
     
     .horizontal-scroll {
@@ -145,16 +165,16 @@
 <body>
   <div class="home-header">
     <div class="home-header-top">
-      <div class="logo" onclick="window.location.reload()">AI Hub</div>
+      <button class="logo" id="logoBtn" aria-label="홈 새로고침">AI Hub</button>
       <div class="header-icons">
-        <div class="icon-btn" onclick="AppUtils.navigateTo('06-통합검색.html')">🔍</div>
-        <div class="icon-btn" onclick="showNotifications()">🔔</div>
+        <button class="icon-btn" id="searchIconBtn" aria-label="검색">🔍</button>
+        <button class="icon-btn" id="notificationBtn" aria-label="알림">🔔</button>
       </div>
     </div>
-    <div class="search-bar" onclick="AppUtils.navigateTo('06-통합검색.html')">
-      <span class="search-bar-icon">🔍</span>
+    <button class="search-bar" id="searchBarBtn" aria-label="통합 검색 열기">
+      <span class="search-bar-icon" aria-hidden="true">🔍</span>
       <span class="search-bar-placeholder">프롬프트, 치트시트, 사례를 찾아보세요</span>
-    </div>
+    </button>
   </div>
   
   <div class="home-content">
@@ -162,40 +182,40 @@
     <div class="banner">
       <div class="banner-title">🎉 프리미엄 무료 체험</div>
       <div class="banner-text">7일간 모든 기능을 무료로 사용해보세요</div>
-      <div class="banner-btn" onclick="alert('프리미엄 안내 준비중')">자세히 보기</div>
+      <button class="banner-btn" id="premiumBtn">자세히 보기</button>
     </div>
-    
+
     <!-- 당신을 위한 추천 -->
-    <div class="section">
+    <section class="section" aria-labelledby="recommended-title">
       <div class="section-header">
-        <div class="section-title">당신을 위한 추천</div>
-        <div class="section-more" onclick="AppUtils.navigateTo('10-프롬프트-검색.html')">전체보기 →</div>
+        <h2 class="section-title" id="recommended-title">당신을 위한 추천</h2>
+        <button class="section-more" data-page="10-프롬프트-검색.html">전체보기 →</button>
       </div>
       <div class="horizontal-scroll" id="recommendedList"></div>
-    </div>
-    
+    </section>
+
     <!-- 스타터킷 -->
-    <div class="section">
+    <section class="section" aria-labelledby="starterkit-title">
       <div class="section-header">
-        <div class="section-title">빠르게 시작하기</div>
-        <div class="section-more" onclick="AppUtils.navigateTo('08-스타터킷-목록.html')">전체보기 →</div>
+        <h2 class="section-title" id="starterkit-title">빠르게 시작하기</h2>
+        <button class="section-more" data-page="08-스타터킷-목록.html">전체보기 →</button>
       </div>
       <div class="horizontal-scroll" id="starterkitList"></div>
-    </div>
-    
+    </section>
+
     <!-- 실무 사례 -->
-    <div class="section">
+    <section class="section" aria-labelledby="case-title">
       <div class="section-header">
-        <div class="section-title">실무에서 검증된 사례</div>
-        <div class="section-more" onclick="AppUtils.navigateTo('17-실무사례-검색.html')">전체보기 →</div>
+        <h2 class="section-title" id="case-title">실무에서 검증된 사례</h2>
+        <button class="section-more" data-page="17-실무사례-검색.html">전체보기 →</button>
       </div>
       <div class="horizontal-scroll" id="caseList"></div>
-    </div>
+    </section>
     
     <!-- 통계 -->
-    <div class="section">
+    <section class="section" aria-labelledby="community-title">
       <div class="section-header">
-        <div class="section-title">함께 성장하는 커뮤니티</div>
+        <h2 class="section-title" id="community-title">함께 성장하는 커뮤니티</h2>
       </div>
       <div class="horizontal-scroll">
         <div class="scroll-card stat-card">
@@ -211,30 +231,72 @@
           <div class="stat-label">활성 사용자</div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
-  
-  <div class="nav-bar">
-    <a href="#" class="nav-item active" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
-      <div class="nav-item-icon">🏠</div>
-      <div class="nav-item-label">홈</div>
-    </a>
-    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
-      <div class="nav-item-icon">🔍</div>
-      <div class="nav-item-label">검색</div>
-    </a>
-    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
-      <div class="nav-item-icon">✏️</div>
-      <div class="nav-item-label">기여</div>
-    </a>
-    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
-      <div class="nav-item-icon">👤</div>
-      <div class="nav-item-label">MY</div>
-    </a>
-  </div>
+
+  <nav class="nav-bar" aria-label="주 네비게이션">
+    <button class="nav-item active" data-page="05-홈.html" aria-label="홈" aria-current="page">
+      <span class="nav-item-icon" aria-hidden="true">🏠</span>
+      <span class="nav-item-label">홈</span>
+    </button>
+    <button class="nav-item" data-page="06-통합검색.html" aria-label="검색">
+      <span class="nav-item-icon" aria-hidden="true">🔍</span>
+      <span class="nav-item-label">검색</span>
+    </button>
+    <button class="nav-item" data-page="27-기여-메인.html" aria-label="기여">
+      <span class="nav-item-icon" aria-hidden="true">✏️</span>
+      <span class="nav-item-label">기여</span>
+    </button>
+    <button class="nav-item" data-page="28-MY.html" aria-label="MY">
+      <span class="nav-item-icon" aria-hidden="true">👤</span>
+      <span class="nav-item-label">MY</span>
+    </button>
+  </nav>
   
   <script src="common.js"></script>
   <script>
+    // 이벤트 리스너 초기화
+    function initEventListeners() {
+      // 로고 버튼
+      document.getElementById('logoBtn')?.addEventListener('click', () => {
+        window.location.reload();
+      });
+
+      // 검색 아이콘 버튼
+      document.getElementById('searchIconBtn')?.addEventListener('click', () => {
+        AppUtils.navigateTo('06-통합검색.html');
+      });
+
+      // 알림 버튼
+      document.getElementById('notificationBtn')?.addEventListener('click', showNotifications);
+
+      // 검색바 버튼
+      document.getElementById('searchBarBtn')?.addEventListener('click', () => {
+        AppUtils.navigateTo('06-통합검색.html');
+      });
+
+      // 프리미엄 버튼
+      document.getElementById('premiumBtn')?.addEventListener('click', () => {
+        AppUtils.showToast('프리미엄 안내 준비중입니다');
+      });
+
+      // 섹션 "전체보기" 버튼들
+      document.querySelectorAll('.section-more').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const page = e.currentTarget.dataset.page;
+          if (page) AppUtils.navigateTo(page);
+        });
+      });
+
+      // 네비게이션 바 버튼들
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const page = e.currentTarget.dataset.page;
+          if (page) AppUtils.navigateTo(page);
+        });
+      });
+    }
+
     // 알림 표시
     function showNotifications() {
       const notificationHTML = `
@@ -336,6 +398,7 @@
     
     // 초기화
     document.addEventListener('DOMContentLoaded', () => {
+      initEventListeners();
       renderRecommended();
       renderStarterkits();
       renderCases();
