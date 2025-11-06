@@ -22,9 +22,9 @@
 </head>
 <body>
   <div class="header">
-    <div class="header-back" onclick="AppUtils.goBack()">←</div>
-    <div class="header-title">프롬프트 상세</div>
-    <div class="header-action" onclick="toggleHeaderFavorite()">❤️</div>
+    <button class="header-back" id="backBtn" aria-label="뒤로가기">←</button>
+    <h1 class="header-title">프롬프트 상세</h1>
+    <button class="header-action" id="favoriteBtn" aria-label="즐겨찾기">❤️</button>
   </div>
   
   <div class="detail-content">
@@ -69,34 +69,58 @@
   </div>
   
   <div class="cta-fixed">
-    <button class="btn btn-secondary" style="flex: 1;" onclick="favorite()">즐겨찾기</button>
-    <button class="btn btn-primary" style="flex: 2;" onclick="copyPrompt()">프롬프트 복사</button>
+    <button class="btn btn-secondary" id="favoriteActionBtn" style="flex: 1;">즐겨찾기</button>
+    <button class="btn btn-primary" id="copyPromptBtn" style="flex: 2;">프롬프트 복사</button>
   </div>
-  
-  
-  <div class="nav-bar">
-    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('05-홈.html');">
-      <div class="nav-item-icon">🏠</div>
-      <div class="nav-item-label">홈</div>
-    </a>
-    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('06-통합검색.html');">
-      <div class="nav-item-icon">🔍</div>
-      <div class="nav-item-label">검색</div>
-    </a>
-    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('27-기여-메인.html');">
-      <div class="nav-item-icon">✏️</div>
-      <div class="nav-item-label">기여</div>
-    </a>
-    <a href="#" class="nav-item" onclick="event.preventDefault(); AppUtils.navigateTo('28-MY.html');">
-      <div class="nav-item-icon">👤</div>
-      <div class="nav-item-label">MY</div>
-    </a>
-  </div>
+
+  <nav class="nav-bar" aria-label="주 네비게이션">
+    <button class="nav-item" data-page="05-홈.html" aria-label="홈">
+      <span class="nav-item-icon" aria-hidden="true">🏠</span>
+      <span class="nav-item-label">홈</span>
+    </button>
+    <button class="nav-item" data-page="06-통합검색.html" aria-label="검색">
+      <span class="nav-item-icon" aria-hidden="true">🔍</span>
+      <span class="nav-item-label">검색</span>
+    </button>
+    <button class="nav-item" data-page="27-기여-메인.html" aria-label="기여">
+      <span class="nav-item-icon" aria-hidden="true">✏️</span>
+      <span class="nav-item-label">기여</span>
+    </button>
+    <button class="nav-item" data-page="28-MY.html" aria-label="MY">
+      <span class="nav-item-icon" aria-hidden="true">👤</span>
+      <span class="nav-item-label">MY</span>
+    </button>
+  </nav>
   
   <script src="common.js"></script>
   <script>
+    // 이벤트 리스너 초기화
+    function initEventListeners() {
+      // 뒤로가기 버튼
+      document.getElementById('backBtn')?.addEventListener('click', () => {
+        AppUtils.goBack();
+      });
+
+      // 헤더 즐겨찾기 버튼
+      document.getElementById('favoriteBtn')?.addEventListener('click', toggleHeaderFavorite);
+
+      // 하단 즐겨찾기 버튼
+      document.getElementById('favoriteActionBtn')?.addEventListener('click', favorite);
+
+      // 프롬프트 복사 버튼
+      document.getElementById('copyPromptBtn')?.addEventListener('click', copyPrompt);
+
+      // 네비게이션 바 버튼들
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const page = e.currentTarget.dataset.page;
+          if (page) AppUtils.navigateTo(page);
+        });
+      });
+    }
+
     function toggleHeaderFavorite() {
-      const icon = document.querySelector('.header-action');
+      const icon = document.getElementById('favoriteBtn');
       const isFavorited = icon.textContent.includes('❤️');
       
       if (isFavorited) {
@@ -137,6 +161,9 @@
     function favorite() {
       AppUtils.showToast('즐겨찾기에 추가되었어요');
     }
+
+    // 초기화
+    document.addEventListener('DOMContentLoaded', initEventListeners);
   </script>
 </body>
 </html>

@@ -211,16 +211,20 @@ const Storage = {
       return true;
     } catch (e) {
       console.error('Storage set error:', e);
+      if (e.name === 'QuotaExceededError') {
+        showToast('저장 공간이 부족합니다');
+      }
       return false;
     }
   },
-  
+
   remove(key) {
     try {
       localStorage.removeItem(key);
       return true;
     } catch (e) {
       console.error('Storage remove error:', e);
+      showToast('삭제 중 오류가 발생했습니다');
       return false;
     }
   }
@@ -228,10 +232,12 @@ const Storage = {
 
 // 별점 렌더링
 function renderStars(rating) {
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 >= 0.5;
+  // rating을 0-5 범위로 제한
+  const normalizedRating = Math.max(0, Math.min(5, rating || 0));
+  const fullStars = Math.floor(normalizedRating);
+  const hasHalfStar = normalizedRating % 1 >= 0.5;
   let stars = '';
-  
+
   for (let i = 0; i < 5; i++) {
     if (i < fullStars) {
       stars += '⭐';
@@ -241,16 +247,21 @@ function renderStars(rating) {
       stars += '☆';
     }
   }
-  
+
   return stars;
 }
 
 // 숫자 포맷팅
 function formatNumber(num) {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
+  const number = Number(num) || 0;
+
+  if (number >= 1000000) {
+    return (number / 1000000).toFixed(1) + 'M';
   }
-  return num.toString();
+  if (number >= 1000) {
+    return (number / 1000).toFixed(1) + 'K';
+  }
+  return number.toString();
 }
 
 // 클립보드 복사
@@ -300,17 +311,19 @@ function debounce(func, wait) {
 function initNavigation() {
   const navItems = document.querySelectorAll('.nav-item');
   const currentPage = window.location.pathname.split('/').pop();
-  
+
   navItems.forEach(item => {
     const targetPage = item.dataset.page;
-    if (currentPage.includes(targetPage)) {
+    if (targetPage && currentPage.includes(targetPage)) {
       item.classList.add('active');
     }
-    
-    item.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigateTo(targetPage);
-    });
+
+    if (targetPage) {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigateTo(targetPage);
+      });
+    }
   });
 }
 
@@ -398,13 +411,10 @@ function renderCaseCard(caseData) {
 
 // ========== 초기화 ==========
 document.addEventListener('DOMContentLoaded', () => {
-  // initNavigation(); // inline onclick 방식 사용으로 인해 주석 처리
   initSearchBar();
-  // initBackButton(); // inline onclick 방식 사용으로 인해 주석 처리
-  
-  // 사용자 데이터 확인
+
+  // 사용자 데이터 확인 - 첫 방문자인 경우 온보딩 데이터 저장
   if (!Storage.get('user')) {
-    // 첫 방문자인 경우 온보딩 데이터 저장
     Storage.set('user', SAMPLE_DATA.user);
   }
 });
